@@ -1,0 +1,108 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "saleae";
+option java_outer_classname = "SaleaeProto";
+option objc_class_prefix = "Saleae";
+
+package saleae.automation;
+
+
+service Manager {
+  rpc GetDevices (GetDevicesRequest) returns (GetDevicesReply) {}
+
+  rpc LoadCapture (LoadCaptureRequest) returns (LoadCaptureReply) {}
+  rpc CloseCapture (CloseCaptureRequest) returns (CloseCaptureReply) {}
+
+  rpc ExportRawDataCsv (ExportRawDataCsvRequest) returns (ExportRawDataCsvRequest) {}
+}
+
+
+// Core Types
+
+enum ErrorType {
+    UNKNOWN_ERROR_TYPE = 0;
+    INVALID_CAPTURE_ID = 10;
+}
+
+// Enum fields don't explicitly track presence if not tagged as optional. In these cases
+// 0 is the implicitly serialized value, which is indistinguishable from the 0 value in the enum.
+// But 0 is required as the first value in an enum. This should be set to something like UNKNOWN instead.
+// Or we should always mark them as optional? I'm not sure how the client-side handles that if the value is 
+// present but 0.
+enum DeviceType {
+    UNKNOWN_DEVICE_TYPE = 0;
+    LOGIC_8 = 1;
+    LOGIC_PRO_8 = 2;
+    LOGIC_PRO_16 = 3;
+}
+
+message Device {
+    uint64 device_id = 1;
+    DeviceType device_type = 2;
+    string serial_number = 3;
+}
+
+enum ChannelType {
+    DIGITAL = 0;
+    ANALOG = 1;
+}
+
+message ChannelIdentifier {
+    uint64 device_id = 1;
+    ChannelType type = 2;
+    uint64 index = 3;
+}
+
+message CaptureInfo {
+    uint64 capture_id = 1;
+}
+
+
+
+// Request/Reply Types
+
+
+// Get Devices
+message GetDevicesRequest {
+}
+message GetDevicesReply {
+    repeated Device devices = 1;
+}
+
+
+
+
+// Load Capture
+message LoadCaptureRequest {
+    string filepath = 1;
+}
+message LoadCaptureReply {
+    CaptureInfo capture_info = 1;
+}
+
+
+// Close Capture
+message CloseCaptureRequest {
+    uint64 capture_id = 1;
+}
+message CloseCaptureReply {
+}
+
+
+// Export Raw Data
+//   CSV
+message ExportRawDataCsvRequest {
+    string directory = 1;
+
+    // If not specified, all channels will be exported
+    repeated ChannelIdentifier channels = 2;
+
+    // If not specified, defaults to 1
+    uint64 analog_downsample_ratio = 3;
+
+    // If set to true, timestamps will be in ISO8601 format
+    bool iso8601 = 4;
+}
+message ExportRawDataCsvReply {
+}
