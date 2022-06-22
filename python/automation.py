@@ -1,5 +1,5 @@
 from os import PathLike
-from typing import Optional
+from typing import List, Optional
 
 from saleae.grpc import saleae_pb2
 from saleae.grpc import saleae_pb2_grpc
@@ -48,7 +48,7 @@ class Capture:
         self.manager = manager
         self.capture_id = capture_id
 
-    def export_raw_data_csv(self, directory: str, *, channels: Optional[list[int]] = None,
+    def export_raw_data_csv(self, directory: str, *, channels: Optional[List[int]] = None,
                             analog_downsample_ratio: int = 1, iso8601: bool = False):
         request = saleae_pb2.ExportRawDataCsvRequest(
             directory=directory,
