@@ -15,7 +15,7 @@ class Manager:
     def __init__(self, port: int):
         """
         """
-        self.channel = grpc.insecure_channel(f'localhost:{port}')
+        self.channel = grpc.insecure_channel(f'127.0.0.1:{port}')
         self.channel.subscribe(lambda value: logger.info(f'sub {value}'))
         self.stub = saleae_pb2_grpc.ManagerStub(self.channel)
 
