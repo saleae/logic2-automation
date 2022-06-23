@@ -15,7 +15,7 @@ class Manager:
     def __init__(self, port: int):
         """
         """
-        self.channel = grpc.insecure_channel(f'localhost:{port}')
+        self.channel = grpc.insecure_channel(f'127.0.0.1:{port}')
         self.channel.subscribe(lambda value: logger.info(f'sub {value}'))
         self.stub = saleae_pb2_grpc.ManagerStub(self.channel)
 
@@ -24,6 +24,11 @@ class Manager:
         Close connection to Saleae backend, and shut it down if it was created by Manager.
 
         """
+
+    def get_devices(self):
+        request = saleae_pb2.GetDevicesRequest()
+        reply: saleae_pb2.GetDevicesReply = self.stub.GetDevices(request)
+        print(reply)
 
     def load_capture(self, filepath: str) -> 'Capture':
         """
@@ -75,5 +80,6 @@ if __name__ == '__main__':
         level=logging.INFO)
 
     manager = Manager(port=50051)
+    manager.get_devices()
     with manager.load_capture('') as cap:
         cap.close()
