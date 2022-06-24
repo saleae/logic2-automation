@@ -45,6 +45,12 @@ class Manager(saleae_pb2_grpc.ManagerServicer):
         self.open_captures.remove(request.capture_id)
         return saleae_pb2.CloseCaptureReply()
 
+    def ExportRawDataCsv(self, request, context):
+        print('export raw data')
+        return saleae_pb2.ExportRawDataCsvReply(
+        )
+
+
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))

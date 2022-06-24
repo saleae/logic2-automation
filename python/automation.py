@@ -7,7 +7,12 @@ from saleae.grpc import saleae_pb2_grpc
 import grpc
 import grpc_status.rpc_status
 
+import os
+import os.path
+
 import logging
+
+from saleae.grpc.saleae_pb2 import ChannelIdentifier
 logger = logging.getLogger(__name__)
 
 
@@ -53,15 +58,25 @@ class Capture:
         self.manager = manager
         self.capture_id = capture_id
 
-    def export_raw_data_csv(self, directory: str, *, channels: Optional[List[int]] = None,
+    def export_raw_data_csv(self, directory: str, *, analog_channels: Optional[List[int]] = None,
+                            digital_channels: Optional[List[int]] = None,
                             analog_downsample_ratio: int = 1, iso8601: bool = False):
+        channels = []
+        if analog_channels:
+            channels.extend([saleae_pb2.ChannelIdentifier(type=saleae_pb2.ANALOG, index=ch) for ch in analog_channels])
+        if digital_channels:
+            channels.extend([saleae_pb2.ChannelIdentifier(type=saleae_pb2.DIGITAL, index=ch) for ch in digital_channels])
+
+        print("Sending export request")
         request = saleae_pb2.ExportRawDataCsvRequest(
+            capture_id=self.capture_id,
             directory=directory,
             channels=channels,
-            analog_downsample_ratio=analog_downsample_ratio,
+            #analog_downsample_ratio=analog_downsample_ratio,
             iso8601=iso8601
         )
         self.manager.stub.ExportRawDataCsv(request)
+        print("done")
 
     def close(self):
         request = saleae_pb2.CloseCaptureRequest(capture_id=self.capture_id)
@@ -81,5 +96,9 @@ if __name__ == '__main__':
 
     manager = Manager(port=50051)
     manager.get_devices()
-    with manager.load_capture('') as cap:
-        cap.close()
+    path = os.path.join(os.getcwd(), 'cap.sal')
+    with manager.load_capture(path) as cap:
+        cap.export_raw_data_csv(
+            directory=os.path.join(os.getcwd(), 'export'),
+            analog_channels=[0,1],
+            digital_channels=[0])

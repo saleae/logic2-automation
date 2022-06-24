@@ -14,7 +14,7 @@ service Manager {
   rpc LoadCapture (LoadCaptureRequest) returns (LoadCaptureReply) {}
   rpc CloseCapture (CloseCaptureRequest) returns (CloseCaptureReply) {}
 
-  rpc ExportRawDataCsv (ExportRawDataCsvRequest) returns (ExportRawDataCsvRequest) {}
+  rpc ExportRawDataCsv (ExportRawDataCsvRequest) returns (ExportRawDataCsvReply) {}
 }
 
 
@@ -93,16 +93,18 @@ message CloseCaptureReply {
 // Export Raw Data
 //   CSV
 message ExportRawDataCsvRequest {
-    string directory = 1;
+    uint64 capture_id = 1;
+
+    string directory = 2;
 
     // If not specified, all channels will be exported
-    repeated ChannelIdentifier channels = 2;
+    repeated ChannelIdentifier channels = 3;
 
     // If not specified, defaults to 1
-    uint64 analog_downsample_ratio = 3;
+    uint64 analog_downsample_ratio = 4;
 
     // If set to true, timestamps will be in ISO8601 format
-    bool iso8601 = 4;
+    bool iso8601 = 5;
 }
 message ExportRawDataCsvReply {
 }
