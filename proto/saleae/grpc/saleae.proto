@@ -97,10 +97,9 @@ message ExportRawDataCsvRequest {
 
     string directory = 2;
 
-    // If not specified, all channels will be exported
     repeated ChannelIdentifier channels = 3;
 
-    // If not specified, defaults to 1
+    // Must be between 1 and 1,000,000, inclusive
     uint64 analog_downsample_ratio = 4;
 
     // If set to true, timestamps will be in ISO8601 format

@@ -3,6 +3,7 @@ from typing import List, Optional
 
 from saleae.grpc import saleae_pb2
 from saleae.grpc import saleae_pb2_grpc
+import time
 
 import grpc
 import grpc_status.rpc_status
@@ -72,7 +73,7 @@ class Capture:
             capture_id=self.capture_id,
             directory=directory,
             channels=channels,
-            #analog_downsample_ratio=analog_downsample_ratio,
+            analog_downsample_ratio=analog_downsample_ratio,
             iso8601=iso8601
         )
         self.manager.stub.ExportRawDataCsv(request)
@@ -96,9 +97,24 @@ if __name__ == '__main__':
 
     manager = Manager(port=50051)
     manager.get_devices()
-    path = os.path.join(os.getcwd(), 'cap.sal')
-    with manager.load_capture(path) as cap:
-        cap.export_raw_data_csv(
-            directory=os.path.join(os.getcwd(), 'export'),
-            analog_channels=[0,1],
-            digital_channels=[0])
+
+    captures = []
+
+    for _ in range(5):
+        for name in ('cap1', 'cap2', 'cap3'):
+            path = os.path.join(os.getcwd(), f'{name}.sal')
+            captures.append(manager.load_capture(path))
+
+
+
+    for name in ('cap1',):
+        path = os.path.join(os.getcwd(), f'{name}.sal')
+        print('loading')
+        with manager.load_capture(path) as cap:
+            cap.export_raw_data_csv(
+                directory=os.path.join(os.getcwd(), f'export_{name}'),
+                analog_channels=[0,1],
+                digital_channels=[0])
+
+    for cap in captures:
+        cap.close()
