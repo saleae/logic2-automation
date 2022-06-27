@@ -20,9 +20,11 @@ service Manager {
 
 // Core Types
 
-enum ErrorType {
-    UNKNOWN_ERROR_TYPE = 0;
-    INVALID_CAPTURE_ID = 10;
+enum ErrorCode {
+    UNKNOWN = 0; // Not used
+
+    INTERNAL = 1;
+    INVALID_CAPTURE_ID = 2;
 }
 
 // Enum fields don't explicitly track presence if not tagged as optional. In these cases
