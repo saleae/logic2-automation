@@ -12,9 +12,11 @@ service Manager {
   rpc GetDevices (GetDevicesRequest) returns (GetDevicesReply) {}
 
   rpc LoadCapture (LoadCaptureRequest) returns (LoadCaptureReply) {}
+  rpc SaveCapture (SaveCaptureRequest) returns (SaveCaptureReply) {}
   rpc CloseCapture (CloseCaptureRequest) returns (CloseCaptureReply) {}
 
   rpc ExportRawDataCsv (ExportRawDataCsvRequest) returns (ExportRawDataCsvReply) {}
+  rpc ExportRawDataBinary (ExportRawDataBinaryRequest) returns (ExportRawDataBinaryReply) {}
 }
 
 
@@ -23,8 +25,14 @@ service Manager {
 enum ErrorCode {
     UNKNOWN = 0; // Not used
 
-    INTERNAL = 1;
-    INVALID_CAPTURE_ID = 2;
+    INTERNAL_EXCEPTION = 1;
+
+    INVALID_REQUEST = 10;
+
+    LOAD_CAPTURE_FAILED = 20;
+
+    CAPTURE_IN_PROGRESS = 21;
+    UNSUPPORTED_FILE_TYPE = 22;
 }
 
 // Enum fields don't explicitly track presence if not tagged as optional. In these cases
@@ -83,6 +91,14 @@ message LoadCaptureReply {
     CaptureInfo capture_info = 1;
 }
 
+// Save Capture
+message SaveCaptureRequest {
+    uint64 capture_id = 1;
+    string filepath = 2;
+}
+message SaveCaptureReply {
+}
+
 
 // Close Capture
 message CloseCaptureRequest {
@@ -93,7 +109,6 @@ message CloseCaptureReply {
 
 
 // Export Raw Data
-//   CSV
 message ExportRawDataCsvRequest {
     uint64 capture_id = 1;
 
@@ -108,4 +123,17 @@ message ExportRawDataCsvRequest {
     bool iso8601 = 5;
 }
 message ExportRawDataCsvReply {
+}
+
+message ExportRawDataBinaryRequest {
+    uint64 capture_id = 1;
+
+    string directory = 2;
+
+    repeated ChannelIdentifier channels = 3;
+
+    // Must be between 1 and 1,000,000, inclusive
+    uint64 analog_downsample_ratio = 4;
+}
+message ExportRawDataBinaryReply {
 }
