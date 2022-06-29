@@ -95,6 +95,8 @@ message StartCaptureRequest {
     oneof device_configuration {
         LogicDeviceConfiguration logic_device_configuration = 2;
     }
+
+    CaptureSettings capture_settings = 3;
 }
 message StartCaptureReply {
     CaptureInfo capture_info = 1;
@@ -114,6 +116,22 @@ message LogicDeviceConfiguration {
 message GlitchFilterEntry {
     uint32 channel_index = 1;
     double pulse_width = 2;
+}
+
+message CaptureSettings {
+    // Capture buffer size (in megabytes)
+    uint32 buffer_size = 1;
+    CaptureMode capture_mode = 2;
+    // Time to stop capture after (in seconds)
+    //
+    // Only applies if capture_mode is `CaptureMode.STOP_AFTER_TIME`
+    double stop_after_time = 3;
+}
+
+enum CaptureMode {
+    CIRCULAR = 0;
+    STOP_AFTER_TIME = 1;
+    STOP_ON_DIGITAL_TRIGGER = 2;
 }
 
 // Stop Capture
