@@ -140,6 +140,10 @@ class Capture:
         request = saleae_pb2.CloseCaptureRequest(capture_id=self.capture_id)
         self.manager.stub.CloseCapture(request)
 
+    def stop(self):
+        request = saleae_pb2.StopCaptureRequest(capture_id=self.capture_id)
+        self.manager.stub.StopCapture(request)
+
     def __enter__(self):
         return self
 
@@ -153,10 +157,12 @@ if __name__ == "__main__":
     )
 
     manager = Manager(port=50051)
-    manager.start_capture(
+    capture = manager.start_capture(
         device_serial_number="1000004",
         device_configuration=LogicDeviceConfiguration(
             enabled_digital_channels=[3],
             digital_sample_rate=500000000,
         ),
     )
+    time.sleep(1)
+    capture.stop()

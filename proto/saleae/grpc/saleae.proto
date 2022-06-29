@@ -39,6 +39,7 @@ enum ErrorCode {
 
     MISSING_DEVICE = 50;
     DEVICE_ERROR = 51;
+    BACKLOGGED = 52;
 }
 
 // Enum fields don't explicitly track presence if not tagged as optional. In these cases
