@@ -31,6 +31,8 @@ class LogicDeviceConfiguration(DeviceConfiguration):
     analog_sample_rate: Optional[int] = None
     digital_sample_rate: Optional[int] = None
 
+    digital_threshold: Optional[float] = None
+
 
 class Manager:
     def __init__(self, port: int):
@@ -70,6 +72,10 @@ class Manager:
             if device_configuration.digital_sample_rate is not None:
                 request.logic_device_configuration.digital_sample_rate = (
                     device_configuration.digital_sample_rate
+                )
+            if device_configuration.digital_threshold is not None:
+                request.logic_device_configuration.digital_threshold = (
+                    device_configuration.digital_threshold
                 )
         else:
             raise TypeError("Invalid device configuration type")
@@ -162,6 +168,7 @@ if __name__ == "__main__":
         device_configuration=LogicDeviceConfiguration(
             enabled_digital_channels=[3],
             digital_sample_rate=500000000,
+            digital_threshold=3.3,
         ),
     )
     time.sleep(1)
