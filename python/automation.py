@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from os import PathLike
 from typing import List, Optional
 
@@ -14,15 +15,28 @@ import os.path
 import logging
 
 from saleae.grpc.saleae_pb2 import ChannelIdentifier
+
 logger = logging.getLogger(__name__)
+
+
+class DeviceConfiguration:
+    pass
+
+
+@dataclass
+class LogicDeviceConfiguration(DeviceConfiguration):
+    enabled_analog_channels: List[int] = field(default_factory=list)
+    enabled_digital_channels: List[int] = field(default_factory=list)
+
+    analog_sample_rate: Optional[int] = None
+    digital_sample_rate: Optional[int] = None
 
 
 class Manager:
     def __init__(self, port: int):
-        """
-        """
-        self.channel = grpc.insecure_channel(f'127.0.0.1:{port}')
-        self.channel.subscribe(lambda value: logger.info(f'sub {value}'))
+        """ """
+        self.channel = grpc.insecure_channel(f"127.0.0.1:{port}")
+        self.channel.subscribe(lambda value: logger.info(f"sub {value}"))
         self.stub = saleae_pb2_grpc.ManagerStub(self.channel)
 
     def close(self):
@@ -36,7 +50,34 @@ class Manager:
         reply: saleae_pb2.GetDevicesReply = self.stub.GetDevices(request)
         print(reply)
 
-    def load_capture(self, filepath: str) -> 'Capture':
+    def start_capture(
+        self, *, device_configuration: DeviceConfiguration, device_serial_number: str
+    ) -> "Capture":
+        request = saleae_pb2.StartCaptureRequest()
+        request.device_serial_number = device_serial_number
+
+        if isinstance(device_configuration, LogicDeviceConfiguration):
+            request.logic_device_configuration.enabled_analog_channels[
+                :
+            ] = device_configuration.enabled_analog_channels
+            request.logic_device_configuration.enabled_digital_channels[
+                :
+            ] = device_configuration.enabled_digital_channels
+            if device_configuration.analog_sample_rate is not None:
+                request.logic_device_configuration.analog_sample_rate = (
+                    device_configuration.analog_sample_rate
+                )
+            if device_configuration.digital_sample_rate is not None:
+                request.logic_device_configuration.digital_sample_rate = (
+                    device_configuration.digital_sample_rate
+                )
+        else:
+            raise TypeError("Invalid device configuration type")
+
+        reply: saleae_pb2.StartCaptureReply = self.stub.StartCapture(request)
+        return Capture(self, reply.capture_info.capture_id)
+
+    def load_capture(self, filepath: str) -> "Capture":
         """
         Load a capture.
 
@@ -59,14 +100,30 @@ class Capture:
         self.manager = manager
         self.capture_id = capture_id
 
-    def export_raw_data_csv(self, directory: str, *, analog_channels: Optional[List[int]] = None,
-                            digital_channels: Optional[List[int]] = None,
-                            analog_downsample_ratio: int = 1, iso8601: bool = False):
+    def export_raw_data_csv(
+        self,
+        directory: str,
+        *,
+        analog_channels: Optional[List[int]] = None,
+        digital_channels: Optional[List[int]] = None,
+        analog_downsample_ratio: int = 1,
+        iso8601: bool = False,
+    ):
         channels = []
         if analog_channels:
-            channels.extend([saleae_pb2.ChannelIdentifier(type=saleae_pb2.ANALOG, index=ch) for ch in analog_channels])
+            channels.extend(
+                [
+                    saleae_pb2.ChannelIdentifier(type=saleae_pb2.ANALOG, index=ch)
+                    for ch in analog_channels
+                ]
+            )
         if digital_channels:
-            channels.extend([saleae_pb2.ChannelIdentifier(type=saleae_pb2.DIGITAL, index=ch) for ch in digital_channels])
+            channels.extend(
+                [
+                    saleae_pb2.ChannelIdentifier(type=saleae_pb2.DIGITAL, index=ch)
+                    for ch in digital_channels
+                ]
+            )
 
         print("Sending export request")
         request = saleae_pb2.ExportRawDataCsvRequest(
@@ -74,7 +131,7 @@ class Capture:
             directory=directory,
             channels=channels,
             analog_downsample_ratio=analog_downsample_ratio,
-            iso8601=iso8601
+            iso8601=iso8601,
         )
         self.manager.stub.ExportRawDataCsv(request)
         print("done")
@@ -90,31 +147,16 @@ class Capture:
         self.close()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logging.basicConfig(
-        format='%(asctime)s %(levelname)-8s %(message)s',
-        level=logging.INFO)
+        format="%(asctime)s %(levelname)-8s %(message)s", level=logging.INFO
+    )
 
     manager = Manager(port=50051)
-    manager.get_devices()
-
-    captures = []
-
-    for _ in range(5):
-        for name in ('cap1', 'cap2', 'cap3'):
-            path = os.path.join(os.getcwd(), f'{name}.sal')
-            captures.append(manager.load_capture(path))
-
-
-
-    for name in ('cap1',):
-        path = os.path.join(os.getcwd(), f'{name}.sal')
-        print('loading')
-        with manager.load_capture(path) as cap:
-            cap.export_raw_data_csv(
-                directory=os.path.join(os.getcwd(), f'export_{name}'),
-                analog_channels=[0,1],
-                digital_channels=[0])
-
-    for cap in captures:
-        cap.close()
+    manager.start_capture(
+        device_serial_number="1000004",
+        device_configuration=LogicDeviceConfiguration(
+            enabled_digital_channels=[3],
+            digital_sample_rate=500000000,
+        ),
+    )

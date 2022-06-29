@@ -11,6 +11,9 @@ package saleae.automation;
 service Manager {
   rpc GetDevices (GetDevicesRequest) returns (GetDevicesReply) {}
 
+  rpc StartCapture (StartCaptureRequest) returns (StartCaptureReply) {}
+  rpc StopCapture (StopCaptureRequest) returns (StopCaptureReply) {}
+
   rpc LoadCapture (LoadCaptureRequest) returns (LoadCaptureReply) {}
   rpc SaveCapture (SaveCaptureRequest) returns (SaveCaptureReply) {}
   rpc CloseCapture (CloseCaptureRequest) returns (CloseCaptureReply) {}
@@ -33,6 +36,9 @@ enum ErrorCode {
 
     CAPTURE_IN_PROGRESS = 21;
     UNSUPPORTED_FILE_TYPE = 22;
+
+    MISSING_DEVICE = 50;
+    DEVICE_ERROR = 51;
 }
 
 // Enum fields don't explicitly track presence if not tagged as optional. In these cases
@@ -81,6 +87,40 @@ message GetDevicesReply {
 }
 
 
+// Start Capture
+message StartCaptureRequest {
+    string device_serial_number = 1;
+
+    oneof device_configuration {
+        LogicDeviceConfiguration logic_device_configuration = 2;
+    }
+}
+message StartCaptureReply {
+    CaptureInfo capture_info = 1;
+}
+
+message LogicDeviceConfiguration {
+    repeated uint32 enabled_analog_channels = 1;
+    repeated uint32 enabled_digital_channels = 2;
+
+    uint32 digital_sample_rate = 3;
+    uint32 analog_sample_rate = 4;
+
+    double digital_threshold = 5;
+
+    repeated GlitchFilterEntry glitch_filter = 6;
+}
+message GlitchFilterEntry {
+    uint32 channel_index = 1;
+    double pulse_width = 2;
+}
+
+// Stop Capture
+message StopCaptureRequest {
+    uint64 capture_id = 1;
+}
+message StopCaptureReply {
+}
 
 
 // Load Capture
