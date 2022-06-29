@@ -158,7 +158,7 @@ if __name__ == "__main__":
 
     manager = Manager(port=50051)
     capture = manager.start_capture(
-        device_serial_number="1000004",
+        device_serial_number="F4241",
         device_configuration=LogicDeviceConfiguration(
             enabled_digital_channels=[3],
             digital_sample_rate=500000000,
