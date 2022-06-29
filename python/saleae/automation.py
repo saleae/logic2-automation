@@ -1,5 +1,7 @@
 from os import PathLike
-from typing import List, Optional
+from typing import List, Optional, Union
+
+from dataclasses import dataclass
 
 from saleae.grpc import saleae_pb2
 from saleae.grpc import saleae_pb2_grpc
@@ -14,7 +16,7 @@ import os.path
 import logging
 import re
 
-from saleae.grpc.saleae_pb2 import ChannelIdentifier, ErrorCode
+from saleae.grpc.saleae_pb2 import AnalyzerSettingValue, ChannelIdentifier, ErrorCode
 
 logger = logging.getLogger(__name__)
 
@@ -90,10 +92,42 @@ class Manager:
         return Capture(self, reply.capture_info.capture_id)
 
 
+
+
 class Capture:
     def __init__(self, manager: Manager, capture_id: int):
         self.manager = manager
         self.capture_id = capture_id
+
+    def add_analyzer(self, name: str, *, label: str, settings: dict[str, Union[str, int, float, bool]]):
+        analyzer_settings = {}
+
+        for key, value in settings.items():
+            if isinstance(value, str):
+                v = AnalyzerSettingValue(string_value=value)
+            elif isinstance(value, int):
+                v = AnalyzerSettingValue(int64_value=value)
+            elif isinstance(value, float):
+                v = AnalyzerSettingValue(double_value=value)
+            elif isinstance(value, bool):
+                v = AnalyzerSettingValue(bool_value=value)
+            else:
+                raise RuntimeError("Unsupported analyzer setting value type")
+
+            analyzer_settings[key] = v
+
+        request = saleae_pb2.AddAnalyzerRequest(capture_id=self.capture_id, analyzer_name=name, analyzer_label=label, settings=analyzer_settings)
+
+        try:
+            reply = self.manager.stub.AddAnalyzer(request)
+        except grpc.RpcError as exc:
+            raise grpc_error_to_exception(exc) from None
+
+        return AnalyzerHandle(analyzer_id=reply.analyzer_id)
+
+    def remove_analyzer(self, analyzer: 'AnalyzerHandle'):
+        request = saleae_pb2.RemoveAnalyzerRequest(capture_id=self.capture_id, analyzer_id=analyzer.analyzer_id)
+        self.manager.stub.RemoveAnalyzer(request)
 
     def save_capture(self, filepath: str):
         request = saleae_pb2.SaveCaptureRequest(filepath=filepath)
@@ -184,3 +218,7 @@ if __name__ == '__main__':
 
     for cap in captures:
         cap.close()
+
+@dataclass
+class AnalyzerHandle:
+    analyzer_id: int

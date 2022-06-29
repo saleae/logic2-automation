@@ -18,6 +18,43 @@ UNKNOWN: ErrorCode
 UNKNOWN_DEVICE_TYPE: DeviceType
 UNSUPPORTED_FILE_TYPE: ErrorCode
 
+class AddAnalyzerReply(_message.Message):
+    __slots__ = ["analyzer_id"]
+    ANALYZER_ID_FIELD_NUMBER: _ClassVar[int]
+    analyzer_id: int
+    def __init__(self, analyzer_id: _Optional[int] = ...) -> None: ...
+
+class AddAnalyzerRequest(_message.Message):
+    __slots__ = ["analyzer_label", "analyzer_name", "capture_id", "settings"]
+    class SettingsEntry(_message.Message):
+        __slots__ = ["key", "value"]
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: AnalyzerSettingValue
+        def __init__(self, key: _Optional[str] = ..., value: _Optional[_Union[AnalyzerSettingValue, _Mapping]] = ...) -> None: ...
+    ANALYZER_LABEL_FIELD_NUMBER: _ClassVar[int]
+    ANALYZER_NAME_FIELD_NUMBER: _ClassVar[int]
+    CAPTURE_ID_FIELD_NUMBER: _ClassVar[int]
+    SETTINGS_FIELD_NUMBER: _ClassVar[int]
+    analyzer_label: str
+    analyzer_name: str
+    capture_id: int
+    settings: _containers.MessageMap[str, AnalyzerSettingValue]
+    def __init__(self, capture_id: _Optional[int] = ..., analyzer_name: _Optional[str] = ..., analyzer_label: _Optional[str] = ..., settings: _Optional[_Mapping[str, AnalyzerSettingValue]] = ...) -> None: ...
+
+class AnalyzerSettingValue(_message.Message):
+    __slots__ = ["bool_value", "double_value", "int64_value", "string_value"]
+    BOOL_VALUE_FIELD_NUMBER: _ClassVar[int]
+    DOUBLE_VALUE_FIELD_NUMBER: _ClassVar[int]
+    INT64_VALUE_FIELD_NUMBER: _ClassVar[int]
+    STRING_VALUE_FIELD_NUMBER: _ClassVar[int]
+    bool_value: bool
+    double_value: float
+    int64_value: int
+    string_value: str
+    def __init__(self, string_value: _Optional[str] = ..., int64_value: _Optional[int] = ..., bool_value: bool = ..., double_value: _Optional[float] = ...) -> None: ...
+
 class CaptureInfo(_message.Message):
     __slots__ = ["capture_id"]
     CAPTURE_ID_FIELD_NUMBER: _ClassVar[int]
@@ -109,6 +146,18 @@ class LoadCaptureRequest(_message.Message):
     FILEPATH_FIELD_NUMBER: _ClassVar[int]
     filepath: str
     def __init__(self, filepath: _Optional[str] = ...) -> None: ...
+
+class RemoveAnalyzerReply(_message.Message):
+    __slots__ = []
+    def __init__(self) -> None: ...
+
+class RemoveAnalyzerRequest(_message.Message):
+    __slots__ = ["analyzer_id", "capture_id"]
+    ANALYZER_ID_FIELD_NUMBER: _ClassVar[int]
+    CAPTURE_ID_FIELD_NUMBER: _ClassVar[int]
+    analyzer_id: int
+    capture_id: int
+    def __init__(self, capture_id: _Optional[int] = ..., analyzer_id: _Optional[int] = ...) -> None: ...
 
 class SaveCaptureReply(_message.Message):
     __slots__ = []
