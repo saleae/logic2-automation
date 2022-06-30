@@ -48,6 +48,8 @@ class CaptureSettings:
 
     capture_mode: Optional[CaptureMode] = None
 
+    stop_after_time: Optional[float] = None
+
 
 class Manager:
     def __init__(self, port: int):
@@ -100,9 +102,11 @@ class Manager:
             raise TypeError("Invalid device configuration type")
 
         if capture_settings.buffer_size is not None:
-            request.capture_settings.buffer_size = request.capture_settings.buffer_size
+            request.capture_settings.buffer_size = capture_settings.buffer_size
         if capture_settings.capture_mode is not None:
             request.capture_settings.capture_mode = capture_settings.capture_mode.value
+        if capture_settings.stop_after_time is not None:
+            request.capture_settings.stop_after_time = capture_settings.stop_after_time
 
         reply: saleae_pb2.StartCaptureReply = self.stub.StartCapture(request)
         return Capture(self, reply.capture_info.capture_id)
@@ -194,5 +198,9 @@ if __name__ == "__main__":
             digital_sample_rate=500000000,
             digital_threshold=3.3,
         ),
-        capture_settings=CaptureSettings(capture_mode=CaptureMode.STOP_AFTER_TIME),
+        capture_settings=CaptureSettings(
+            buffer_size=2048,
+            capture_mode=CaptureMode.STOP_AFTER_TIME,
+            stop_after_time=5,
+        ),
     )
