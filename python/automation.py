@@ -50,6 +50,8 @@ class CaptureSettings:
 
     stop_after_time: Optional[float] = None
 
+    trim_time: Optional[float] = None
+
 
 class Manager:
     def __init__(self, port: int):
@@ -107,6 +109,8 @@ class Manager:
             request.capture_settings.capture_mode = capture_settings.capture_mode.value
         if capture_settings.stop_after_time is not None:
             request.capture_settings.stop_after_time = capture_settings.stop_after_time
+        if capture_settings.trim_time is not None:
+            request.capture_settings.trim_time = capture_settings.trim_time
 
         reply: saleae_pb2.StartCaptureReply = self.stub.StartCapture(request)
         return Capture(self, reply.capture_info.capture_id)
@@ -202,5 +206,6 @@ if __name__ == "__main__":
             buffer_size=2048,
             capture_mode=CaptureMode.STOP_AFTER_TIME,
             stop_after_time=5,
+            trim_time=1,
         ),
     )

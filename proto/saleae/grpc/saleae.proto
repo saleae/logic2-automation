@@ -126,6 +126,11 @@ message CaptureSettings {
     //
     // Only applies if capture_mode is `CaptureMode.STOP_AFTER_TIME`
     double stop_after_time = 3;
+
+    // Duration to trim data down to after capture completes
+    //
+    // When trigger is active, we trim relative to the trigger, not the end of capture
+    double trim_time = 4;
 }
 
 enum CaptureMode {
