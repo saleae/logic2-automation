@@ -20,13 +20,16 @@ service Manager {
 
   rpc ExportRawDataCsv (ExportRawDataCsvRequest) returns (ExportRawDataCsvReply) {}
   rpc ExportRawDataBinary (ExportRawDataBinaryRequest) returns (ExportRawDataBinaryReply) {}
+
+  rpc ExportDataTable (ExportDataTableRequest) returns (ExportDataTableReply) {}
+  rpc ExportAnalyzerLegacy (ExportAnalyzerLegacyRequest) returns (ExportAnalyzerLegacyReply) {}
 }
 
 
 // Core Types
 
 enum ErrorCode {
-    UNKNOWN = 0; // Not used
+    UNKNOWN_ERROR_CODE = 0; // Not used
 
     INTERNAL_EXCEPTION = 1;
 
@@ -37,6 +40,14 @@ enum ErrorCode {
     CAPTURE_IN_PROGRESS = 21;
     UNSUPPORTED_FILE_TYPE = 22;
 }
+
+enum RadixType {
+    UNKNOWN_RADIX_TYPE = 0;
+    BINARY = 1;
+    DECIMAL = 2;
+    HEXADECIMAL = 3;
+    ASCII = 4;
+};
 
 // Enum fields don't explicitly track presence if not tagged as optional. In these cases
 // 0 is the implicitly serialized value, which is indistinguishable from the 0 value in the enum.
@@ -166,4 +177,25 @@ message RemoveAnalyzerRequest {
     uint64 analyzer_id = 2;
 }
 message RemoveAnalyzerReply {
+}
+
+message ExportDataTableRequest {
+    uint64 capture_id = 1;
+
+    string filepath = 2;
+
+    repeated uint64 analyzer_ids = 3;
+}
+message ExportDataTableReply{
+}
+
+message ExportAnalyzerLegacyRequest {
+    uint64 capture_id = 1;
+
+    string filepath = 2;
+
+    uint64 analyzer_id = 3;
+    RadixType radix_type = 4;
+}
+message ExportAnalyzerLegacyReply{
 }

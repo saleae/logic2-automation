@@ -1,3 +1,4 @@
+from enum import Enum
 from os import PathLike
 from typing import List, Optional, Union
 
@@ -28,6 +29,25 @@ class InternalServerError(Exception):
 
 class InvalidRequest(Exception):
     pass
+
+class RadixType(Enum):
+    BINARY = 1
+    DECIMAL = 2
+    HEXADECIMAL = 3
+    ASCII = 4
+
+
+def to_grpc_radix_type(type: RadixType) -> saleae_pb2.RadixType:
+    if type == RadixType.BINARY:
+        return saleae_pb2.BINARY
+    elif type == RadixType.DECIMAL:
+        return saleae_pb2.DECIMAL
+    elif type == RadixType.HEXADECIMAL:
+        return saleae_pb2.HEXADECIMAL
+    elif type == RadixType.ASCII:
+        return saleae_pb2.ASCII
+
+    raise RuntimeError(f"Unrecognized radix type: {type}")
 
 
 error_message_re = re.compile(r"^(\d+): (.*)$")
@@ -133,6 +153,30 @@ class Capture:
         request = saleae_pb2.SaveCaptureRequest(filepath=filepath)
         try:
             reply = self.manager.stub.SaveCapture(request)
+        except grpc.RpcError as exc:
+            raise grpc_error_to_exception(exc) from None
+
+    def export_analyzer_legacy(self, filepath: str, analyzer: 'AnalyzerHandle', radix: 'RadixType'):
+        request = saleae_pb2.ExportAnalyzerLegacyRequest(
+            capture_id=self.capture_id,
+            filepath=filepath,
+            analyzer_id=analyzer.analyzer_id,
+            radix_type=to_grpc_radix_type(radix)
+        )
+
+        try:
+            reply = self.manager.stub.ExportAnalyzerLegacy(request)
+        except grpc.RpcError as exc:
+            raise grpc_error_to_exception(exc) from None
+
+    def export_data_table(self, filepath: str, analyzers: List['AnalyzerHandle']):
+        request = saleae_pb2.ExportDataTableRequest(
+            capture_id=self.capture_id,
+            filepath=filepath,
+            analyzer_ids=[h.analyzer_id for h in analyzers])
+
+        try:
+            reply = self.manager.stub.ExportDataTable(request)
         except grpc.RpcError as exc:
             raise grpc_error_to_exception(exc) from None
 
