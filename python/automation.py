@@ -34,6 +34,14 @@ class LogicDeviceConfiguration(DeviceConfiguration):
 
     digital_threshold: Optional[float] = None
 
+    glitch_filters: "List[GlitchFilterEntry]" = field(default_factory=list)
+
+
+@dataclass
+class GlitchFilterEntry:
+    channel_index: int
+    pulse_width: float
+
 
 class CaptureMode(Enum):
     CIRCULAR = saleae_pb2.CaptureMode.CIRCULAR
@@ -134,6 +142,15 @@ class Manager:
                 request.logic_device_configuration.digital_threshold = (
                     device_configuration.digital_threshold
                 )
+            request.logic_device_configuration.glitch_filters.extend(
+                [
+                    saleae_pb2.GlitchFilterEntry(
+                        channel_index=glitch_filter.channel_index,
+                        pulse_width=glitch_filter.pulse_width,
+                    )
+                    for glitch_filter in device_configuration.glitch_filters
+                ]
+            )
         else:
             raise TypeError("Invalid device configuration type")
 
@@ -267,17 +284,16 @@ if __name__ == "__main__":
             enabled_digital_channels=[3, 4],
             digital_sample_rate=500000000,
             digital_threshold=3.3,
+            glitch_filters=[GlitchFilterEntry(channel_index=3, pulse_width=100e-9)],
         ),
         capture_settings=CaptureSettings(
             buffer_size=2048,
             capture_mode=CaptureMode.STOP_ON_DIGITAL_TRIGGER,
             stop_after_time=5,
             digital_trigger=DigitalTriggerSettings(
-                trigger_type=DigitalTriggerType.PULSE_LOW,
+                trigger_type=DigitalTriggerType.RISING,
                 record_after_trigger_time=1,
                 trigger_channel_index=3,
-                # min_pulse_duration=1e-9,
-                # max_pulse_duration=100e-9,
                 linked_channels=[
                     DigitalTriggerLinkedChannel(
                         4, DigitalTriggerLinkedChannelState.HIGH

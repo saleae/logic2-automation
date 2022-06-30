@@ -112,7 +112,7 @@ message LogicDeviceConfiguration {
 
     double digital_threshold = 5;
 
-    repeated GlitchFilterEntry glitch_filter = 6;
+    repeated GlitchFilterEntry glitch_filters = 6;
 }
 message GlitchFilterEntry {
     uint32 channel_index = 1;
