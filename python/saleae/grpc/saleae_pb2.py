@@ -15,7 +15,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x18saleae/grpc/saleae.proto\x12\x11saleae.automation\"f\n\x06\x44\x65vice\x12\x11\n\tdevice_id\x18\x01 \x01(\x04\x12\x32\n\x0b\x64\x65vice_type\x18\x02 \x01(\x0e\x32\x1d.saleae.automation.DeviceType\x12\x15\n\rserial_number\x18\x03 \x01(\t\"c\n\x11\x43hannelIdentifier\x12\x11\n\tdevice_id\x18\x01 \x01(\x04\x12,\n\x04type\x18\x02 \x01(\x0e\x32\x1e.saleae.automation.ChannelType\x12\r\n\x05index\x18\x03 \x01(\x04\"!\n\x0b\x43\x61ptureInfo\x12\x12\n\ncapture_id\x18\x01 \x01(\x04\"\x13\n\x11GetDevicesRequest\"=\n\x0fGetDevicesReply\x12*\n\x07\x64\x65vices\x18\x01 \x03(\x0b\x32\x19.saleae.automation.Device\"\xdc\x01\n\x13StartCaptureRequest\x12\x1c\n\x14\x64\x65vice_serial_number\x18\x01 \x01(\t\x12Q\n\x1alogic_device_configuration\x18\x02 \x01(\x0b\x32+.saleae.automation.LogicDeviceConfigurationH\x00\x12<\n\x10\x63\x61pture_settings\x18\x03 \x01(\x0b\x32\".saleae.automation.CaptureSettingsB\x16\n\x14\x64\x65vice_configuration\"I\n\x11StartCaptureReply\x12\x34\n\x0c\x63\x61pture_info\x18\x01 \x01(\x0b\x32\x1e.saleae.automation.CaptureInfo\"\xee\x01\n\x18LogicDeviceConfiguration\x12\x1f\n\x17\x65nabled_analog_channels\x18\x01 \x03(\r\x12 \n\x18\x65nabled_digital_channels\x18\x02 \x03(\r\x12\x1b\n\x13\x64igital_sample_rate\x18\x03 \x01(\r\x12\x1a\n\x12\x61nalog_sample_rate\x18\x04 \x01(\r\x12\x19\n\x11\x64igital_threshold\x18\x05 \x01(\x01\x12;\n\rglitch_filter\x18\x06 \x03(\x0b\x32$.saleae.automation.GlitchFilterEntry\"?\n\x11GlitchFilterEntry\x12\x15\n\rchannel_index\x18\x01 \x01(\r\x12\x13\n\x0bpulse_width\x18\x02 \x01(\x01\"\x88\x01\n\x0f\x43\x61ptureSettings\x12\x13\n\x0b\x62uffer_size\x18\x01 \x01(\r\x12\x34\n\x0c\x63\x61pture_mode\x18\x02 \x01(\x0e\x32\x1e.saleae.automation.CaptureMode\x12\x17\n\x0fstop_after_time\x18\x03 \x01(\x01\x12\x11\n\ttrim_time\x18\x04 \x01(\x01\"(\n\x12StopCaptureRequest\x12\x12\n\ncapture_id\x18\x01 \x01(\x04\"\x12\n\x10StopCaptureReply\"&\n\x12LoadCaptureRequest\x12\x10\n\x08\x66ilepath\x18\x01 \x01(\t\"H\n\x10LoadCaptureReply\x12\x34\n\x0c\x63\x61pture_info\x18\x01 \x01(\x0b\x32\x1e.saleae.automation.CaptureInfo\":\n\x12SaveCaptureRequest\x12\x12\n\ncapture_id\x18\x01 \x01(\x04\x12\x10\n\x08\x66ilepath\x18\x02 \x01(\t\"\x12\n\x10SaveCaptureReply\")\n\x13\x43loseCaptureRequest\x12\x12\n\ncapture_id\x18\x01 \x01(\x04\"\x13\n\x11\x43loseCaptureReply\"\xaa\x01\n\x17\x45xportRawDataCsvRequest\x12\x12\n\ncapture_id\x18\x01 \x01(\x04\x12\x11\n\tdirectory\x18\x02 \x01(\t\x12\x36\n\x08\x63hannels\x18\x03 \x03(\x0b\x32$.saleae.automation.ChannelIdentifier\x12\x1f\n\x17\x61nalog_downsample_ratio\x18\x04 \x01(\x04\x12\x0f\n\x07iso8601\x18\x05 \x01(\x08\"\x17\n\x15\x45xportRawDataCsvReply\"\x9c\x01\n\x1a\x45xportRawDataBinaryRequest\x12\x12\n\ncapture_id\x18\x01 \x01(\x04\x12\x11\n\tdirectory\x18\x02 \x01(\t\x12\x36\n\x08\x63hannels\x18\x03 \x03(\x0b\x32$.saleae.automation.ChannelIdentifier\x12\x1f\n\x17\x61nalog_downsample_ratio\x18\x04 \x01(\x04\"\x1a\n\x18\x45xportRawDataBinaryReply*\xc1\x01\n\tErrorCode\x12\x0b\n\x07UNKNOWN\x10\x00\x12\x16\n\x12INTERNAL_EXCEPTION\x10\x01\x12\x13\n\x0fINVALID_REQUEST\x10\n\x12\x17\n\x13LOAD_CAPTURE_FAILED\x10\x14\x12\x17\n\x13\x43\x41PTURE_IN_PROGRESS\x10\x15\x12\x19\n\x15UNSUPPORTED_FILE_TYPE\x10\x16\x12\x12\n\x0eMISSING_DEVICE\x10\x32\x12\x10\n\x0c\x44\x45VICE_ERROR\x10\x33\x12\x07\n\x03OOM\x10\x34*U\n\nDeviceType\x12\x17\n\x13UNKNOWN_DEVICE_TYPE\x10\x00\x12\x0b\n\x07LOGIC_8\x10\x01\x12\x0f\n\x0bLOGIC_PRO_8\x10\x02\x12\x10\n\x0cLOGIC_PRO_16\x10\x03*&\n\x0b\x43hannelType\x12\x0b\n\x07\x44IGITAL\x10\x00\x12\n\n\x06\x41NALOG\x10\x01*M\n\x0b\x43\x61ptureMode\x12\x0c\n\x08\x43IRCULAR\x10\x00\x12\x13\n\x0fSTOP_AFTER_TIME\x10\x01\x12\x1b\n\x17STOP_ON_DIGITAL_TRIGGER\x10\x02\x32\x9b\x06\n\x07Manager\x12X\n\nGetDevices\x12$.saleae.automation.GetDevicesRequest\x1a\".saleae.automation.GetDevicesReply\"\x00\x12^\n\x0cStartCapture\x12&.saleae.automation.StartCaptureRequest\x1a$.saleae.automation.StartCaptureReply\"\x00\x12[\n\x0bStopCapture\x12%.saleae.automation.StopCaptureRequest\x1a#.saleae.automation.StopCaptureReply\"\x00\x12[\n\x0bLoadCapture\x12%.saleae.automation.LoadCaptureRequest\x1a#.saleae.automation.LoadCaptureReply\"\x00\x12[\n\x0bSaveCapture\x12%.saleae.automation.SaveCaptureRequest\x1a#.saleae.automation.SaveCaptureReply\"\x00\x12^\n\x0c\x43loseCapture\x12&.saleae.automation.CloseCaptureRequest\x1a$.saleae.automation.CloseCaptureReply\"\x00\x12j\n\x10\x45xportRawDataCsv\x12*.saleae.automation.ExportRawDataCsvRequest\x1a(.saleae.automation.ExportRawDataCsvReply\"\x00\x12s\n\x13\x45xportRawDataBinary\x12-.saleae.automation.ExportRawDataBinaryRequest\x1a+.saleae.automation.ExportRawDataBinaryReply\"\x00\x42 \n\x06saleaeB\x0bSaleaeProtoP\x01\xa2\x02\x06Saleaeb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x18saleae/grpc/saleae.proto\x12\x11saleae.automation\"f\n\x06\x44\x65vice\x12\x11\n\tdevice_id\x18\x01 \x01(\x04\x12\x32\n\x0b\x64\x65vice_type\x18\x02 \x01(\x0e\x32\x1d.saleae.automation.DeviceType\x12\x15\n\rserial_number\x18\x03 \x01(\t\"c\n\x11\x43hannelIdentifier\x12\x11\n\tdevice_id\x18\x01 \x01(\x04\x12,\n\x04type\x18\x02 \x01(\x0e\x32\x1e.saleae.automation.ChannelType\x12\r\n\x05index\x18\x03 \x01(\x04\"!\n\x0b\x43\x61ptureInfo\x12\x12\n\ncapture_id\x18\x01 \x01(\x04\"\x13\n\x11GetDevicesRequest\"=\n\x0fGetDevicesReply\x12*\n\x07\x64\x65vices\x18\x01 \x03(\x0b\x32\x19.saleae.automation.Device\"\xdc\x01\n\x13StartCaptureRequest\x12\x1c\n\x14\x64\x65vice_serial_number\x18\x01 \x01(\t\x12Q\n\x1alogic_device_configuration\x18\x02 \x01(\x0b\x32+.saleae.automation.LogicDeviceConfigurationH\x00\x12<\n\x10\x63\x61pture_settings\x18\x03 \x01(\x0b\x32\".saleae.automation.CaptureSettingsB\x16\n\x14\x64\x65vice_configuration\"I\n\x11StartCaptureReply\x12\x34\n\x0c\x63\x61pture_info\x18\x01 \x01(\x0b\x32\x1e.saleae.automation.CaptureInfo\"\xee\x01\n\x18LogicDeviceConfiguration\x12\x1f\n\x17\x65nabled_analog_channels\x18\x01 \x03(\r\x12 \n\x18\x65nabled_digital_channels\x18\x02 \x03(\r\x12\x1b\n\x13\x64igital_sample_rate\x18\x03 \x01(\r\x12\x1a\n\x12\x61nalog_sample_rate\x18\x04 \x01(\r\x12\x19\n\x11\x64igital_threshold\x18\x05 \x01(\x01\x12;\n\rglitch_filter\x18\x06 \x03(\x0b\x32$.saleae.automation.GlitchFilterEntry\"?\n\x11GlitchFilterEntry\x12\x15\n\rchannel_index\x18\x01 \x01(\r\x12\x13\n\x0bpulse_width\x18\x02 \x01(\x01\"\xcc\x01\n\x0f\x43\x61ptureSettings\x12\x13\n\x0b\x62uffer_size\x18\x01 \x01(\r\x12\x34\n\x0c\x63\x61pture_mode\x18\x02 \x01(\x0e\x32\x1e.saleae.automation.CaptureMode\x12\x17\n\x0fstop_after_time\x18\x03 \x01(\x01\x12\x11\n\ttrim_time\x18\x04 \x01(\x01\x12\x42\n\x0f\x64igital_trigger\x18\x05 \x01(\x0b\x32).saleae.automation.DigitalTriggerSettings\"\x98\x02\n\x16\x44igitalTriggerSettings\x12;\n\x0ctrigger_type\x18\x01 \x01(\x0e\x32%.saleae.automation.DigitalTriggerType\x12!\n\x19record_after_trigger_time\x18\x02 \x01(\x01\x12\x1d\n\x15trigger_channel_index\x18\x03 \x01(\r\x12\x1a\n\x12min_pulse_duration\x18\x04 \x01(\x01\x12\x1a\n\x12max_pulse_duration\x18\x05 \x01(\x01\x12G\n\x0flinked_channels\x18\x06 \x03(\x0b\x32..saleae.automation.DigitalTriggerLinkedChannel\"x\n\x1b\x44igitalTriggerLinkedChannel\x12\x15\n\rchannel_index\x18\x01 \x01(\r\x12\x42\n\x05state\x18\x02 \x01(\x0e\x32\x33.saleae.automation.DigitalTriggerLinkedChannelState\"(\n\x12StopCaptureRequest\x12\x12\n\ncapture_id\x18\x01 \x01(\x04\"\x12\n\x10StopCaptureReply\"&\n\x12LoadCaptureRequest\x12\x10\n\x08\x66ilepath\x18\x01 \x01(\t\"H\n\x10LoadCaptureReply\x12\x34\n\x0c\x63\x61pture_info\x18\x01 \x01(\x0b\x32\x1e.saleae.automation.CaptureInfo\":\n\x12SaveCaptureRequest\x12\x12\n\ncapture_id\x18\x01 \x01(\x04\x12\x10\n\x08\x66ilepath\x18\x02 \x01(\t\"\x12\n\x10SaveCaptureReply\")\n\x13\x43loseCaptureRequest\x12\x12\n\ncapture_id\x18\x01 \x01(\x04\"\x13\n\x11\x43loseCaptureReply\"\xaa\x01\n\x17\x45xportRawDataCsvRequest\x12\x12\n\ncapture_id\x18\x01 \x01(\x04\x12\x11\n\tdirectory\x18\x02 \x01(\t\x12\x36\n\x08\x63hannels\x18\x03 \x03(\x0b\x32$.saleae.automation.ChannelIdentifier\x12\x1f\n\x17\x61nalog_downsample_ratio\x18\x04 \x01(\x04\x12\x0f\n\x07iso8601\x18\x05 \x01(\x08\"\x17\n\x15\x45xportRawDataCsvReply\"\x9c\x01\n\x1a\x45xportRawDataBinaryRequest\x12\x12\n\ncapture_id\x18\x01 \x01(\x04\x12\x11\n\tdirectory\x18\x02 \x01(\t\x12\x36\n\x08\x63hannels\x18\x03 \x03(\x0b\x32$.saleae.automation.ChannelIdentifier\x12\x1f\n\x17\x61nalog_downsample_ratio\x18\x04 \x01(\x04\"\x1a\n\x18\x45xportRawDataBinaryReply*\xc1\x01\n\tErrorCode\x12\x0b\n\x07UNKNOWN\x10\x00\x12\x16\n\x12INTERNAL_EXCEPTION\x10\x01\x12\x13\n\x0fINVALID_REQUEST\x10\n\x12\x17\n\x13LOAD_CAPTURE_FAILED\x10\x14\x12\x17\n\x13\x43\x41PTURE_IN_PROGRESS\x10\x15\x12\x19\n\x15UNSUPPORTED_FILE_TYPE\x10\x16\x12\x12\n\x0eMISSING_DEVICE\x10\x32\x12\x10\n\x0c\x44\x45VICE_ERROR\x10\x33\x12\x07\n\x03OOM\x10\x34*U\n\nDeviceType\x12\x17\n\x13UNKNOWN_DEVICE_TYPE\x10\x00\x12\x0b\n\x07LOGIC_8\x10\x01\x12\x0f\n\x0bLOGIC_PRO_8\x10\x02\x12\x10\n\x0cLOGIC_PRO_16\x10\x03*&\n\x0b\x43hannelType\x12\x0b\n\x07\x44IGITAL\x10\x00\x12\n\n\x06\x41NALOG\x10\x01*M\n\x0b\x43\x61ptureMode\x12\x0c\n\x08\x43IRCULAR\x10\x00\x12\x13\n\x0fSTOP_AFTER_TIME\x10\x01\x12\x1b\n\x17STOP_ON_DIGITAL_TRIGGER\x10\x02*L\n\x12\x44igitalTriggerType\x12\n\n\x06RISING\x10\x00\x12\x0b\n\x07\x46\x41LLING\x10\x01\x12\x0e\n\nPULSE_HIGH\x10\x02\x12\r\n\tPULSE_LOW\x10\x03*5\n DigitalTriggerLinkedChannelState\x12\x07\n\x03LOW\x10\x00\x12\x08\n\x04HIGH\x10\x01\x32\x9b\x06\n\x07Manager\x12X\n\nGetDevices\x12$.saleae.automation.GetDevicesRequest\x1a\".saleae.automation.GetDevicesReply\"\x00\x12^\n\x0cStartCapture\x12&.saleae.automation.StartCaptureRequest\x1a$.saleae.automation.StartCaptureReply\"\x00\x12[\n\x0bStopCapture\x12%.saleae.automation.StopCaptureRequest\x1a#.saleae.automation.StopCaptureReply\"\x00\x12[\n\x0bLoadCapture\x12%.saleae.automation.LoadCaptureRequest\x1a#.saleae.automation.LoadCaptureReply\"\x00\x12[\n\x0bSaveCapture\x12%.saleae.automation.SaveCaptureRequest\x1a#.saleae.automation.SaveCaptureReply\"\x00\x12^\n\x0c\x43loseCapture\x12&.saleae.automation.CloseCaptureRequest\x1a$.saleae.automation.CloseCaptureReply\"\x00\x12j\n\x10\x45xportRawDataCsv\x12*.saleae.automation.ExportRawDataCsvRequest\x1a(.saleae.automation.ExportRawDataCsvReply\"\x00\x12s\n\x13\x45xportRawDataBinary\x12-.saleae.automation.ExportRawDataBinaryRequest\x1a+.saleae.automation.ExportRawDataBinaryReply\"\x00\x42 \n\x06saleaeB\x0bSaleaeProtoP\x01\xa2\x02\x06Saleaeb\x06proto3')
 
 _ERRORCODE = DESCRIPTOR.enum_types_by_name['ErrorCode']
 ErrorCode = enum_type_wrapper.EnumTypeWrapper(_ERRORCODE)
@@ -25,6 +25,10 @@ _CHANNELTYPE = DESCRIPTOR.enum_types_by_name['ChannelType']
 ChannelType = enum_type_wrapper.EnumTypeWrapper(_CHANNELTYPE)
 _CAPTUREMODE = DESCRIPTOR.enum_types_by_name['CaptureMode']
 CaptureMode = enum_type_wrapper.EnumTypeWrapper(_CAPTUREMODE)
+_DIGITALTRIGGERTYPE = DESCRIPTOR.enum_types_by_name['DigitalTriggerType']
+DigitalTriggerType = enum_type_wrapper.EnumTypeWrapper(_DIGITALTRIGGERTYPE)
+_DIGITALTRIGGERLINKEDCHANNELSTATE = DESCRIPTOR.enum_types_by_name['DigitalTriggerLinkedChannelState']
+DigitalTriggerLinkedChannelState = enum_type_wrapper.EnumTypeWrapper(_DIGITALTRIGGERLINKEDCHANNELSTATE)
 UNKNOWN = 0
 INTERNAL_EXCEPTION = 1
 INVALID_REQUEST = 10
@@ -43,6 +47,12 @@ ANALOG = 1
 CIRCULAR = 0
 STOP_AFTER_TIME = 1
 STOP_ON_DIGITAL_TRIGGER = 2
+RISING = 0
+FALLING = 1
+PULSE_HIGH = 2
+PULSE_LOW = 3
+LOW = 0
+HIGH = 1
 
 
 _DEVICE = DESCRIPTOR.message_types_by_name['Device']
@@ -55,6 +65,8 @@ _STARTCAPTUREREPLY = DESCRIPTOR.message_types_by_name['StartCaptureReply']
 _LOGICDEVICECONFIGURATION = DESCRIPTOR.message_types_by_name['LogicDeviceConfiguration']
 _GLITCHFILTERENTRY = DESCRIPTOR.message_types_by_name['GlitchFilterEntry']
 _CAPTURESETTINGS = DESCRIPTOR.message_types_by_name['CaptureSettings']
+_DIGITALTRIGGERSETTINGS = DESCRIPTOR.message_types_by_name['DigitalTriggerSettings']
+_DIGITALTRIGGERLINKEDCHANNEL = DESCRIPTOR.message_types_by_name['DigitalTriggerLinkedChannel']
 _STOPCAPTUREREQUEST = DESCRIPTOR.message_types_by_name['StopCaptureRequest']
 _STOPCAPTUREREPLY = DESCRIPTOR.message_types_by_name['StopCaptureReply']
 _LOADCAPTUREREQUEST = DESCRIPTOR.message_types_by_name['LoadCaptureRequest']
@@ -136,6 +148,20 @@ CaptureSettings = _reflection.GeneratedProtocolMessageType('CaptureSettings', (_
   # @@protoc_insertion_point(class_scope:saleae.automation.CaptureSettings)
   })
 _sym_db.RegisterMessage(CaptureSettings)
+
+DigitalTriggerSettings = _reflection.GeneratedProtocolMessageType('DigitalTriggerSettings', (_message.Message,), {
+  'DESCRIPTOR' : _DIGITALTRIGGERSETTINGS,
+  '__module__' : 'saleae.grpc.saleae_pb2'
+  # @@protoc_insertion_point(class_scope:saleae.automation.DigitalTriggerSettings)
+  })
+_sym_db.RegisterMessage(DigitalTriggerSettings)
+
+DigitalTriggerLinkedChannel = _reflection.GeneratedProtocolMessageType('DigitalTriggerLinkedChannel', (_message.Message,), {
+  'DESCRIPTOR' : _DIGITALTRIGGERLINKEDCHANNEL,
+  '__module__' : 'saleae.grpc.saleae_pb2'
+  # @@protoc_insertion_point(class_scope:saleae.automation.DigitalTriggerLinkedChannel)
+  })
+_sym_db.RegisterMessage(DigitalTriggerLinkedChannel)
 
 StopCaptureRequest = _reflection.GeneratedProtocolMessageType('StopCaptureRequest', (_message.Message,), {
   'DESCRIPTOR' : _STOPCAPTUREREQUEST,
@@ -226,14 +252,18 @@ if _descriptor._USE_C_DESCRIPTORS == False:
 
   DESCRIPTOR._options = None
   DESCRIPTOR._serialized_options = b'\n\006saleaeB\013SaleaeProtoP\001\242\002\006Saleae'
-  _ERRORCODE._serialized_start=1820
-  _ERRORCODE._serialized_end=2013
-  _DEVICETYPE._serialized_start=2015
-  _DEVICETYPE._serialized_end=2100
-  _CHANNELTYPE._serialized_start=2102
-  _CHANNELTYPE._serialized_end=2140
-  _CAPTUREMODE._serialized_start=2142
-  _CAPTUREMODE._serialized_end=2219
+  _ERRORCODE._serialized_start=2293
+  _ERRORCODE._serialized_end=2486
+  _DEVICETYPE._serialized_start=2488
+  _DEVICETYPE._serialized_end=2573
+  _CHANNELTYPE._serialized_start=2575
+  _CHANNELTYPE._serialized_end=2613
+  _CAPTUREMODE._serialized_start=2615
+  _CAPTUREMODE._serialized_end=2692
+  _DIGITALTRIGGERTYPE._serialized_start=2694
+  _DIGITALTRIGGERTYPE._serialized_end=2770
+  _DIGITALTRIGGERLINKEDCHANNELSTATE._serialized_start=2772
+  _DIGITALTRIGGERLINKEDCHANNELSTATE._serialized_end=2825
   _DEVICE._serialized_start=47
   _DEVICE._serialized_end=149
   _CHANNELIDENTIFIER._serialized_start=151
@@ -253,31 +283,35 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _GLITCHFILTERENTRY._serialized_start=910
   _GLITCHFILTERENTRY._serialized_end=973
   _CAPTURESETTINGS._serialized_start=976
-  _CAPTURESETTINGS._serialized_end=1112
-  _STOPCAPTUREREQUEST._serialized_start=1114
-  _STOPCAPTUREREQUEST._serialized_end=1154
-  _STOPCAPTUREREPLY._serialized_start=1156
-  _STOPCAPTUREREPLY._serialized_end=1174
-  _LOADCAPTUREREQUEST._serialized_start=1176
-  _LOADCAPTUREREQUEST._serialized_end=1214
-  _LOADCAPTUREREPLY._serialized_start=1216
-  _LOADCAPTUREREPLY._serialized_end=1288
-  _SAVECAPTUREREQUEST._serialized_start=1290
-  _SAVECAPTUREREQUEST._serialized_end=1348
-  _SAVECAPTUREREPLY._serialized_start=1350
-  _SAVECAPTUREREPLY._serialized_end=1368
-  _CLOSECAPTUREREQUEST._serialized_start=1370
-  _CLOSECAPTUREREQUEST._serialized_end=1411
-  _CLOSECAPTUREREPLY._serialized_start=1413
-  _CLOSECAPTUREREPLY._serialized_end=1432
-  _EXPORTRAWDATACSVREQUEST._serialized_start=1435
-  _EXPORTRAWDATACSVREQUEST._serialized_end=1605
-  _EXPORTRAWDATACSVREPLY._serialized_start=1607
-  _EXPORTRAWDATACSVREPLY._serialized_end=1630
-  _EXPORTRAWDATABINARYREQUEST._serialized_start=1633
-  _EXPORTRAWDATABINARYREQUEST._serialized_end=1789
-  _EXPORTRAWDATABINARYREPLY._serialized_start=1791
-  _EXPORTRAWDATABINARYREPLY._serialized_end=1817
-  _MANAGER._serialized_start=2222
-  _MANAGER._serialized_end=3017
+  _CAPTURESETTINGS._serialized_end=1180
+  _DIGITALTRIGGERSETTINGS._serialized_start=1183
+  _DIGITALTRIGGERSETTINGS._serialized_end=1463
+  _DIGITALTRIGGERLINKEDCHANNEL._serialized_start=1465
+  _DIGITALTRIGGERLINKEDCHANNEL._serialized_end=1585
+  _STOPCAPTUREREQUEST._serialized_start=1587
+  _STOPCAPTUREREQUEST._serialized_end=1627
+  _STOPCAPTUREREPLY._serialized_start=1629
+  _STOPCAPTUREREPLY._serialized_end=1647
+  _LOADCAPTUREREQUEST._serialized_start=1649
+  _LOADCAPTUREREQUEST._serialized_end=1687
+  _LOADCAPTUREREPLY._serialized_start=1689
+  _LOADCAPTUREREPLY._serialized_end=1761
+  _SAVECAPTUREREQUEST._serialized_start=1763
+  _SAVECAPTUREREQUEST._serialized_end=1821
+  _SAVECAPTUREREPLY._serialized_start=1823
+  _SAVECAPTUREREPLY._serialized_end=1841
+  _CLOSECAPTUREREQUEST._serialized_start=1843
+  _CLOSECAPTUREREQUEST._serialized_end=1884
+  _CLOSECAPTUREREPLY._serialized_start=1886
+  _CLOSECAPTUREREPLY._serialized_end=1905
+  _EXPORTRAWDATACSVREQUEST._serialized_start=1908
+  _EXPORTRAWDATACSVREQUEST._serialized_end=2078
+  _EXPORTRAWDATACSVREPLY._serialized_start=2080
+  _EXPORTRAWDATACSVREPLY._serialized_end=2103
+  _EXPORTRAWDATABINARYREQUEST._serialized_start=2106
+  _EXPORTRAWDATABINARYREQUEST._serialized_end=2262
+  _EXPORTRAWDATABINARYREPLY._serialized_start=2264
+  _EXPORTRAWDATABINARYREPLY._serialized_end=2290
+  _MANAGER._serialized_start=2828
+  _MANAGER._serialized_end=3623
 # @@protoc_insertion_point(module_scope)

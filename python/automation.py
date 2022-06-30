@@ -52,6 +52,40 @@ class CaptureSettings:
 
     trim_time: Optional[float] = None
 
+    digital_trigger: "Optional[DigitalTriggerSettings]" = None
+
+
+@dataclass
+class DigitalTriggerSettings:
+    trigger_type: "DigitalTriggerType"
+
+    record_after_trigger_time: float
+
+    trigger_channel_index: int
+
+    min_pulse_duration: Optional[float] = None
+    max_pulse_duration: Optional[float] = None
+
+    linked_channels: "List[DigitalTriggerLinkedChannel]" = field(default_factory=list)
+
+
+class DigitalTriggerType(Enum):
+    RISING = saleae_pb2.DigitalTriggerType.RISING
+    FALLING = saleae_pb2.DigitalTriggerType.FALLING
+    PULSE_HIGH = saleae_pb2.DigitalTriggerType.PULSE_HIGH
+    PULSE_LOW = saleae_pb2.DigitalTriggerType.PULSE_LOW
+
+
+@dataclass
+class DigitalTriggerLinkedChannel:
+    channel_index: int
+    state: "DigitalTriggerLinkedChannelState"
+
+
+class DigitalTriggerLinkedChannelState(Enum):
+    LOW = saleae_pb2.DigitalTriggerLinkedChannelState.LOW
+    HIGH = saleae_pb2.DigitalTriggerLinkedChannelState.HIGH
+
 
 class Manager:
     def __init__(self, port: int):
@@ -111,6 +145,34 @@ class Manager:
             request.capture_settings.stop_after_time = capture_settings.stop_after_time
         if capture_settings.trim_time is not None:
             request.capture_settings.trim_time = capture_settings.trim_time
+        if capture_settings.digital_trigger is not None:
+            digital_trigger = request.capture_settings.digital_trigger
+            digital_trigger.trigger_type = (
+                capture_settings.digital_trigger.trigger_type.value
+            )
+            digital_trigger.record_after_trigger_time = (
+                capture_settings.digital_trigger.record_after_trigger_time
+            )
+            digital_trigger.trigger_channel_index = (
+                capture_settings.digital_trigger.trigger_channel_index
+            )
+            if capture_settings.digital_trigger.min_pulse_duration is not None:
+                digital_trigger.min_pulse_duration = (
+                    capture_settings.digital_trigger.min_pulse_duration
+                )
+            if capture_settings.digital_trigger.max_pulse_duration is not None:
+                digital_trigger.max_pulse_duration = (
+                    capture_settings.digital_trigger.max_pulse_duration
+                )
+            digital_trigger.linked_channels.extend(
+                [
+                    saleae_pb2.DigitalTriggerLinkedChannel(
+                        channel_index=linked_channel.channel_index,
+                        state=linked_channel.state.value,
+                    )
+                    for linked_channel in capture_settings.digital_trigger.linked_channels
+                ]
+            )
 
         reply: saleae_pb2.StartCaptureReply = self.stub.StartCapture(request)
         return Capture(self, reply.capture_info.capture_id)
@@ -198,14 +260,25 @@ if __name__ == "__main__":
     capture = manager.start_capture(
         device_serial_number="F4241",
         device_configuration=LogicDeviceConfiguration(
-            enabled_digital_channels=[3],
+            enabled_digital_channels=[3, 4],
             digital_sample_rate=500000000,
             digital_threshold=3.3,
         ),
         capture_settings=CaptureSettings(
             buffer_size=2048,
-            capture_mode=CaptureMode.STOP_AFTER_TIME,
+            capture_mode=CaptureMode.STOP_ON_DIGITAL_TRIGGER,
             stop_after_time=5,
-            trim_time=1,
+            digital_trigger=DigitalTriggerSettings(
+                trigger_type=DigitalTriggerType.PULSE_LOW,
+                record_after_trigger_time=1,
+                trigger_channel_index=3,
+                min_pulse_duration=1e-9,
+                max_pulse_duration=100e-9,
+                linked_channels=[
+                    DigitalTriggerLinkedChannel(
+                        4, DigitalTriggerLinkedChannelState.HIGH
+                    )
+                ],
+            ),
         ),
     )
