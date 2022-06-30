@@ -13,6 +13,7 @@ service Manager {
 
   rpc StartCapture (StartCaptureRequest) returns (StartCaptureReply) {}
   rpc StopCapture (StopCaptureRequest) returns (StopCaptureReply) {}
+  rpc WaitCapture (WaitCaptureRequest) returns (WaitCaptureReply) {}
 
   rpc LoadCapture (LoadCaptureRequest) returns (LoadCaptureReply) {}
   rpc SaveCapture (SaveCaptureRequest) returns (SaveCaptureReply) {}
@@ -178,6 +179,14 @@ message StopCaptureRequest {
 }
 message StopCaptureReply {
 }
+
+// Stop Capture
+message WaitCaptureRequest {
+    uint64 capture_id = 1;
+}
+message WaitCaptureReply {
+}
+
 
 
 // Load Capture

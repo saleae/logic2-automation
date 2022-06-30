@@ -29,6 +29,11 @@ class ManagerStub(object):
                 request_serializer=saleae_dot_grpc_dot_saleae__pb2.StopCaptureRequest.SerializeToString,
                 response_deserializer=saleae_dot_grpc_dot_saleae__pb2.StopCaptureReply.FromString,
                 )
+        self.WaitCapture = channel.unary_unary(
+                '/saleae.automation.Manager/WaitCapture',
+                request_serializer=saleae_dot_grpc_dot_saleae__pb2.WaitCaptureRequest.SerializeToString,
+                response_deserializer=saleae_dot_grpc_dot_saleae__pb2.WaitCaptureReply.FromString,
+                )
         self.LoadCapture = channel.unary_unary(
                 '/saleae.automation.Manager/LoadCapture',
                 request_serializer=saleae_dot_grpc_dot_saleae__pb2.LoadCaptureRequest.SerializeToString,
@@ -72,6 +77,12 @@ class ManagerServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def StopCapture(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def WaitCapture(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -124,6 +135,11 @@ def add_ManagerServicer_to_server(servicer, server):
                     servicer.StopCapture,
                     request_deserializer=saleae_dot_grpc_dot_saleae__pb2.StopCaptureRequest.FromString,
                     response_serializer=saleae_dot_grpc_dot_saleae__pb2.StopCaptureReply.SerializeToString,
+            ),
+            'WaitCapture': grpc.unary_unary_rpc_method_handler(
+                    servicer.WaitCapture,
+                    request_deserializer=saleae_dot_grpc_dot_saleae__pb2.WaitCaptureRequest.FromString,
+                    response_serializer=saleae_dot_grpc_dot_saleae__pb2.WaitCaptureReply.SerializeToString,
             ),
             'LoadCapture': grpc.unary_unary_rpc_method_handler(
                     servicer.LoadCapture,
@@ -208,6 +224,23 @@ class Manager(object):
         return grpc.experimental.unary_unary(request, target, '/saleae.automation.Manager/StopCapture',
             saleae_dot_grpc_dot_saleae__pb2.StopCaptureRequest.SerializeToString,
             saleae_dot_grpc_dot_saleae__pb2.StopCaptureReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def WaitCapture(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/saleae.automation.Manager/WaitCapture',
+            saleae_dot_grpc_dot_saleae__pb2.WaitCaptureRequest.SerializeToString,
+            saleae_dot_grpc_dot_saleae__pb2.WaitCaptureReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 

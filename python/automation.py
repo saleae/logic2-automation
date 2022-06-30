@@ -244,6 +244,10 @@ class Capture:
         request = saleae_pb2.StopCaptureRequest(capture_id=self.capture_id)
         self.manager.stub.StopCapture(request)
 
+    def wait(self):
+        request = saleae_pb2.WaitCaptureRequest(capture_id=self.capture_id)
+        self.manager.stub.WaitCapture(request)
+
     def __enter__(self):
         return self
 
@@ -272,8 +276,8 @@ if __name__ == "__main__":
                 trigger_type=DigitalTriggerType.PULSE_LOW,
                 record_after_trigger_time=1,
                 trigger_channel_index=3,
-                min_pulse_duration=1e-9,
-                max_pulse_duration=100e-9,
+                # min_pulse_duration=1e-9,
+                # max_pulse_duration=100e-9,
                 linked_channels=[
                     DigitalTriggerLinkedChannel(
                         4, DigitalTriggerLinkedChannelState.HIGH
@@ -282,3 +286,4 @@ if __name__ == "__main__":
             ),
         ),
     )
+    capture.wait()
