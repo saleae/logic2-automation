@@ -9,25 +9,49 @@ package saleae.automation;
 
 
 service Manager {
-  rpc GetDevices (GetDevicesRequest) returns (GetDevicesReply) {}
+    // Get list of connected devices.
+    rpc GetDevices (GetDevicesRequest) returns (GetDevicesReply) {}
+  
+    // Load a capture from file.
+    rpc LoadCapture (LoadCaptureRequest) returns (LoadCaptureReply) {}
 
-  rpc LoadCapture (LoadCaptureRequest) returns (LoadCaptureReply) {}
-  rpc SaveCapture (SaveCaptureRequest) returns (SaveCaptureReply) {}
-  rpc CloseCapture (CloseCaptureRequest) returns (CloseCaptureReply) {}
+    // Save a capture to file.
+    rpc SaveCapture (SaveCaptureRequest) returns (SaveCaptureReply) {}
 
-  rpc AddAnalyzer (AddAnalyzerRequest) returns (AddAnalyzerReply) {}
-  rpc RemoveAnalyzer (RemoveAnalyzerRequest) returns (RemoveAnalyzerReply) {}
+    // Close a capture.
+    // Note: It is recommended to close a capture once it is no longer being used so that any
+    //       consumed resources can be released.
+    rpc CloseCapture (CloseCaptureRequest) returns (CloseCaptureReply) {}
+  
+    // Add an analyzer to a capture.
+    rpc AddAnalyzer (AddAnalyzerRequest) returns (AddAnalyzerReply) {}
 
-  rpc ExportRawDataCsv (ExportRawDataCsvRequest) returns (ExportRawDataCsvReply) {}
-  rpc ExportRawDataBinary (ExportRawDataBinaryRequest) returns (ExportRawDataBinaryReply) {}
+    // Remove an analyzer from a capture.
+    rpc RemoveAnalyzer (RemoveAnalyzerRequest) returns (RemoveAnalyzerReply) {}
+  
+    // Export raw channel data to CSV files.
+    rpc ExportRawDataCsv (ExportRawDataCsvRequest) returns (ExportRawDataCsvReply) {}
 
-  rpc ExportDataTable (ExportDataTableRequest) returns (ExportDataTableReply) {}
-  rpc ExportAnalyzerLegacy (ExportAnalyzerLegacyRequest) returns (ExportAnalyzerLegacyReply) {}
+    // Export raw channel data to binary files.
+    rpc ExportRawDataBinary (ExportRawDataBinaryRequest) returns (ExportRawDataBinaryReply) {}
+  
+    // Export analyzer data to CSV file.
+    rpc ExportDataTable (ExportDataTableRequest) returns (ExportDataTableReply) {}
+
+    // Export custom analyzer export data to file.
+    rpc ExportAnalyzerLegacy (ExportAnalyzerLegacyRequest) returns (ExportAnalyzerLegacyReply) {}
 }
 
 
-// Core Types
+/*****************************************************************************
+ *
+ * Core Types
+ *
+ ****************************************************************************/
 
+/**
+ *
+ */
 enum ErrorCode {
     UNKNOWN_ERROR_CODE = 0; // Not used
 
@@ -43,6 +67,7 @@ enum ErrorCode {
 
 enum RadixType {
     UNKNOWN_RADIX_TYPE = 0;
+
     BINARY = 1;
     DECIMAL = 2;
     HEXADECIMAL = 3;
@@ -55,39 +80,68 @@ enum RadixType {
 // Or we should always mark them as optional? I'm not sure how the client-side handles that if the value is 
 // present but 0.
 enum DeviceType {
+    // Invalid Device Type
     UNKNOWN_DEVICE_TYPE = 0;
+
+    // Saleae Logic 8
     LOGIC_8 = 1;
+
+    // Saleae Logic Pro 8
     LOGIC_PRO_8 = 2;
+
+    // Saleae Logic Pro 16
     LOGIC_PRO_16 = 3;
 }
 
+/**
+ * Device descriptor object.
+ */
 message Device {
+    // The id used to identify this device
     uint64 device_id = 1;
+
+    // The type of this device
     DeviceType device_type = 2;
+
+    // The serial number of this device
     string serial_number = 3;
 }
 
 enum ChannelType {
-    DIGITAL = 0;
-    ANALOG = 1;
+    UNKNOWN_CHANNEL_TYPE = 0;
+
+    // Digial channel.
+    DIGITAL = 1;
+
+    // Analog data.
+    ANALOG = 2;
 }
 
+// Identification for a channel.
 message ChannelIdentifier {
+    // Device id
     uint64 device_id = 1;
+
+    // Channel type.
     ChannelType type = 2;
+
+    // Index of channel.
     uint64 index = 3;
 }
 
 message CaptureInfo {
+    // Id of the capture.
     uint64 capture_id = 1;
 }
 
 
 
-// Request/Reply Types
+/*****************************************************************************
+ *
+ * Request/Reply Messages
+ *
+ ****************************************************************************/
 
-
-// Get Devices
 message GetDevicesRequest {
 }
 message GetDevicesReply {
@@ -95,58 +149,66 @@ message GetDevicesReply {
 }
 
 
-
-
-// Load Capture
 message LoadCaptureRequest {
+    // Filepath of Logic 2 .sal capture file to load.
     string filepath = 1;
 }
 message LoadCaptureReply {
+    // Information about the capture that was loaded.
     CaptureInfo capture_info = 1;
 }
 
-// Save Capture
+
 message SaveCaptureRequest {
+    // Id of capture.
     uint64 capture_id = 1;
+
+    // Full filepath to save the file to, usually ending in ".sal".
     string filepath = 2;
 }
 message SaveCaptureReply {
 }
 
 
-// Close Capture
 message CloseCaptureRequest {
+    // Id of capture to close.
     uint64 capture_id = 1;
 }
 message CloseCaptureReply {
 }
 
 
-// Export Raw Data
 message ExportRawDataCsvRequest {
+    // Id of capture to export data from.
     uint64 capture_id = 1;
 
+    // Directory to create exported CSV files in.
     string directory = 2;
 
+    // Channels to export.
     repeated ChannelIdentifier channels = 3;
 
-    // Must be between 1 and 1,000,000, inclusive
+    // Must be between 1 and 1,000,000, inclusive.
     uint64 analog_downsample_ratio = 4;
 
-    // If set to true, timestamps will be in ISO8601 format
+    // If set to true, timestamps will be in ISO8601 format.
     bool iso8601 = 5;
 }
 message ExportRawDataCsvReply {
 }
 
+
 message ExportRawDataBinaryRequest {
+    // Id of capture to export data from.
     uint64 capture_id = 1;
 
+    // Directory to create exported binary files in.
     string directory = 2;
 
+    // Channels to export.
     repeated ChannelIdentifier channels = 3;
 
-    // Must be between 1 and 1,000,000, inclusive
+    // Must be between 1 and 1,000,000, inclusive.
     uint64 analog_downsample_ratio = 4;
 }
 message ExportRawDataBinaryReply {
@@ -155,46 +217,73 @@ message ExportRawDataBinaryReply {
 
 message AnalyzerSettingValue {
     oneof value {
+        // String value
         string string_value = 1;
+
+        // Integer value
         int64 int64_value = 2;
+
+        // Boolean value
         bool bool_value = 3;
+
+        // Double floating-point value
         double double_value = 4;
     }
 }
 message AddAnalyzerRequest {
+    // Id of capture to add analyzer to.
     uint64 capture_id = 1;
 
+    // Name of analyzer. This should exactly match the name seen in the application.
+    // Examples: "SPI", "I2C", "Async Serial"
     string analyzer_name = 2;
+
+    // User-facing name for the analyzer.
     string analyzer_label = 3;
+
+    // Analyzer settings. These should match the names shown in analyzer's settings
+    // shown in the application.
     map<string, AnalyzerSettingValue> settings = 4;
 }
 message AddAnalyzerReply {
+    // Id of the newly created analyzer.
     uint64 analyzer_id = 1;
 }
 
 message RemoveAnalyzerRequest {
+    // Id of capture to remove analyzer from.
     uint64 capture_id = 1;
+
+    // Id of analyzer to remove.
     uint64 analyzer_id = 2;
 }
 message RemoveAnalyzerReply {
 }
 
 message ExportDataTableRequest {
+    // Id of capture to export data from.
     uint64 capture_id = 1;
 
+    // Path to export CSV data to.
     string filepath = 2;
 
+    // Id of analyzers to export data from.
     repeated uint64 analyzer_ids = 3;
 }
 message ExportDataTableReply{
 }
 
 message ExportAnalyzerLegacyRequest {
+    // Id of capture to export data from.
     uint64 capture_id = 1;
 
+    // Path to export data to.
     string filepath = 2;
 
+    // Id of analyzer to export data from.
     uint64 analyzer_id = 3;
+
+    // Radix to use for exported data.
     RadixType radix_type = 4;
 }
 message ExportAnalyzerLegacyReply{
