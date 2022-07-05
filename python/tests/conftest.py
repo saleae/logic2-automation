@@ -11,6 +11,6 @@ def asset_path() -> str:
 
 @pytest.fixture
 def manager():
-    mgr = automation.Manager(port=50051)
+    mgr = automation.Manager(port=10430)
     yield mgr
     mgr.close()
