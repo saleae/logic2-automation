@@ -18,6 +18,15 @@ service Manager {
     // Get list of connected devices.
     rpc GetDevices (GetDevicesRequest) returns (GetDevicesReply) {}
   
+    // Start a capture
+    rpc StartCapture (StartCaptureRequest) returns (StartCaptureReply) {}
+
+    // Stop an active capture
+    rpc StopCapture (StopCaptureRequest) returns (StopCaptureReply) {}
+
+    // Wait until a capture has completed
+    rpc WaitCapture (WaitCaptureRequest) returns (WaitCaptureReply) {}
+
     // Load a capture from file.
     rpc LoadCapture (LoadCaptureRequest) returns (LoadCaptureReply) {}
 
@@ -72,6 +81,10 @@ enum ErrorCode {
     LOAD_CAPTURE_FAILED = 20;
     CAPTURE_IN_PROGRESS = 21;
     UNSUPPORTED_FILE_TYPE = 22;
+
+    MISSING_DEVICE = 50;
+    DEVICE_ERROR = 51;
+    OOM = 52;
 }
 
 enum RadixType {
@@ -151,6 +164,105 @@ message GetDevicesReply {
 }
 
 
+// Start Capture
+message StartCaptureRequest {
+    string device_serial_number = 1;
+
+    oneof device_configuration {
+        LogicDeviceConfiguration logic_device_configuration = 2;
+    }
+
+    CaptureSettings capture_settings = 3;
+}
+message StartCaptureReply {
+    CaptureInfo capture_info = 1;
+}
+
+message LogicDeviceConfiguration {
+    repeated uint32 enabled_analog_channels = 1;
+    repeated uint32 enabled_digital_channels = 2;
+
+    uint32 digital_sample_rate = 3;
+    uint32 analog_sample_rate = 4;
+
+    double digital_threshold = 5;
+
+    repeated GlitchFilterEntry glitch_filters = 6;
+}
+message GlitchFilterEntry {
+    uint32 channel_index = 1;
+    double pulse_width = 2;
+}
+
+message CaptureSettings {
+    // Capture buffer size (in megabytes)
+    uint32 buffer_size = 1;
+    CaptureMode capture_mode = 2;
+    // Time to stop capture after (in seconds)
+    //
+    // Only applies if capture_mode is `CaptureMode.STOP_AFTER_TIME`
+    double stop_after_time = 3;
+
+    // Duration to trim data down to after capture completes
+    //
+    // When trigger is active, we trim relative to the trigger, not the end of capture
+    double trim_time = 4;
+
+    DigitalTriggerSettings digital_trigger = 5;
+}
+
+enum CaptureMode {
+    CIRCULAR = 0;
+    STOP_AFTER_TIME = 1;
+    STOP_ON_DIGITAL_TRIGGER = 2;
+}
+
+message DigitalTriggerSettings {
+    DigitalTriggerType trigger_type = 1;
+
+    double record_after_trigger_time = 2;
+
+    uint32 trigger_channel_index = 3;
+
+    double min_pulse_duration = 4;
+    double max_pulse_duration = 5;
+
+    repeated DigitalTriggerLinkedChannel linked_channels = 6;
+}
+
+enum DigitalTriggerType {
+    RISING = 0;
+    FALLING = 1;
+    PULSE_HIGH = 2;
+    PULSE_LOW = 3;
+}
+
+message DigitalTriggerLinkedChannel {
+    uint32 channel_index = 1;
+    DigitalTriggerLinkedChannelState state = 2;
+}
+
+enum DigitalTriggerLinkedChannelState {
+    LOW = 0;
+    HIGH = 1;
+}
+
+
+// Stop Capture
+message StopCaptureRequest {
+    uint64 capture_id = 1;
+}
+message StopCaptureReply {
+}
+
+// Stop Capture
+message WaitCaptureRequest {
+    uint64 capture_id = 1;
+}
+message WaitCaptureReply {
+}
+
+// Load Capture
 message LoadCaptureRequest {
     // Filepath of Logic 2 .sal capture file to load.
     string filepath = 1;

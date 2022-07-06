@@ -25,6 +25,21 @@ class ManagerStub(object):
                 request_serializer=saleae_dot_grpc_dot_saleae__pb2.GetDevicesRequest.SerializeToString,
                 response_deserializer=saleae_dot_grpc_dot_saleae__pb2.GetDevicesReply.FromString,
                 )
+        self.StartCapture = channel.unary_unary(
+                '/saleae.automation.Manager/StartCapture',
+                request_serializer=saleae_dot_grpc_dot_saleae__pb2.StartCaptureRequest.SerializeToString,
+                response_deserializer=saleae_dot_grpc_dot_saleae__pb2.StartCaptureReply.FromString,
+                )
+        self.StopCapture = channel.unary_unary(
+                '/saleae.automation.Manager/StopCapture',
+                request_serializer=saleae_dot_grpc_dot_saleae__pb2.StopCaptureRequest.SerializeToString,
+                response_deserializer=saleae_dot_grpc_dot_saleae__pb2.StopCaptureReply.FromString,
+                )
+        self.WaitCapture = channel.unary_unary(
+                '/saleae.automation.Manager/WaitCapture',
+                request_serializer=saleae_dot_grpc_dot_saleae__pb2.WaitCaptureRequest.SerializeToString,
+                response_deserializer=saleae_dot_grpc_dot_saleae__pb2.WaitCaptureReply.FromString,
+                )
         self.LoadCapture = channel.unary_unary(
                 '/saleae.automation.Manager/LoadCapture',
                 request_serializer=saleae_dot_grpc_dot_saleae__pb2.LoadCaptureRequest.SerializeToString,
@@ -84,6 +99,24 @@ class ManagerServicer(object):
     def GetDevices(self, request, context):
         """Get list of connected devices.
         """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def StartCapture(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def StopCapture(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def WaitCapture(self, request, context):
+        """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -161,6 +194,21 @@ def add_ManagerServicer_to_server(servicer, server):
                     request_deserializer=saleae_dot_grpc_dot_saleae__pb2.GetDevicesRequest.FromString,
                     response_serializer=saleae_dot_grpc_dot_saleae__pb2.GetDevicesReply.SerializeToString,
             ),
+            'StartCapture': grpc.unary_unary_rpc_method_handler(
+                    servicer.StartCapture,
+                    request_deserializer=saleae_dot_grpc_dot_saleae__pb2.StartCaptureRequest.FromString,
+                    response_serializer=saleae_dot_grpc_dot_saleae__pb2.StartCaptureReply.SerializeToString,
+            ),
+            'StopCapture': grpc.unary_unary_rpc_method_handler(
+                    servicer.StopCapture,
+                    request_deserializer=saleae_dot_grpc_dot_saleae__pb2.StopCaptureRequest.FromString,
+                    response_serializer=saleae_dot_grpc_dot_saleae__pb2.StopCaptureReply.SerializeToString,
+            ),
+            'WaitCapture': grpc.unary_unary_rpc_method_handler(
+                    servicer.WaitCapture,
+                    request_deserializer=saleae_dot_grpc_dot_saleae__pb2.WaitCaptureRequest.FromString,
+                    response_serializer=saleae_dot_grpc_dot_saleae__pb2.WaitCaptureReply.SerializeToString,
+            ),
             'LoadCapture': grpc.unary_unary_rpc_method_handler(
                     servicer.LoadCapture,
                     request_deserializer=saleae_dot_grpc_dot_saleae__pb2.LoadCaptureRequest.FromString,
@@ -236,6 +284,57 @@ class Manager(object):
         return grpc.experimental.unary_unary(request, target, '/saleae.automation.Manager/GetDevices',
             saleae_dot_grpc_dot_saleae__pb2.GetDevicesRequest.SerializeToString,
             saleae_dot_grpc_dot_saleae__pb2.GetDevicesReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def StartCapture(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/saleae.automation.Manager/StartCapture',
+            saleae_dot_grpc_dot_saleae__pb2.StartCaptureRequest.SerializeToString,
+            saleae_dot_grpc_dot_saleae__pb2.StartCaptureReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def StopCapture(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/saleae.automation.Manager/StopCapture',
+            saleae_dot_grpc_dot_saleae__pb2.StopCaptureRequest.SerializeToString,
+            saleae_dot_grpc_dot_saleae__pb2.StopCaptureReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def WaitCapture(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/saleae.automation.Manager/WaitCapture',
+            saleae_dot_grpc_dot_saleae__pb2.WaitCaptureRequest.SerializeToString,
+            saleae_dot_grpc_dot_saleae__pb2.WaitCaptureReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 

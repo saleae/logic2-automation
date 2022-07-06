@@ -1,8 +1,7 @@
-from enum import Enum
 from os import PathLike
 from typing import List, Optional, Union
-
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from enum import Enum
 
 from saleae.grpc import saleae_pb2
 from saleae.grpc import saleae_pb2_grpc
@@ -76,6 +75,87 @@ def grpc_error_msg_to_exception(msg: str):
     return exc_type(error_msg)
 
 
+@dataclass
+class AnalyzerHandle:
+    analyzer_id: int
+
+
+class DeviceConfiguration:
+    pass
+
+
+@dataclass
+class LogicDeviceConfiguration(DeviceConfiguration):
+    enabled_analog_channels: List[int] = field(default_factory=list)
+    enabled_digital_channels: List[int] = field(default_factory=list)
+
+    analog_sample_rate: Optional[int] = None
+    digital_sample_rate: Optional[int] = None
+
+    digital_threshold: Optional[float] = None
+
+    glitch_filters: "List[GlitchFilterEntry]" = field(default_factory=list)
+
+
+@dataclass
+class GlitchFilterEntry:
+    channel_index: int
+    pulse_width: float
+
+
+class CaptureMode(Enum):
+    CIRCULAR = saleae_pb2.CaptureMode.CIRCULAR
+    STOP_AFTER_TIME = saleae_pb2.CaptureMode.STOP_AFTER_TIME
+    STOP_ON_DIGITAL_TRIGGER = saleae_pb2.CaptureMode.STOP_ON_DIGITAL_TRIGGER
+
+
+@dataclass
+class CaptureSettings:
+    buffer_size: Optional[int] = None
+    """Capture buffer size (in megabytes)"""
+
+    capture_mode: Optional[CaptureMode] = None
+
+    stop_after_time: Optional[float] = None
+
+    trim_time: Optional[float] = None
+
+    digital_trigger: "Optional[DigitalTriggerSettings]" = None
+
+
+@dataclass
+class DigitalTriggerSettings:
+    trigger_type: "DigitalTriggerType"
+
+    record_after_trigger_time: float
+
+    trigger_channel_index: int
+
+    min_pulse_duration: Optional[float] = None
+    max_pulse_duration: Optional[float] = None
+
+    linked_channels: "List[DigitalTriggerLinkedChannel]" = field(default_factory=list)
+
+
+class DigitalTriggerType(Enum):
+    RISING = saleae_pb2.DigitalTriggerType.RISING
+    FALLING = saleae_pb2.DigitalTriggerType.FALLING
+    PULSE_HIGH = saleae_pb2.DigitalTriggerType.PULSE_HIGH
+    PULSE_LOW = saleae_pb2.DigitalTriggerType.PULSE_LOW
+
+
+@dataclass
+class DigitalTriggerLinkedChannel:
+    channel_index: int
+    state: "DigitalTriggerLinkedChannelState"
+
+
+class DigitalTriggerLinkedChannelState(Enum):
+    LOW = saleae_pb2.DigitalTriggerLinkedChannelState.LOW
+    HIGH = saleae_pb2.DigitalTriggerLinkedChannelState.HIGH
+
+
+
 class Manager:
     def __init__(self, port: int):
         """
@@ -96,6 +176,87 @@ class Manager:
     def get_devices(self):
         request = saleae_pb2.GetDevicesRequest()
         reply: saleae_pb2.GetDevicesReply = self.stub.GetDevices(request)
+
+    def start_capture(
+        self,
+        *,
+        device_configuration: DeviceConfiguration,
+        device_serial_number: str,
+        capture_settings: CaptureSettings = CaptureSettings(),
+    ) -> "Capture":
+        request = saleae_pb2.StartCaptureRequest()
+        request.device_serial_number = device_serial_number
+
+        if isinstance(device_configuration, LogicDeviceConfiguration):
+            request.logic_device_configuration.enabled_analog_channels[
+                :
+            ] = device_configuration.enabled_analog_channels
+            request.logic_device_configuration.enabled_digital_channels[
+                :
+            ] = device_configuration.enabled_digital_channels
+            if device_configuration.analog_sample_rate is not None:
+                request.logic_device_configuration.analog_sample_rate = (
+                    device_configuration.analog_sample_rate
+                )
+            if device_configuration.digital_sample_rate is not None:
+                request.logic_device_configuration.digital_sample_rate = (
+                    device_configuration.digital_sample_rate
+                )
+            if device_configuration.digital_threshold is not None:
+                request.logic_device_configuration.digital_threshold = (
+                    device_configuration.digital_threshold
+                )
+            request.logic_device_configuration.glitch_filters.extend(
+                [
+                    saleae_pb2.GlitchFilterEntry(
+                        channel_index=glitch_filter.channel_index,
+                        pulse_width=glitch_filter.pulse_width,
+                    )
+                    for glitch_filter in device_configuration.glitch_filters
+                ]
+            )
+        else:
+            raise TypeError("Invalid device configuration type")
+
+        if capture_settings.buffer_size is not None:
+            request.capture_settings.buffer_size = capture_settings.buffer_size
+        if capture_settings.capture_mode is not None:
+            request.capture_settings.capture_mode = capture_settings.capture_mode.value
+        if capture_settings.stop_after_time is not None:
+            request.capture_settings.stop_after_time = capture_settings.stop_after_time
+        if capture_settings.trim_time is not None:
+            request.capture_settings.trim_time = capture_settings.trim_time
+        if capture_settings.digital_trigger is not None:
+            digital_trigger = request.capture_settings.digital_trigger
+            digital_trigger.trigger_type = (
+                capture_settings.digital_trigger.trigger_type.value
+            )
+            digital_trigger.record_after_trigger_time = (
+                capture_settings.digital_trigger.record_after_trigger_time
+            )
+            digital_trigger.trigger_channel_index = (
+                capture_settings.digital_trigger.trigger_channel_index
+            )
+            if capture_settings.digital_trigger.min_pulse_duration is not None:
+                digital_trigger.min_pulse_duration = (
+                    capture_settings.digital_trigger.min_pulse_duration
+                )
+            if capture_settings.digital_trigger.max_pulse_duration is not None:
+                digital_trigger.max_pulse_duration = (
+                    capture_settings.digital_trigger.max_pulse_duration
+                )
+            digital_trigger.linked_channels.extend(
+                [
+                    saleae_pb2.DigitalTriggerLinkedChannel(
+                        channel_index=linked_channel.channel_index,
+                        state=linked_channel.state.value,
+                    )
+                    for linked_channel in capture_settings.digital_trigger.linked_channels
+                ]
+            )
+
+        reply: saleae_pb2.StartCaptureReply = self.stub.StartCapture(request)
+        return Capture(self, reply.capture_info.capture_id)
 
     def load_capture(self, filepath: str) -> 'Capture':
         """
@@ -228,6 +389,14 @@ class Capture:
         request = saleae_pb2.CloseCaptureRequest(capture_id=self.capture_id)
         self.manager.stub.CloseCapture(request)
 
+    def stop(self):
+        request = saleae_pb2.StopCaptureRequest(capture_id=self.capture_id)
+        self.manager.stub.StopCapture(request)
+
+    def wait(self):
+        request = saleae_pb2.WaitCaptureRequest(capture_id=self.capture_id)
+        self.manager.stub.WaitCapture(request)
+
     def __enter__(self):
         return self
 
@@ -264,6 +433,29 @@ if __name__ == '__main__':
     for cap in captures:
         cap.close()
 
-@dataclass
-class AnalyzerHandle:
-    analyzer_id: int
+    capture = manager.start_capture(
+        device_serial_number="F4241",
+        device_configuration=LogicDeviceConfiguration(
+            enabled_digital_channels=[3, 4],
+            digital_sample_rate=500000000,
+            digital_threshold=3.3,
+            glitch_filters=[GlitchFilterEntry(channel_index=3, pulse_width=100e-9)],
+        ),
+        capture_settings=CaptureSettings(
+            buffer_size=2048,
+            capture_mode=CaptureMode.STOP_ON_DIGITAL_TRIGGER,
+            stop_after_time=5,
+            digital_trigger=DigitalTriggerSettings(
+                trigger_type=DigitalTriggerType.RISING,
+                record_after_trigger_time=1,
+                trigger_channel_index=3,
+                linked_channels=[
+                    DigitalTriggerLinkedChannel(
+                        4, DigitalTriggerLinkedChannelState.HIGH
+                    )
+                ],
+            ),
+        ),
+    )
+    capture.wait()
+
