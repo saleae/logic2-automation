@@ -169,11 +169,12 @@ class Capture:
         except grpc.RpcError as exc:
             raise grpc_error_to_exception(exc) from None
 
-    def export_data_table(self, filepath: str, analyzers: List['AnalyzerHandle']):
+    def export_data_table(self, filepath: str, analyzers: List['AnalyzerHandle'], iso8601: bool = False):
         request = saleae_pb2.ExportDataTableRequest(
             capture_id=self.capture_id,
             filepath=filepath,
-            analyzer_ids=[h.analyzer_id for h in analyzers])
+            analyzer_ids=[h.analyzer_id for h in analyzers],
+            iso8601=iso8601)
 
         try:
             reply = self.manager.stub.ExportDataTable(request)

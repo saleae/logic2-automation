@@ -8,6 +8,12 @@ option objc_class_prefix = "Saleae";
 package saleae.automation;
 
 
+/*****************************************************************************
+ *
+ * gRPC API
+ *
+ ****************************************************************************/
+
 service Manager {
     // Get list of connected devices.
     rpc GetDevices (GetDevicesRequest) returns (GetDevicesReply) {}
@@ -43,24 +49,27 @@ service Manager {
 }
 
 
+
 /*****************************************************************************
  *
  * Core Types
  *
  ****************************************************************************/
 
-/**
- *
- */
 enum ErrorCode {
     UNKNOWN_ERROR_CODE = 0; // Not used
 
+    // Unexpected Saleae Internal Error.
     INTERNAL_EXCEPTION = 1;
 
+    // Request is invalid, usually because of invalid arguments.
+    //
+    // Examples:
+    //   Invalid Capture Id - capture does not exist
+    //   Missing filepath
     INVALID_REQUEST = 10;
 
     LOAD_CAPTURE_FAILED = 20;
-
     CAPTURE_IN_PROGRESS = 21;
     UNSUPPORTED_FILE_TYPE = 22;
 }
@@ -74,11 +83,6 @@ enum RadixType {
     ASCII = 4;
 };
 
-// Enum fields don't explicitly track presence if not tagged as optional. In these cases
-// 0 is the implicitly serialized value, which is indistinguishable from the 0 value in the enum.
-// But 0 is required as the first value in an enum. This should be set to something like UNKNOWN instead.
-// Or we should always mark them as optional? I'm not sure how the client-side handles that if the value is 
-// present but 0.
 enum DeviceType {
     // Invalid Device Type
     UNKNOWN_DEVICE_TYPE = 0;
@@ -93,9 +97,7 @@ enum DeviceType {
     LOGIC_PRO_16 = 3;
 }
 
-/**
- * Device descriptor object.
- */
+// Device descriptor object.
 message Device {
     // The id used to identify this device
     uint64 device_id = 1;
@@ -160,7 +162,7 @@ message LoadCaptureReply {
 
 
 message SaveCaptureRequest {
-    // Id of capture.
+    // Id of capture to save.
     uint64 capture_id = 1;
 
     // Full filepath to save the file to, usually ending in ".sal".
@@ -191,7 +193,7 @@ message ExportRawDataCsvRequest {
     // Must be between 1 and 1,000,000, inclusive.
     uint64 analog_downsample_ratio = 4;
 
-    // If set to true, timestamps will be in ISO8601 format.
+    // If true, timestamps will be in ISO8601 format.
     bool iso8601 = 5;
 }
 message ExportRawDataCsvReply {
@@ -269,6 +271,9 @@ message ExportDataTableRequest {
 
     // Id of analyzers to export data from.
     repeated uint64 analyzer_ids = 3;
+
+    // If true, timestamps will be in ISO8601 format.
+    bool iso8601 = 5;
 }
 message ExportDataTableReply{
 }

@@ -1,11 +1,9 @@
 from dataclasses import dataclass, field
-from enum import auto
-import time
 from typing import Literal
 import pytest
 import os
 import os.path
-import pathlib
+import filecmp
 
 from saleae import automation
 
@@ -157,3 +155,149 @@ def test_invalid_analog_downsample_ratio(analog_downsample_ratio: int, type: Lit
 
         except automation.InvalidRequest:
             assert(analog_downsample_ratio < MIN_DOWNSAMPLE_RATIO or analog_downsample_ratio > MAX_DOWNSAMPLE_RATIO)
+
+
+
+
+@dataclass
+class ComparisonScenario:
+    capture_name: str
+    folder: str
+    type: Literal['csv', 'bin']
+    params: dict
+
+
+comparison_scenarios = [
+    ComparisonScenario(
+        capture_name='cap1.sal',
+        folder='cap1/all',
+        type='csv',
+        params=dict(
+            analog_downsample_ratio=1,
+            analog_channels=[0,1],
+            digital_channels=[0,1],
+        )
+    ),
+    ComparisonScenario(
+        capture_name='cap1.sal',
+        folder='cap1/all_isotimestamps',
+        type='csv',
+        params=dict(
+            analog_downsample_ratio=1,
+            analog_channels=[0,1],
+            digital_channels=[0,1],
+            iso8601=True,
+        )
+    ),
+    ComparisonScenario(
+        capture_name='cap1.sal',
+        folder='cap1/analog_only',
+        type='csv',
+        params=dict(
+            analog_downsample_ratio=1,
+            analog_channels=[0,1],
+            digital_channels=[],
+        )
+    ),
+    ComparisonScenario(
+        capture_name='cap1.sal',
+        folder='cap1/digital_only',
+        type='csv',
+        params=dict(
+            analog_downsample_ratio=1,
+            analog_channels=[],
+            digital_channels=[0,1],
+        )
+    ),
+    ComparisonScenario(
+        capture_name='cap1.sal',
+        folder='cap1/analog_1_downsample4',
+        type='csv',
+        params=dict(
+            analog_downsample_ratio=4,
+            analog_channels=[1],
+            digital_channels=[],
+        )
+    ),
+    ComparisonScenario(
+        capture_name='cap1.sal',
+        folder='cap1/all_bin',
+        type='bin',
+        params=dict(
+            analog_downsample_ratio=1,
+            analog_channels=[0,1],
+            digital_channels=[0,1],
+        )
+    ),
+    ComparisonScenario(
+        capture_name='cap1.sal',
+        folder='cap1/analog_bin',
+        type='bin',
+        params=dict(
+            analog_downsample_ratio=1,
+            analog_channels=[0,1],
+            digital_channels=[],
+        )
+    ),
+    ComparisonScenario(
+        capture_name='cap1.sal',
+        folder='cap1/digital_bin',
+        type='bin',
+        params=dict(
+            analog_downsample_ratio=1,
+            analog_channels=[],
+            digital_channels=[0,1],
+        )
+    ),
+    ComparisonScenario(
+        capture_name='cap1.sal',
+        folder='cap1/ch1_bin',
+        type='bin',
+        params=dict(
+            analog_downsample_ratio=1,
+            analog_channels=[1],
+            digital_channels=[1],
+        )
+    ),
+    ComparisonScenario(
+        capture_name='cap1.sal',
+        folder='cap1/analog_1_downsample4_bin',
+        type='bin',
+        params=dict(
+            analog_downsample_ratio=4,
+            analog_channels=[1],
+            digital_channels=[],
+        )
+    ),
+]
+
+@pytest.mark.parametrize('scenario', comparison_scenarios)
+def test_compare(scenario: ComparisonScenario, manager: automation.Manager, asset_path: str, tmp_path):
+    capture_path = os.path.join(asset_path, scenario.capture_name)
+
+    export_directory = os.path.join(tmp_path, f'export_{scenario.capture_name}')
+
+    with manager.load_capture(capture_path) as cap:
+        if scenario.type == 'csv':
+            cap.export_raw_data_csv(
+                directory=export_directory,
+                **scenario.params)
+        else:
+            cap.export_raw_data_binary(
+                directory=export_directory,
+                **scenario.params)
+
+    expected_directory = os.path.join(asset_path, scenario.folder)
+
+    expected_files = os.listdir(expected_directory)
+    actual_files = os.listdir(export_directory)
+
+    for filename in expected_files:
+        assert(filename in actual_files)
+
+    for filename in expected_files:
+        actual_filepath = os.path.join(export_directory, filename)
+        expected_filepath = os.path.join(expected_directory, filename)
+
+        assert(filecmp.cmp(actual_filepath, expected_filepath))
+
