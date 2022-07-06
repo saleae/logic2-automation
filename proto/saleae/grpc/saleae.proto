@@ -12,17 +12,27 @@ service Manager {
   rpc GetDevices (GetDevicesRequest) returns (GetDevicesReply) {}
 
   rpc LoadCapture (LoadCaptureRequest) returns (LoadCaptureReply) {}
+  rpc SaveCapture (SaveCaptureRequest) returns (SaveCaptureReply) {}
   rpc CloseCapture (CloseCaptureRequest) returns (CloseCaptureReply) {}
 
-  rpc ExportRawDataCsv (ExportRawDataCsvRequest) returns (ExportRawDataCsvRequest) {}
+  rpc ExportRawDataCsv (ExportRawDataCsvRequest) returns (ExportRawDataCsvReply) {}
+  rpc ExportRawDataBinary (ExportRawDataBinaryRequest) returns (ExportRawDataBinaryReply) {}
 }
 
 
 // Core Types
 
-enum ErrorType {
-    UNKNOWN_ERROR_TYPE = 0;
-    INVALID_CAPTURE_ID = 10;
+enum ErrorCode {
+    UNKNOWN = 0; // Not used
+
+    INTERNAL_EXCEPTION = 1;
+
+    INVALID_REQUEST = 10;
+
+    LOAD_CAPTURE_FAILED = 20;
+
+    CAPTURE_IN_PROGRESS = 21;
+    UNSUPPORTED_FILE_TYPE = 22;
 }
 
 // Enum fields don't explicitly track presence if not tagged as optional. In these cases
@@ -81,6 +91,14 @@ message LoadCaptureReply {
     CaptureInfo capture_info = 1;
 }
 
+// Save Capture
+message SaveCaptureRequest {
+    uint64 capture_id = 1;
+    string filepath = 2;
+}
+message SaveCaptureReply {
+}
+
 
 // Close Capture
 message CloseCaptureRequest {
@@ -91,18 +109,31 @@ message CloseCaptureReply {
 
 
 // Export Raw Data
-//   CSV
 message ExportRawDataCsvRequest {
-    string directory = 1;
+    uint64 capture_id = 1;
 
-    // If not specified, all channels will be exported
-    repeated ChannelIdentifier channels = 2;
+    string directory = 2;
 
-    // If not specified, defaults to 1
-    uint64 analog_downsample_ratio = 3;
+    repeated ChannelIdentifier channels = 3;
+
+    // Must be between 1 and 1,000,000, inclusive
+    uint64 analog_downsample_ratio = 4;
 
     // If set to true, timestamps will be in ISO8601 format
-    bool iso8601 = 4;
+    bool iso8601 = 5;
 }
 message ExportRawDataCsvReply {
+}
+
+message ExportRawDataBinaryRequest {
+    uint64 capture_id = 1;
+
+    string directory = 2;
+
+    repeated ChannelIdentifier channels = 3;
+
+    // Must be between 1 and 1,000,000, inclusive
+    uint64 analog_downsample_ratio = 4;
+}
+message ExportRawDataBinaryReply {
 }
