@@ -25,6 +25,11 @@ class Manager:
 
         """
 
+    def get_devices(self):
+        request = saleae_pb2.GetDevicesRequest()
+        reply: saleae_pb2.GetDevicesReply = self.stub.GetDevices(request)
+        print(reply)
+
     def load_capture(self, filepath: str) -> 'Capture':
         """
         Load a capture.
@@ -75,5 +80,6 @@ if __name__ == '__main__':
         level=logging.INFO)
 
     manager = Manager(port=50051)
+    manager.get_devices()
     with manager.load_capture('') as cap:
         cap.close()
