@@ -15,6 +15,9 @@ service Manager {
   rpc SaveCapture (SaveCaptureRequest) returns (SaveCaptureReply) {}
   rpc CloseCapture (CloseCaptureRequest) returns (CloseCaptureReply) {}
 
+  rpc AddAnalyzer (AddAnalyzerRequest) returns (AddAnalyzerReply) {}
+  rpc RemoveAnalyzer (RemoveAnalyzerRequest) returns (RemoveAnalyzerReply) {}
+
   rpc ExportRawDataCsv (ExportRawDataCsvRequest) returns (ExportRawDataCsvReply) {}
   rpc ExportRawDataBinary (ExportRawDataBinaryRequest) returns (ExportRawDataBinaryReply) {}
 }
@@ -136,4 +139,31 @@ message ExportRawDataBinaryRequest {
     uint64 analog_downsample_ratio = 4;
 }
 message ExportRawDataBinaryReply {
+}
+
+
+message AnalyzerSettingValue {
+    oneof value {
+        string string_value = 1;
+        int64 int64_value = 2;
+        bool bool_value = 3;
+        double double_value = 4;
+    }
+}
+message AddAnalyzerRequest {
+    uint64 capture_id = 1;
+
+    string analyzer_name = 2;
+    string analyzer_label = 3;
+    map<string, AnalyzerSettingValue> settings = 4;
+}
+message AddAnalyzerReply {
+    uint64 analyzer_id = 1;
+}
+
+message RemoveAnalyzerRequest {
+    uint64 capture_id = 1;
+    uint64 analyzer_id = 2;
+}
+message RemoveAnalyzerReply {
 }

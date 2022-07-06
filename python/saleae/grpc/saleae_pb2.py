@@ -13,7 +13,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x18saleae/grpc/saleae.proto\x12\x11saleae.automation\"f\n\x06\x44\x65vice\x12\x11\n\tdevice_id\x18\x01 \x01(\x04\x12\x32\n\x0b\x64\x65vice_type\x18\x02 \x01(\x0e\x32\x1d.saleae.automation.DeviceType\x12\x15\n\rserial_number\x18\x03 \x01(\t\"c\n\x11\x43hannelIdentifier\x12\x11\n\tdevice_id\x18\x01 \x01(\x04\x12,\n\x04type\x18\x02 \x01(\x0e\x32\x1e.saleae.automation.ChannelType\x12\r\n\x05index\x18\x03 \x01(\x04\"!\n\x0b\x43\x61ptureInfo\x12\x12\n\ncapture_id\x18\x01 \x01(\x04\"\x13\n\x11GetDevicesRequest\"=\n\x0fGetDevicesReply\x12*\n\x07\x64\x65vices\x18\x01 \x03(\x0b\x32\x19.saleae.automation.Device\"&\n\x12LoadCaptureRequest\x12\x10\n\x08\x66ilepath\x18\x01 \x01(\t\"H\n\x10LoadCaptureReply\x12\x34\n\x0c\x63\x61pture_info\x18\x01 \x01(\x0b\x32\x1e.saleae.automation.CaptureInfo\":\n\x12SaveCaptureRequest\x12\x12\n\ncapture_id\x18\x01 \x01(\x04\x12\x10\n\x08\x66ilepath\x18\x02 \x01(\t\"\x12\n\x10SaveCaptureReply\")\n\x13\x43loseCaptureRequest\x12\x12\n\ncapture_id\x18\x01 \x01(\x04\"\x13\n\x11\x43loseCaptureReply\"\xaa\x01\n\x17\x45xportRawDataCsvRequest\x12\x12\n\ncapture_id\x18\x01 \x01(\x04\x12\x11\n\tdirectory\x18\x02 \x01(\t\x12\x36\n\x08\x63hannels\x18\x03 \x03(\x0b\x32$.saleae.automation.ChannelIdentifier\x12\x1f\n\x17\x61nalog_downsample_ratio\x18\x04 \x01(\x04\x12\x0f\n\x07iso8601\x18\x05 \x01(\x08\"\x17\n\x15\x45xportRawDataCsvReply\"\x9c\x01\n\x1a\x45xportRawDataBinaryRequest\x12\x12\n\ncapture_id\x18\x01 \x01(\x04\x12\x11\n\tdirectory\x18\x02 \x01(\t\x12\x36\n\x08\x63hannels\x18\x03 \x03(\x0b\x32$.saleae.automation.ChannelIdentifier\x12\x1f\n\x17\x61nalog_downsample_ratio\x18\x04 \x01(\x04\"\x1a\n\x18\x45xportRawDataBinaryReply*\x92\x01\n\tErrorCode\x12\x0b\n\x07UNKNOWN\x10\x00\x12\x16\n\x12INTERNAL_EXCEPTION\x10\x01\x12\x13\n\x0fINVALID_REQUEST\x10\n\x12\x17\n\x13LOAD_CAPTURE_FAILED\x10\x14\x12\x17\n\x13\x43\x41PTURE_IN_PROGRESS\x10\x15\x12\x19\n\x15UNSUPPORTED_FILE_TYPE\x10\x16*U\n\nDeviceType\x12\x17\n\x13UNKNOWN_DEVICE_TYPE\x10\x00\x12\x0b\n\x07LOGIC_8\x10\x01\x12\x0f\n\x0bLOGIC_PRO_8\x10\x02\x12\x10\n\x0cLOGIC_PRO_16\x10\x03*&\n\x0b\x43hannelType\x12\x0b\n\x07\x44IGITAL\x10\x00\x12\n\n\x06\x41NALOG\x10\x01\x32\xde\x04\n\x07Manager\x12X\n\nGetDevices\x12$.saleae.automation.GetDevicesRequest\x1a\".saleae.automation.GetDevicesReply\"\x00\x12[\n\x0bLoadCapture\x12%.saleae.automation.LoadCaptureRequest\x1a#.saleae.automation.LoadCaptureReply\"\x00\x12[\n\x0bSaveCapture\x12%.saleae.automation.SaveCaptureRequest\x1a#.saleae.automation.SaveCaptureReply\"\x00\x12^\n\x0c\x43loseCapture\x12&.saleae.automation.CloseCaptureRequest\x1a$.saleae.automation.CloseCaptureReply\"\x00\x12j\n\x10\x45xportRawDataCsv\x12*.saleae.automation.ExportRawDataCsvRequest\x1a(.saleae.automation.ExportRawDataCsvReply\"\x00\x12s\n\x13\x45xportRawDataBinary\x12-.saleae.automation.ExportRawDataBinaryRequest\x1a+.saleae.automation.ExportRawDataBinaryReply\"\x00\x42 \n\x06saleaeB\x0bSaleaeProtoP\x01\xa2\x02\x06Saleaeb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x18saleae/grpc/saleae.proto\x12\x11saleae.automation\"f\n\x06\x44\x65vice\x12\x11\n\tdevice_id\x18\x01 \x01(\x04\x12\x32\n\x0b\x64\x65vice_type\x18\x02 \x01(\x0e\x32\x1d.saleae.automation.DeviceType\x12\x15\n\rserial_number\x18\x03 \x01(\t\"c\n\x11\x43hannelIdentifier\x12\x11\n\tdevice_id\x18\x01 \x01(\x04\x12,\n\x04type\x18\x02 \x01(\x0e\x32\x1e.saleae.automation.ChannelType\x12\r\n\x05index\x18\x03 \x01(\x04\"!\n\x0b\x43\x61ptureInfo\x12\x12\n\ncapture_id\x18\x01 \x01(\x04\"\x13\n\x11GetDevicesRequest\"=\n\x0fGetDevicesReply\x12*\n\x07\x64\x65vices\x18\x01 \x03(\x0b\x32\x19.saleae.automation.Device\"&\n\x12LoadCaptureRequest\x12\x10\n\x08\x66ilepath\x18\x01 \x01(\t\"H\n\x10LoadCaptureReply\x12\x34\n\x0c\x63\x61pture_info\x18\x01 \x01(\x0b\x32\x1e.saleae.automation.CaptureInfo\":\n\x12SaveCaptureRequest\x12\x12\n\ncapture_id\x18\x01 \x01(\x04\x12\x10\n\x08\x66ilepath\x18\x02 \x01(\t\"\x12\n\x10SaveCaptureReply\")\n\x13\x43loseCaptureRequest\x12\x12\n\ncapture_id\x18\x01 \x01(\x04\"\x13\n\x11\x43loseCaptureReply\"\xaa\x01\n\x17\x45xportRawDataCsvRequest\x12\x12\n\ncapture_id\x18\x01 \x01(\x04\x12\x11\n\tdirectory\x18\x02 \x01(\t\x12\x36\n\x08\x63hannels\x18\x03 \x03(\x0b\x32$.saleae.automation.ChannelIdentifier\x12\x1f\n\x17\x61nalog_downsample_ratio\x18\x04 \x01(\x04\x12\x0f\n\x07iso8601\x18\x05 \x01(\x08\"\x17\n\x15\x45xportRawDataCsvReply\"\x9c\x01\n\x1a\x45xportRawDataBinaryRequest\x12\x12\n\ncapture_id\x18\x01 \x01(\x04\x12\x11\n\tdirectory\x18\x02 \x01(\t\x12\x36\n\x08\x63hannels\x18\x03 \x03(\x0b\x32$.saleae.automation.ChannelIdentifier\x12\x1f\n\x17\x61nalog_downsample_ratio\x18\x04 \x01(\x04\"\x1a\n\x18\x45xportRawDataBinaryReply\"|\n\x14\x41nalyzerSettingValue\x12\x16\n\x0cstring_value\x18\x01 \x01(\tH\x00\x12\x15\n\x0bint64_value\x18\x02 \x01(\x03H\x00\x12\x14\n\nbool_value\x18\x03 \x01(\x08H\x00\x12\x16\n\x0c\x64ouble_value\x18\x04 \x01(\x01H\x00\x42\x07\n\x05value\"\xf8\x01\n\x12\x41\x64\x64\x41nalyzerRequest\x12\x12\n\ncapture_id\x18\x01 \x01(\x04\x12\x15\n\ranalyzer_name\x18\x02 \x01(\t\x12\x16\n\x0e\x61nalyzer_label\x18\x03 \x01(\t\x12\x45\n\x08settings\x18\x04 \x03(\x0b\x32\x33.saleae.automation.AddAnalyzerRequest.SettingsEntry\x1aX\n\rSettingsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x36\n\x05value\x18\x02 \x01(\x0b\x32\'.saleae.automation.AnalyzerSettingValue:\x02\x38\x01\"\'\n\x10\x41\x64\x64\x41nalyzerReply\x12\x13\n\x0b\x61nalyzer_id\x18\x01 \x01(\x04\"@\n\x15RemoveAnalyzerRequest\x12\x12\n\ncapture_id\x18\x01 \x01(\x04\x12\x13\n\x0b\x61nalyzer_id\x18\x02 \x01(\x04\"\x15\n\x13RemoveAnalyzerReply*\x92\x01\n\tErrorCode\x12\x0b\n\x07UNKNOWN\x10\x00\x12\x16\n\x12INTERNAL_EXCEPTION\x10\x01\x12\x13\n\x0fINVALID_REQUEST\x10\n\x12\x17\n\x13LOAD_CAPTURE_FAILED\x10\x14\x12\x17\n\x13\x43\x41PTURE_IN_PROGRESS\x10\x15\x12\x19\n\x15UNSUPPORTED_FILE_TYPE\x10\x16*U\n\nDeviceType\x12\x17\n\x13UNKNOWN_DEVICE_TYPE\x10\x00\x12\x0b\n\x07LOGIC_8\x10\x01\x12\x0f\n\x0bLOGIC_PRO_8\x10\x02\x12\x10\n\x0cLOGIC_PRO_16\x10\x03*&\n\x0b\x43hannelType\x12\x0b\n\x07\x44IGITAL\x10\x00\x12\n\n\x06\x41NALOG\x10\x01\x32\xa1\x06\n\x07Manager\x12X\n\nGetDevices\x12$.saleae.automation.GetDevicesRequest\x1a\".saleae.automation.GetDevicesReply\"\x00\x12[\n\x0bLoadCapture\x12%.saleae.automation.LoadCaptureRequest\x1a#.saleae.automation.LoadCaptureReply\"\x00\x12[\n\x0bSaveCapture\x12%.saleae.automation.SaveCaptureRequest\x1a#.saleae.automation.SaveCaptureReply\"\x00\x12^\n\x0c\x43loseCapture\x12&.saleae.automation.CloseCaptureRequest\x1a$.saleae.automation.CloseCaptureReply\"\x00\x12[\n\x0b\x41\x64\x64\x41nalyzer\x12%.saleae.automation.AddAnalyzerRequest\x1a#.saleae.automation.AddAnalyzerReply\"\x00\x12\x64\n\x0eRemoveAnalyzer\x12(.saleae.automation.RemoveAnalyzerRequest\x1a&.saleae.automation.RemoveAnalyzerReply\"\x00\x12j\n\x10\x45xportRawDataCsv\x12*.saleae.automation.ExportRawDataCsvRequest\x1a(.saleae.automation.ExportRawDataCsvReply\"\x00\x12s\n\x13\x45xportRawDataBinary\x12-.saleae.automation.ExportRawDataBinaryRequest\x1a+.saleae.automation.ExportRawDataBinaryReply\"\x00\x42 \n\x06saleaeB\x0bSaleaeProtoP\x01\xa2\x02\x06Saleaeb\x06proto3')
 
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, globals())
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'saleae.grpc.saleae_pb2', globals())
@@ -21,12 +21,14 @@ if _descriptor._USE_C_DESCRIPTORS == False:
 
   DESCRIPTOR._options = None
   DESCRIPTOR._serialized_options = b'\n\006saleaeB\013SaleaeProtoP\001\242\002\006Saleae'
-  _ERRORCODE._serialized_start=1015
-  _ERRORCODE._serialized_end=1161
-  _DEVICETYPE._serialized_start=1163
-  _DEVICETYPE._serialized_end=1248
-  _CHANNELTYPE._serialized_start=1250
-  _CHANNELTYPE._serialized_end=1288
+  _ADDANALYZERREQUEST_SETTINGSENTRY._options = None
+  _ADDANALYZERREQUEST_SETTINGSENTRY._serialized_options = b'8\001'
+  _ERRORCODE._serialized_start=1522
+  _ERRORCODE._serialized_end=1668
+  _DEVICETYPE._serialized_start=1670
+  _DEVICETYPE._serialized_end=1755
+  _CHANNELTYPE._serialized_start=1757
+  _CHANNELTYPE._serialized_end=1795
   _DEVICE._serialized_start=47
   _DEVICE._serialized_end=149
   _CHANNELIDENTIFIER._serialized_start=151
@@ -57,6 +59,18 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _EXPORTRAWDATABINARYREQUEST._serialized_end=984
   _EXPORTRAWDATABINARYREPLY._serialized_start=986
   _EXPORTRAWDATABINARYREPLY._serialized_end=1012
-  _MANAGER._serialized_start=1291
-  _MANAGER._serialized_end=1897
+  _ANALYZERSETTINGVALUE._serialized_start=1014
+  _ANALYZERSETTINGVALUE._serialized_end=1138
+  _ADDANALYZERREQUEST._serialized_start=1141
+  _ADDANALYZERREQUEST._serialized_end=1389
+  _ADDANALYZERREQUEST_SETTINGSENTRY._serialized_start=1301
+  _ADDANALYZERREQUEST_SETTINGSENTRY._serialized_end=1389
+  _ADDANALYZERREPLY._serialized_start=1391
+  _ADDANALYZERREPLY._serialized_end=1430
+  _REMOVEANALYZERREQUEST._serialized_start=1432
+  _REMOVEANALYZERREQUEST._serialized_end=1496
+  _REMOVEANALYZERREPLY._serialized_start=1498
+  _REMOVEANALYZERREPLY._serialized_end=1519
+  _MANAGER._serialized_start=1798
+  _MANAGER._serialized_end=2599
 # @@protoc_insertion_point(module_scope)

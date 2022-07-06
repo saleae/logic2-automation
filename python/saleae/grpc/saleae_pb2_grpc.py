@@ -34,6 +34,16 @@ class ManagerStub(object):
                 request_serializer=saleae_dot_grpc_dot_saleae__pb2.CloseCaptureRequest.SerializeToString,
                 response_deserializer=saleae_dot_grpc_dot_saleae__pb2.CloseCaptureReply.FromString,
                 )
+        self.AddAnalyzer = channel.unary_unary(
+                '/saleae.automation.Manager/AddAnalyzer',
+                request_serializer=saleae_dot_grpc_dot_saleae__pb2.AddAnalyzerRequest.SerializeToString,
+                response_deserializer=saleae_dot_grpc_dot_saleae__pb2.AddAnalyzerReply.FromString,
+                )
+        self.RemoveAnalyzer = channel.unary_unary(
+                '/saleae.automation.Manager/RemoveAnalyzer',
+                request_serializer=saleae_dot_grpc_dot_saleae__pb2.RemoveAnalyzerRequest.SerializeToString,
+                response_deserializer=saleae_dot_grpc_dot_saleae__pb2.RemoveAnalyzerReply.FromString,
+                )
         self.ExportRawDataCsv = channel.unary_unary(
                 '/saleae.automation.Manager/ExportRawDataCsv',
                 request_serializer=saleae_dot_grpc_dot_saleae__pb2.ExportRawDataCsvRequest.SerializeToString,
@@ -73,6 +83,18 @@ class ManagerServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def AddAnalyzer(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def RemoveAnalyzer(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def ExportRawDataCsv(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -107,6 +129,16 @@ def add_ManagerServicer_to_server(servicer, server):
                     servicer.CloseCapture,
                     request_deserializer=saleae_dot_grpc_dot_saleae__pb2.CloseCaptureRequest.FromString,
                     response_serializer=saleae_dot_grpc_dot_saleae__pb2.CloseCaptureReply.SerializeToString,
+            ),
+            'AddAnalyzer': grpc.unary_unary_rpc_method_handler(
+                    servicer.AddAnalyzer,
+                    request_deserializer=saleae_dot_grpc_dot_saleae__pb2.AddAnalyzerRequest.FromString,
+                    response_serializer=saleae_dot_grpc_dot_saleae__pb2.AddAnalyzerReply.SerializeToString,
+            ),
+            'RemoveAnalyzer': grpc.unary_unary_rpc_method_handler(
+                    servicer.RemoveAnalyzer,
+                    request_deserializer=saleae_dot_grpc_dot_saleae__pb2.RemoveAnalyzerRequest.FromString,
+                    response_serializer=saleae_dot_grpc_dot_saleae__pb2.RemoveAnalyzerReply.SerializeToString,
             ),
             'ExportRawDataCsv': grpc.unary_unary_rpc_method_handler(
                     servicer.ExportRawDataCsv,
@@ -193,6 +225,40 @@ class Manager(object):
         return grpc.experimental.unary_unary(request, target, '/saleae.automation.Manager/CloseCapture',
             saleae_dot_grpc_dot_saleae__pb2.CloseCaptureRequest.SerializeToString,
             saleae_dot_grpc_dot_saleae__pb2.CloseCaptureReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def AddAnalyzer(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/saleae.automation.Manager/AddAnalyzer',
+            saleae_dot_grpc_dot_saleae__pb2.AddAnalyzerRequest.SerializeToString,
+            saleae_dot_grpc_dot_saleae__pb2.AddAnalyzerReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def RemoveAnalyzer(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/saleae.automation.Manager/RemoveAnalyzer',
+            saleae_dot_grpc_dot_saleae__pb2.RemoveAnalyzerRequest.SerializeToString,
+            saleae_dot_grpc_dot_saleae__pb2.RemoveAnalyzerReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
