@@ -149,46 +149,27 @@ message CaptureInfo {
     uint64 capture_id = 1;
 }
 
-
-
-/*****************************************************************************
- *
- * Request/Reply Messages
- *
- ****************************************************************************/
-
-message GetDevicesRequest {
-}
-message GetDevicesReply {
-    repeated Device devices = 1;
-}
-
-
-// Start Capture
-message StartCaptureRequest {
-    string device_serial_number = 1;
-
-    oneof device_configuration {
-        LogicDeviceConfiguration logic_device_configuration = 2;
-    }
-
-    CaptureSettings capture_settings = 3;
-}
-message StartCaptureReply {
-    CaptureInfo capture_info = 1;
-}
-
 message LogicDeviceConfiguration {
-    repeated uint32 enabled_analog_channels = 1;
-    repeated uint32 enabled_digital_channels = 2;
+    // Digital channel indices to enabled
+    repeated uint32 enabled_digital_channels = 1;
 
+    // Analog channel indices to enabled
+    repeated uint32 enabled_analog_channels = 2;
+
+    // Digital Sample Rate
     uint32 digital_sample_rate = 3;
+
+    // Analog Sample Rate
     uint32 analog_sample_rate = 4;
 
+    // For Pro 8 and Pro 16, this can be one of: 1.2, 1.8, or 3.3
+    // For other devices this is ignored
     double digital_threshold = 5;
 
+    // Glitch filter to apply to digital data
     repeated GlitchFilterEntry glitch_filters = 6;
 }
+
 message GlitchFilterEntry {
     uint32 channel_index = 1;
     double pulse_width = 2;
@@ -245,6 +226,36 @@ message DigitalTriggerLinkedChannel {
 enum DigitalTriggerLinkedChannelState {
     LOW = 0;
     HIGH = 1;
+}
+
+
+
+
+/*****************************************************************************
+ *
+ * Request/Reply Messages
+ *
+ ****************************************************************************/
+
+message GetDevicesRequest {
+}
+message GetDevicesReply {
+    repeated Device devices = 1;
+}
+
+
+// Start Capture
+message StartCaptureRequest {
+    string device_serial_number = 1;
+
+    oneof device_configuration {
+        LogicDeviceConfiguration logic_device_configuration = 2;
+    }
+
+    CaptureSettings capture_settings = 3;
+}
+message StartCaptureReply {
+    CaptureInfo capture_info = 1;
 }
 
 
