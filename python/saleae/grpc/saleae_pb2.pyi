@@ -5,17 +5,23 @@ from google.protobuf import message as _message
 from typing import ClassVar as _ClassVar, Iterable as _Iterable, Mapping as _Mapping, Optional as _Optional, Union as _Union
 
 ANALOG: ChannelType
+ASCII: RadixType
+BINARY: RadixType
 CAPTURE_IN_PROGRESS: ErrorCode
+DECIMAL: RadixType
 DESCRIPTOR: _descriptor.FileDescriptor
 DIGITAL: ChannelType
+HEXADECIMAL: RadixType
 INTERNAL_EXCEPTION: ErrorCode
 INVALID_REQUEST: ErrorCode
 LOAD_CAPTURE_FAILED: ErrorCode
 LOGIC_8: DeviceType
 LOGIC_PRO_16: DeviceType
 LOGIC_PRO_8: DeviceType
-UNKNOWN: ErrorCode
+UNKNOWN_CHANNEL_TYPE: ChannelType
 UNKNOWN_DEVICE_TYPE: DeviceType
+UNKNOWN_ERROR_CODE: ErrorCode
+UNKNOWN_RADIX_TYPE: RadixType
 UNSUPPORTED_FILE_TYPE: ErrorCode
 
 class AddAnalyzerReply(_message.Message):
@@ -90,6 +96,38 @@ class Device(_message.Message):
     device_type: DeviceType
     serial_number: str
     def __init__(self, device_id: _Optional[int] = ..., device_type: _Optional[_Union[DeviceType, str]] = ..., serial_number: _Optional[str] = ...) -> None: ...
+
+class ExportAnalyzerLegacyReply(_message.Message):
+    __slots__ = []
+    def __init__(self) -> None: ...
+
+class ExportAnalyzerLegacyRequest(_message.Message):
+    __slots__ = ["analyzer_id", "capture_id", "filepath", "radix_type"]
+    ANALYZER_ID_FIELD_NUMBER: _ClassVar[int]
+    CAPTURE_ID_FIELD_NUMBER: _ClassVar[int]
+    FILEPATH_FIELD_NUMBER: _ClassVar[int]
+    RADIX_TYPE_FIELD_NUMBER: _ClassVar[int]
+    analyzer_id: int
+    capture_id: int
+    filepath: str
+    radix_type: RadixType
+    def __init__(self, capture_id: _Optional[int] = ..., filepath: _Optional[str] = ..., analyzer_id: _Optional[int] = ..., radix_type: _Optional[_Union[RadixType, str]] = ...) -> None: ...
+
+class ExportDataTableReply(_message.Message):
+    __slots__ = []
+    def __init__(self) -> None: ...
+
+class ExportDataTableRequest(_message.Message):
+    __slots__ = ["analyzer_ids", "capture_id", "filepath", "iso8601"]
+    ANALYZER_IDS_FIELD_NUMBER: _ClassVar[int]
+    CAPTURE_ID_FIELD_NUMBER: _ClassVar[int]
+    FILEPATH_FIELD_NUMBER: _ClassVar[int]
+    ISO8601_FIELD_NUMBER: _ClassVar[int]
+    analyzer_ids: _containers.RepeatedScalarFieldContainer[int]
+    capture_id: int
+    filepath: str
+    iso8601: bool
+    def __init__(self, capture_id: _Optional[int] = ..., filepath: _Optional[str] = ..., analyzer_ids: _Optional[_Iterable[int]] = ..., iso8601: bool = ...) -> None: ...
 
 class ExportRawDataBinaryReply(_message.Message):
     __slots__ = []
@@ -172,6 +210,9 @@ class SaveCaptureRequest(_message.Message):
     def __init__(self, capture_id: _Optional[int] = ..., filepath: _Optional[str] = ...) -> None: ...
 
 class ErrorCode(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = []
+
+class RadixType(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = []
 
 class DeviceType(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
