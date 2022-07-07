@@ -8,16 +8,28 @@ ANALOG: ChannelType
 ASCII: RadixType
 BINARY: RadixType
 CAPTURE_IN_PROGRESS: ErrorCode
+CIRCULAR: CaptureMode
 DECIMAL: RadixType
 DESCRIPTOR: _descriptor.FileDescriptor
+DEVICE_ERROR: ErrorCode
 DIGITAL: ChannelType
+FALLING: DigitalTriggerType
 HEXADECIMAL: RadixType
+HIGH: DigitalTriggerLinkedChannelState
 INTERNAL_EXCEPTION: ErrorCode
 INVALID_REQUEST: ErrorCode
 LOAD_CAPTURE_FAILED: ErrorCode
 LOGIC_8: DeviceType
 LOGIC_PRO_16: DeviceType
 LOGIC_PRO_8: DeviceType
+LOW: DigitalTriggerLinkedChannelState
+MISSING_DEVICE: ErrorCode
+OOM: ErrorCode
+PULSE_HIGH: DigitalTriggerType
+PULSE_LOW: DigitalTriggerType
+RISING: DigitalTriggerType
+STOP_AFTER_TIME: CaptureMode
+STOP_ON_DIGITAL_TRIGGER: CaptureMode
 UNKNOWN_CHANNEL_TYPE: ChannelType
 UNKNOWN_DEVICE_TYPE: DeviceType
 UNKNOWN_ERROR_CODE: ErrorCode
@@ -67,6 +79,20 @@ class CaptureInfo(_message.Message):
     capture_id: int
     def __init__(self, capture_id: _Optional[int] = ...) -> None: ...
 
+class CaptureSettings(_message.Message):
+    __slots__ = ["buffer_size", "capture_mode", "digital_trigger", "stop_after_time", "trim_time"]
+    BUFFER_SIZE_FIELD_NUMBER: _ClassVar[int]
+    CAPTURE_MODE_FIELD_NUMBER: _ClassVar[int]
+    DIGITAL_TRIGGER_FIELD_NUMBER: _ClassVar[int]
+    STOP_AFTER_TIME_FIELD_NUMBER: _ClassVar[int]
+    TRIM_TIME_FIELD_NUMBER: _ClassVar[int]
+    buffer_size: int
+    capture_mode: CaptureMode
+    digital_trigger: DigitalTriggerSettings
+    stop_after_time: float
+    trim_time: float
+    def __init__(self, buffer_size: _Optional[int] = ..., capture_mode: _Optional[_Union[CaptureMode, str]] = ..., stop_after_time: _Optional[float] = ..., trim_time: _Optional[float] = ..., digital_trigger: _Optional[_Union[DigitalTriggerSettings, _Mapping]] = ...) -> None: ...
+
 class ChannelIdentifier(_message.Message):
     __slots__ = ["device_id", "index", "type"]
     DEVICE_ID_FIELD_NUMBER: _ClassVar[int]
@@ -96,6 +122,30 @@ class Device(_message.Message):
     device_type: DeviceType
     serial_number: str
     def __init__(self, device_id: _Optional[int] = ..., device_type: _Optional[_Union[DeviceType, str]] = ..., serial_number: _Optional[str] = ...) -> None: ...
+
+class DigitalTriggerLinkedChannel(_message.Message):
+    __slots__ = ["channel_index", "state"]
+    CHANNEL_INDEX_FIELD_NUMBER: _ClassVar[int]
+    STATE_FIELD_NUMBER: _ClassVar[int]
+    channel_index: int
+    state: DigitalTriggerLinkedChannelState
+    def __init__(self, channel_index: _Optional[int] = ..., state: _Optional[_Union[DigitalTriggerLinkedChannelState, str]] = ...) -> None: ...
+
+class DigitalTriggerSettings(_message.Message):
+    __slots__ = ["linked_channels", "max_pulse_duration", "min_pulse_duration", "record_after_trigger_time", "trigger_channel_index", "trigger_type"]
+    LINKED_CHANNELS_FIELD_NUMBER: _ClassVar[int]
+    MAX_PULSE_DURATION_FIELD_NUMBER: _ClassVar[int]
+    MIN_PULSE_DURATION_FIELD_NUMBER: _ClassVar[int]
+    RECORD_AFTER_TRIGGER_TIME_FIELD_NUMBER: _ClassVar[int]
+    TRIGGER_CHANNEL_INDEX_FIELD_NUMBER: _ClassVar[int]
+    TRIGGER_TYPE_FIELD_NUMBER: _ClassVar[int]
+    linked_channels: _containers.RepeatedCompositeFieldContainer[DigitalTriggerLinkedChannel]
+    max_pulse_duration: float
+    min_pulse_duration: float
+    record_after_trigger_time: float
+    trigger_channel_index: int
+    trigger_type: DigitalTriggerType
+    def __init__(self, trigger_type: _Optional[_Union[DigitalTriggerType, str]] = ..., record_after_trigger_time: _Optional[float] = ..., trigger_channel_index: _Optional[int] = ..., min_pulse_duration: _Optional[float] = ..., max_pulse_duration: _Optional[float] = ..., linked_channels: _Optional[_Iterable[_Union[DigitalTriggerLinkedChannel, _Mapping]]] = ...) -> None: ...
 
 class ExportAnalyzerLegacyReply(_message.Message):
     __slots__ = []
@@ -173,6 +223,14 @@ class GetDevicesRequest(_message.Message):
     __slots__ = []
     def __init__(self) -> None: ...
 
+class GlitchFilterEntry(_message.Message):
+    __slots__ = ["channel_index", "pulse_width"]
+    CHANNEL_INDEX_FIELD_NUMBER: _ClassVar[int]
+    PULSE_WIDTH_FIELD_NUMBER: _ClassVar[int]
+    channel_index: int
+    pulse_width: float
+    def __init__(self, channel_index: _Optional[int] = ..., pulse_width: _Optional[float] = ...) -> None: ...
+
 class LoadCaptureReply(_message.Message):
     __slots__ = ["capture_info"]
     CAPTURE_INFO_FIELD_NUMBER: _ClassVar[int]
@@ -184,6 +242,22 @@ class LoadCaptureRequest(_message.Message):
     FILEPATH_FIELD_NUMBER: _ClassVar[int]
     filepath: str
     def __init__(self, filepath: _Optional[str] = ...) -> None: ...
+
+class LogicDeviceConfiguration(_message.Message):
+    __slots__ = ["analog_sample_rate", "digital_sample_rate", "digital_threshold", "enabled_analog_channels", "enabled_digital_channels", "glitch_filters"]
+    ANALOG_SAMPLE_RATE_FIELD_NUMBER: _ClassVar[int]
+    DIGITAL_SAMPLE_RATE_FIELD_NUMBER: _ClassVar[int]
+    DIGITAL_THRESHOLD_FIELD_NUMBER: _ClassVar[int]
+    ENABLED_ANALOG_CHANNELS_FIELD_NUMBER: _ClassVar[int]
+    ENABLED_DIGITAL_CHANNELS_FIELD_NUMBER: _ClassVar[int]
+    GLITCH_FILTERS_FIELD_NUMBER: _ClassVar[int]
+    analog_sample_rate: int
+    digital_sample_rate: int
+    digital_threshold: float
+    enabled_analog_channels: _containers.RepeatedScalarFieldContainer[int]
+    enabled_digital_channels: _containers.RepeatedScalarFieldContainer[int]
+    glitch_filters: _containers.RepeatedCompositeFieldContainer[GlitchFilterEntry]
+    def __init__(self, enabled_digital_channels: _Optional[_Iterable[int]] = ..., enabled_analog_channels: _Optional[_Iterable[int]] = ..., digital_sample_rate: _Optional[int] = ..., analog_sample_rate: _Optional[int] = ..., digital_threshold: _Optional[float] = ..., glitch_filters: _Optional[_Iterable[_Union[GlitchFilterEntry, _Mapping]]] = ...) -> None: ...
 
 class RemoveAnalyzerReply(_message.Message):
     __slots__ = []
@@ -209,6 +283,42 @@ class SaveCaptureRequest(_message.Message):
     filepath: str
     def __init__(self, capture_id: _Optional[int] = ..., filepath: _Optional[str] = ...) -> None: ...
 
+class StartCaptureReply(_message.Message):
+    __slots__ = ["capture_info"]
+    CAPTURE_INFO_FIELD_NUMBER: _ClassVar[int]
+    capture_info: CaptureInfo
+    def __init__(self, capture_info: _Optional[_Union[CaptureInfo, _Mapping]] = ...) -> None: ...
+
+class StartCaptureRequest(_message.Message):
+    __slots__ = ["capture_settings", "device_serial_number", "logic_device_configuration"]
+    CAPTURE_SETTINGS_FIELD_NUMBER: _ClassVar[int]
+    DEVICE_SERIAL_NUMBER_FIELD_NUMBER: _ClassVar[int]
+    LOGIC_DEVICE_CONFIGURATION_FIELD_NUMBER: _ClassVar[int]
+    capture_settings: CaptureSettings
+    device_serial_number: str
+    logic_device_configuration: LogicDeviceConfiguration
+    def __init__(self, device_serial_number: _Optional[str] = ..., logic_device_configuration: _Optional[_Union[LogicDeviceConfiguration, _Mapping]] = ..., capture_settings: _Optional[_Union[CaptureSettings, _Mapping]] = ...) -> None: ...
+
+class StopCaptureReply(_message.Message):
+    __slots__ = []
+    def __init__(self) -> None: ...
+
+class StopCaptureRequest(_message.Message):
+    __slots__ = ["capture_id"]
+    CAPTURE_ID_FIELD_NUMBER: _ClassVar[int]
+    capture_id: int
+    def __init__(self, capture_id: _Optional[int] = ...) -> None: ...
+
+class WaitCaptureReply(_message.Message):
+    __slots__ = []
+    def __init__(self) -> None: ...
+
+class WaitCaptureRequest(_message.Message):
+    __slots__ = ["capture_id"]
+    CAPTURE_ID_FIELD_NUMBER: _ClassVar[int]
+    capture_id: int
+    def __init__(self, capture_id: _Optional[int] = ...) -> None: ...
+
 class ErrorCode(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = []
 
@@ -219,4 +329,13 @@ class DeviceType(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = []
 
 class ChannelType(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = []
+
+class CaptureMode(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = []
+
+class DigitalTriggerType(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = []
+
+class DigitalTriggerLinkedChannelState(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = []

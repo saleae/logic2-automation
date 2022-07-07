@@ -104,19 +104,22 @@ class ManagerServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def StartCapture(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Start a capture
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def StopCapture(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Stop an active capture
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def WaitCapture(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Wait until a capture has completed
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')

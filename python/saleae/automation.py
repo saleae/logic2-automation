@@ -5,10 +5,8 @@ from enum import Enum
 
 from saleae.grpc import saleae_pb2
 from saleae.grpc import saleae_pb2_grpc
-import time
 
 import grpc
-import grpc_status.rpc_status
 
 import os
 import os.path
@@ -16,7 +14,7 @@ import os.path
 import logging
 import re
 
-from saleae.grpc.saleae_pb2 import AnalyzerSettingValue, ChannelIdentifier, ErrorCode
+from saleae.grpc.saleae_pb2 import AnalyzerSettingValue, ErrorCode
 
 logger = logging.getLogger(__name__)
 
@@ -181,8 +179,8 @@ class Manager:
         self,
         *,
         device_configuration: DeviceConfiguration,
-        device_serial_number: str,
-        capture_settings: CaptureSettings = CaptureSettings(),
+        device_serial_number: str = None,
+        capture_settings: CaptureSettings = None,
     ) -> "Capture":
         request = saleae_pb2.StartCaptureRequest()
         request.device_serial_number = device_serial_number
@@ -217,6 +215,9 @@ class Manager:
             )
         else:
             raise TypeError("Invalid device configuration type")
+        
+        if capture_settings is None:
+            capture_settings = CaptureSettings()
 
         if capture_settings.buffer_size is not None:
             request.capture_settings.buffer_size = capture_settings.buffer_size
@@ -280,22 +281,23 @@ class Capture:
         self.manager = manager
         self.capture_id = capture_id
 
-    def add_analyzer(self, name: str, *, label: str, settings: dict[str, Union[str, int, float, bool]]):
+    def add_analyzer(self, name: str, *, label: Optional[str]=None, settings: Optional[dict[str, Union[str, int, float, bool]]]=None):
         analyzer_settings = {}
 
-        for key, value in settings.items():
-            if isinstance(value, str):
-                v = AnalyzerSettingValue(string_value=value)
-            elif isinstance(value, int):
-                v = AnalyzerSettingValue(int64_value=value)
-            elif isinstance(value, float):
-                v = AnalyzerSettingValue(double_value=value)
-            elif isinstance(value, bool):
-                v = AnalyzerSettingValue(bool_value=value)
-            else:
-                raise RuntimeError("Unsupported analyzer setting value type")
+        if settings is not None:
+            for key, value in settings.items():
+                if isinstance(value, str):
+                    v = AnalyzerSettingValue(string_value=value)
+                elif isinstance(value, int):
+                    v = AnalyzerSettingValue(int64_value=value)
+                elif isinstance(value, float):
+                    v = AnalyzerSettingValue(double_value=value)
+                elif isinstance(value, bool):
+                    v = AnalyzerSettingValue(bool_value=value)
+                else:
+                    raise RuntimeError("Unsupported analyzer setting value type")
 
-            analyzer_settings[key] = v
+                analyzer_settings[key] = v
 
         request = saleae_pb2.AddAnalyzerRequest(capture_id=self.capture_id, analyzer_name=name, analyzer_label=label, settings=analyzer_settings)
 
