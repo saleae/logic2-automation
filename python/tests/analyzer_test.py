@@ -73,7 +73,7 @@ def test_many_analyzers(manager: automation.Manager, asset_path: str):
     path = os.path.join(asset_path, 'small_spi_capture.sal')
     
     cap = manager.load_capture(path)
-    for i in range(100):
+    for i in range(10):
         bitty = 8
 
         with measure(f'add analyzer {i}'):
