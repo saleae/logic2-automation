@@ -28,23 +28,10 @@ class InvalidRequest(Exception):
     pass
 
 class RadixType(Enum):
-    BINARY = 1
-    DECIMAL = 2
-    HEXADECIMAL = 3
-    ASCII = 4
-
-
-def to_grpc_radix_type(type: RadixType) -> saleae_pb2.RadixType:
-    if type == RadixType.BINARY:
-        return saleae_pb2.BINARY
-    elif type == RadixType.DECIMAL:
-        return saleae_pb2.DECIMAL
-    elif type == RadixType.HEXADECIMAL:
-        return saleae_pb2.HEXADECIMAL
-    elif type == RadixType.ASCII:
-        return saleae_pb2.ASCII
-
-    raise RuntimeError(f"Unrecognized radix type: {type}")
+    BINARY = saleae_pb2.BINARY
+    DECIMAL = saleae_pb2.DECIMAL
+    HEXADECIMAL = saleae_pb2.HEXADECIMAL
+    ASCII = saleae_pb2.ASCII
 
 
 error_message_re = re.compile(r"^(\d+): (.*)$")
@@ -319,12 +306,12 @@ class Capture:
         except grpc.RpcError as exc:
             raise grpc_error_to_exception(exc) from None
 
-    def export_analyzer_legacy(self, filepath: str, analyzer: 'AnalyzerHandle', radix: 'RadixType'):
+    def export_analyzer_legacy(self, filepath: str, analyzer: AnalyzerHandle, radix: RadixType):
         request = saleae_pb2.ExportAnalyzerLegacyRequest(
             capture_id=self.capture_id,
             filepath=filepath,
             analyzer_id=analyzer.analyzer_id,
-            radix_type=to_grpc_radix_type(radix)
+            radix_type=radix.value
         )
 
         try:

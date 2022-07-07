@@ -1,9 +1,26 @@
-import os.path
+wmport os.path
 import filecmp
 from dataclasses import dataclass
 import pytest
+import difflib
 
 from saleae import automation
+
+def assert_files_match(expected, actual):
+    if filecmp.cmp(expected, actual):
+        assert True
+        return
+    
+    with open(expected) as f:
+        expected_data = f.readlines()
+
+    with open(actual) as f:
+        actual_data = f.readlines()
+
+    diff = ''.join(difflib.unified_diff(expected_data, actual_data, fromfile=expected, tofile=actual))
+
+    assert False, f'Files ${expected} and ${actual} do not match: ${diff}'
+
 
 @dataclass
 class Scenario:
@@ -79,12 +96,11 @@ def test_data_table_export_multiple_existing_analyzers(scenario: Scenario, manag
         for analyzer in [analyzer1, analyzer2, analyzer3]:
             cap.export_data_table(filepath=export_filepath, analyzers=[analyzer], **scenario.params)
             expected_filepath = os.path.join(asset_path, scenario.filename)
-            match = filecmp.cmp(export_filepath, expected_filepath)
 
             if analyzer == analyzer2:
-                assert(match)
+                assert_files_match(expected_filepath, export_filepath)
             else:
-                assert(not match)
+                assert not filecmp.cmp(export_filepath, expected_filepath)
 
 
 
