@@ -107,22 +107,24 @@ def test_no_channels(type: Literal['csv', 'bin'], manager: automation.Manager, a
     directory = os.path.join(tmp_path, f'export_{capture_name}')
 
     with manager.load_capture(path) as cap:
-        try:
-            if type == 'csv':
-                cap.export_raw_data_csv(
-                    directory=directory,
-                    analog_channels=[],
-                    digital_channels=[])
-            else:
-                cap.export_raw_data_binary(
-                    directory=directory,
-                    analog_channels=[],
-                    digital_channels=[])
+        if type == 'csv':
+            cap.export_raw_data_csv(
+                directory=directory,
+                analog_channels=[],
+                digital_channels=[])
+        else:
+            cap.export_raw_data_binary(
+                directory=directory,
+                analog_channels=[],
+                digital_channels=[])
 
-            # We should not get to this point
-            assert(False)
-        except automation.InvalidRequest:
-            pass
+        desc = capture_desc[capture_name]
+        expected_files = get_expected_files(type, desc.digital_channels, desc.analog_channels)
+
+        files_created = os.listdir(directory)
+        assert(len(expected_files) == len(files_created))
+        for filename in expected_files:
+            assert(filename in files_created)
 
 
 MIN_DOWNSAMPLE_RATIO = 1
