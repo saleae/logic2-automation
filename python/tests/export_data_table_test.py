@@ -1,4 +1,4 @@
-wmport os.path
+import os.path
 import filecmp
 from dataclasses import dataclass
 import pytest
@@ -10,7 +10,7 @@ def assert_files_match(expected, actual):
     if filecmp.cmp(expected, actual):
         assert True
         return
-    
+
     with open(expected) as f:
         expected_data = f.readlines()
 
