@@ -1,5 +1,6 @@
 from contextlib import contextmanager
 import os.path
+import threading
 import time
 
 from saleae import automation
@@ -68,7 +69,6 @@ def measure(name: str):
     print(f"Took {dt} seconds to execute '{name}'")
 
 
-
 def test_many_analyzers(manager: automation.Manager, asset_path: str):
     path = os.path.join(asset_path, 'small_spi_capture.sal')
     
@@ -83,3 +83,28 @@ def test_many_analyzers(manager: automation.Manager, asset_path: str):
                 'Enable': 5,
                 'Bits per Transfer': f'{bitty} Bits per Transfer{" (Standard)" if bitty == 8 else ""}'
             })
+
+
+def test_parallel_analyzer(manager: automation.Manager, asset_path: str):
+    path = os.path.join(asset_path, 'small_spi_capture.sal')
+    
+    cap = manager.load_capture(path)
+    threads = []
+    for i in range(20):
+        bitty = 8
+
+        def add(i):
+            with measure(f'add analyzer {i}'):
+                cap.add_analyzer('SPI',label=f'SPI ({i}) (bits={bitty})', settings={
+                    'MISO': 4,
+                    'Clock': 3,
+                    'Enable': 5,
+                    'Bits per Transfer': f'{bitty} Bits per Transfer{" (Standard)" if bitty == 8 else ""}'
+                })
+        threads.append(threading.Thread(target=add, args=(i,)))
+
+    for thread in threads:
+        thread.start()
+
+    for thread in threads:
+        thread.join()
