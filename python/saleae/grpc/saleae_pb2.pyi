@@ -80,18 +80,16 @@ class CaptureInfo(_message.Message):
     def __init__(self, capture_id: _Optional[int] = ...) -> None: ...
 
 class CaptureSettings(_message.Message):
-    __slots__ = ["buffer_size", "capture_mode", "digital_trigger", "stop_after_time", "trim_time"]
+    __slots__ = ["buffer_size", "digital_trigger_settings", "manual_trigger_settings", "timed_trigger_settings"]
     BUFFER_SIZE_FIELD_NUMBER: _ClassVar[int]
-    CAPTURE_MODE_FIELD_NUMBER: _ClassVar[int]
-    DIGITAL_TRIGGER_FIELD_NUMBER: _ClassVar[int]
-    STOP_AFTER_TIME_FIELD_NUMBER: _ClassVar[int]
-    TRIM_TIME_FIELD_NUMBER: _ClassVar[int]
+    DIGITAL_TRIGGER_SETTINGS_FIELD_NUMBER: _ClassVar[int]
+    MANUAL_TRIGGER_SETTINGS_FIELD_NUMBER: _ClassVar[int]
+    TIMED_TRIGGER_SETTINGS_FIELD_NUMBER: _ClassVar[int]
     buffer_size: int
-    capture_mode: CaptureMode
-    digital_trigger: DigitalTriggerSettings
-    stop_after_time: float
-    trim_time: float
-    def __init__(self, buffer_size: _Optional[int] = ..., capture_mode: _Optional[_Union[CaptureMode, str]] = ..., stop_after_time: _Optional[float] = ..., trim_time: _Optional[float] = ..., digital_trigger: _Optional[_Union[DigitalTriggerSettings, _Mapping]] = ...) -> None: ...
+    digital_trigger_settings: DigitalTriggerSettings
+    manual_trigger_settings: ManualTriggerSettings
+    timed_trigger_settings: TimedTriggerSettings
+    def __init__(self, buffer_size: _Optional[int] = ..., manual_trigger_settings: _Optional[_Union[ManualTriggerSettings, _Mapping]] = ..., timed_trigger_settings: _Optional[_Union[TimedTriggerSettings, _Mapping]] = ..., digital_trigger_settings: _Optional[_Union[DigitalTriggerSettings, _Mapping]] = ...) -> None: ...
 
 class ChannelIdentifier(_message.Message):
     __slots__ = ["device_id", "index", "type"]
@@ -132,20 +130,22 @@ class DigitalTriggerLinkedChannel(_message.Message):
     def __init__(self, channel_index: _Optional[int] = ..., state: _Optional[_Union[DigitalTriggerLinkedChannelState, str]] = ...) -> None: ...
 
 class DigitalTriggerSettings(_message.Message):
-    __slots__ = ["linked_channels", "max_pulse_duration", "min_pulse_duration", "record_after_trigger_time", "trigger_channel_index", "trigger_type"]
+    __slots__ = ["linked_channels", "max_pulse_duration", "min_pulse_duration", "post_trigger_seconds", "pre_trigger_seconds", "trigger_channel_index", "trigger_type"]
     LINKED_CHANNELS_FIELD_NUMBER: _ClassVar[int]
     MAX_PULSE_DURATION_FIELD_NUMBER: _ClassVar[int]
     MIN_PULSE_DURATION_FIELD_NUMBER: _ClassVar[int]
-    RECORD_AFTER_TRIGGER_TIME_FIELD_NUMBER: _ClassVar[int]
+    POST_TRIGGER_SECONDS_FIELD_NUMBER: _ClassVar[int]
+    PRE_TRIGGER_SECONDS_FIELD_NUMBER: _ClassVar[int]
     TRIGGER_CHANNEL_INDEX_FIELD_NUMBER: _ClassVar[int]
     TRIGGER_TYPE_FIELD_NUMBER: _ClassVar[int]
     linked_channels: _containers.RepeatedCompositeFieldContainer[DigitalTriggerLinkedChannel]
     max_pulse_duration: float
     min_pulse_duration: float
-    record_after_trigger_time: float
+    post_trigger_seconds: float
+    pre_trigger_seconds: float
     trigger_channel_index: int
     trigger_type: DigitalTriggerType
-    def __init__(self, trigger_type: _Optional[_Union[DigitalTriggerType, str]] = ..., record_after_trigger_time: _Optional[float] = ..., trigger_channel_index: _Optional[int] = ..., min_pulse_duration: _Optional[float] = ..., max_pulse_duration: _Optional[float] = ..., linked_channels: _Optional[_Iterable[_Union[DigitalTriggerLinkedChannel, _Mapping]]] = ...) -> None: ...
+    def __init__(self, trigger_type: _Optional[_Union[DigitalTriggerType, str]] = ..., pre_trigger_seconds: _Optional[float] = ..., post_trigger_seconds: _Optional[float] = ..., trigger_channel_index: _Optional[int] = ..., min_pulse_duration: _Optional[float] = ..., max_pulse_duration: _Optional[float] = ..., linked_channels: _Optional[_Iterable[_Union[DigitalTriggerLinkedChannel, _Mapping]]] = ...) -> None: ...
 
 class ExportAnalyzerLegacyReply(_message.Message):
     __slots__ = []
@@ -259,6 +259,12 @@ class LogicDeviceConfiguration(_message.Message):
     glitch_filters: _containers.RepeatedCompositeFieldContainer[GlitchFilterEntry]
     def __init__(self, enabled_digital_channels: _Optional[_Iterable[int]] = ..., enabled_analog_channels: _Optional[_Iterable[int]] = ..., digital_sample_rate: _Optional[int] = ..., analog_sample_rate: _Optional[int] = ..., digital_threshold: _Optional[float] = ..., glitch_filters: _Optional[_Iterable[_Union[GlitchFilterEntry, _Mapping]]] = ...) -> None: ...
 
+class ManualTriggerSettings(_message.Message):
+    __slots__ = ["pre_trigger_seconds"]
+    PRE_TRIGGER_SECONDS_FIELD_NUMBER: _ClassVar[int]
+    pre_trigger_seconds: float
+    def __init__(self, pre_trigger_seconds: _Optional[float] = ...) -> None: ...
+
 class RemoveAnalyzerReply(_message.Message):
     __slots__ = []
     def __init__(self) -> None: ...
@@ -309,6 +315,14 @@ class StopCaptureRequest(_message.Message):
     capture_id: int
     def __init__(self, capture_id: _Optional[int] = ...) -> None: ...
 
+class TimedTriggerSettings(_message.Message):
+    __slots__ = ["pre_trigger_seconds", "trigger_seconds"]
+    PRE_TRIGGER_SECONDS_FIELD_NUMBER: _ClassVar[int]
+    TRIGGER_SECONDS_FIELD_NUMBER: _ClassVar[int]
+    pre_trigger_seconds: float
+    trigger_seconds: float
+    def __init__(self, trigger_seconds: _Optional[float] = ..., pre_trigger_seconds: _Optional[float] = ...) -> None: ...
+
 class WaitCaptureReply(_message.Message):
     __slots__ = []
     def __init__(self) -> None: ...
@@ -331,11 +345,11 @@ class DeviceType(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
 class ChannelType(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = []
 
-class CaptureMode(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
-    __slots__ = []
-
 class DigitalTriggerType(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = []
 
 class DigitalTriggerLinkedChannelState(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = []
+
+class CaptureMode(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = []

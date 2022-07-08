@@ -80,6 +80,12 @@ class DeviceConfiguration:
 
 
 @dataclass
+class GlitchFilterEntry:
+    channel_index: int
+    pulse_width: float
+
+
+@dataclass
 class LogicDeviceConfiguration(DeviceConfiguration):
     enabled_analog_channels: List[int] = field(default_factory=list)
     enabled_digital_channels: List[int] = field(default_factory=list)
@@ -89,47 +95,13 @@ class LogicDeviceConfiguration(DeviceConfiguration):
 
     digital_threshold: Optional[float] = None
 
-    glitch_filters: "List[GlitchFilterEntry]" = field(default_factory=list)
-
-
-@dataclass
-class GlitchFilterEntry:
-    channel_index: int
-    pulse_width: float
+    glitch_filters: List[GlitchFilterEntry] = field(default_factory=list)
 
 
 class CaptureMode(Enum):
     CIRCULAR = saleae_pb2.CaptureMode.CIRCULAR
     STOP_AFTER_TIME = saleae_pb2.CaptureMode.STOP_AFTER_TIME
     STOP_ON_DIGITAL_TRIGGER = saleae_pb2.CaptureMode.STOP_ON_DIGITAL_TRIGGER
-
-
-@dataclass
-class CaptureSettings:
-    buffer_size: Optional[int] = None
-    """Capture buffer size (in megabytes)"""
-
-    capture_mode: Optional[CaptureMode] = None
-
-    stop_after_time: Optional[float] = None
-
-    trim_time: Optional[float] = None
-
-    digital_trigger: "Optional[DigitalTriggerSettings]" = None
-
-
-@dataclass
-class DigitalTriggerSettings:
-    trigger_type: "DigitalTriggerType"
-
-    record_after_trigger_time: float
-
-    trigger_channel_index: int
-
-    min_pulse_duration: Optional[float] = None
-    max_pulse_duration: Optional[float] = None
-
-    linked_channels: "List[DigitalTriggerLinkedChannel]" = field(default_factory=list)
 
 
 class DigitalTriggerType(Enum):
@@ -139,16 +111,61 @@ class DigitalTriggerType(Enum):
     PULSE_LOW = saleae_pb2.DigitalTriggerType.PULSE_LOW
 
 
-@dataclass
-class DigitalTriggerLinkedChannel:
-    channel_index: int
-    state: "DigitalTriggerLinkedChannelState"
-
-
 class DigitalTriggerLinkedChannelState(Enum):
     LOW = saleae_pb2.DigitalTriggerLinkedChannelState.LOW
     HIGH = saleae_pb2.DigitalTriggerLinkedChannelState.HIGH
 
+
+@dataclass
+class DigitalTriggerLinkedChannel:
+    channel_index: int
+    state: DigitalTriggerLinkedChannelState
+
+
+@dataclass
+class DigitalTriggerConfiguration:
+    trigger_type: DigitalTriggerType
+
+    trigger_channel_index: int
+
+    min_pulse_duration: Optional[float] = None
+    max_pulse_duration: Optional[float] = None
+
+    linked_channels: List[DigitalTriggerLinkedChannel] = field(default_factory=list)
+
+    # Seconds of data before trigger to keep
+    # What if you only want to keep data starting _after_ the trigger - negative value?
+    pre_trigger_buffer: Optional[float] = None
+
+    # Seconds of data to record after triggering
+    post_trigger_buffer: Optional[float] = None
+
+@dataclass
+class TimerTriggerConfiguration:
+    # Trigger after X seconds
+    trigger_time: float
+
+    # Seconds of data before trigger to keep. If unspecified, all data will be kept.
+    pre_trigger_buffer: Optional[float] = None
+
+
+@dataclass
+class ManualTriggerConfiguration:
+    """
+    When this is used, a capture must be triggered/stopped manually.
+    
+    """
+    # Seconds of data before trigger to keep
+    pre_trigger_buffer: Optional[float] = None
+
+
+TriggerConfiguration = Union[ManualTriggerConfiguration, TimerTriggerConfiguration, DigitalTriggerConfiguration]
+
+@dataclass
+class CaptureSettings:
+    # Capture buffer size (in megabytes)
+    buffer_size: Optional[int] = None
+    trigger: TriggerConfiguration = field(default_factory=ManualTriggerConfiguration)
 
 
 class Manager:
@@ -157,7 +174,7 @@ class Manager:
         """
         self.channel = grpc.insecure_channel(f'127.0.0.1:{port}')
         self.channel.subscribe(lambda value: logger.info(f'sub {value}'))
-        self.stub = saleae_pb2_grpc.ManagerStub(self.channel)
+        self._stub = saleae_pb2_grpc.ManagerStub(self.channel)
 
     def close(self):
         """
@@ -166,7 +183,13 @@ class Manager:
         """
         self.channel.close()
         self.channel = None
-        self.stub = None
+        self._stub = None
+
+    @property
+    def stub(self) -> saleae_pb2_grpc.ManagerStub:
+        if self._stub is None:
+            raise RuntimeError("Cannot use Manager after it has been closed")
+        return self._stub
 
     def get_devices(self):
         request = saleae_pb2.GetDevicesRequest()
@@ -177,8 +200,8 @@ class Manager:
         self,
         *,
         device_configuration: DeviceConfiguration,
-        device_serial_number: str = None,
-        capture_settings: CaptureSettings = None,
+        device_serial_number: str,
+        capture_settings: Optional[CaptureSettings] = None,
     ) -> "Capture":
         request = saleae_pb2.StartCaptureRequest()
         request.device_serial_number = device_serial_number
@@ -214,45 +237,42 @@ class Manager:
         else:
             raise TypeError("Invalid device configuration type")
         
-        if capture_settings is None:
-            capture_settings = CaptureSettings()
+        if capture_settings is not None:
+            if capture_settings.buffer_size:
+                request.capture_settings.buffer_size = capture_settings.buffer_size
 
-        if capture_settings.buffer_size is not None:
-            request.capture_settings.buffer_size = capture_settings.buffer_size
-        if capture_settings.capture_mode is not None:
-            request.capture_settings.capture_mode = capture_settings.capture_mode.value
-        if capture_settings.stop_after_time is not None:
-            request.capture_settings.stop_after_time = capture_settings.stop_after_time
-        if capture_settings.trim_time is not None:
-            request.capture_settings.trim_time = capture_settings.trim_time
-        if capture_settings.digital_trigger is not None:
-            digital_trigger = request.capture_settings.digital_trigger
-            digital_trigger.trigger_type = (
-                capture_settings.digital_trigger.trigger_type.value
-            )
-            digital_trigger.record_after_trigger_time = (
-                capture_settings.digital_trigger.record_after_trigger_time
-            )
-            digital_trigger.trigger_channel_index = (
-                capture_settings.digital_trigger.trigger_channel_index
-            )
-            if capture_settings.digital_trigger.min_pulse_duration is not None:
-                digital_trigger.min_pulse_duration = (
-                    capture_settings.digital_trigger.min_pulse_duration
-                )
-            if capture_settings.digital_trigger.max_pulse_duration is not None:
-                digital_trigger.max_pulse_duration = (
-                    capture_settings.digital_trigger.max_pulse_duration
-                )
-            digital_trigger.linked_channels.extend(
-                [
-                    saleae_pb2.DigitalTriggerLinkedChannel(
-                        channel_index=linked_channel.channel_index,
-                        state=linked_channel.state.value,
-                    )
-                    for linked_channel in capture_settings.digital_trigger.linked_channels
-                ]
-            )
+            if capture_settings.trigger is not None:
+                trigger = capture_settings.trigger
+
+                if isinstance(trigger, ManualTriggerConfiguration):
+                    request.capture_settings.manual_trigger_settings.CopyFrom(saleae_pb2.ManualTriggerSettings(
+                        pre_trigger_seconds=trigger.pre_trigger_buffer
+                    ))
+
+                elif isinstance(trigger, TimerTriggerConfiguration):
+                    request.capture_settings.timed_trigger_settings.CopyFrom(saleae_pb2.TimedTriggerSettings(
+                        trigger_seconds=trigger.trigger_time,
+                        pre_trigger_seconds=trigger.pre_trigger_buffer,
+                    ))
+
+                elif isinstance(trigger, DigitalTriggerConfiguration):
+                    request.capture_settings.digital_trigger_settings.CopyFrom(saleae_pb2.DigitalTriggerSettings(
+                        trigger_channel_index=trigger.trigger_channel_index,
+                        trigger_type=trigger.trigger_type.value,
+                        min_pulse_duration=trigger.min_pulse_duration,
+                        max_pulse_duration=trigger.max_pulse_duration,
+                        pre_trigger_seconds=trigger.pre_trigger_buffer,
+                        post_trigger_seconds=trigger.post_trigger_buffer,
+                        linked_channels=[
+                            saleae_pb2.DigitalTriggerLinkedChannel(
+                                channel_index=linked_channel.channel_index,
+                                state=linked_channel.state.value,
+                            )
+                            for linked_channel in trigger.linked_channels
+                        ]
+                    ))
+                else:
+                    raise TypeError("Unexpected trigger type")
 
         with error_handler():
             reply: saleae_pb2.StartCaptureReply = self.stub.StartCapture(request)

@@ -7,7 +7,6 @@ option objc_class_prefix = "Saleae";
 
 package saleae.automation;
 
-
 /*****************************************************************************
  *
  * gRPC API
@@ -16,48 +15,50 @@ package saleae.automation;
 
 service Manager {
     // Get list of connected devices.
-    rpc GetDevices (GetDevicesRequest) returns (GetDevicesReply) {}
-  
+    rpc GetDevices(GetDevicesRequest) returns (GetDevicesReply) {}
+
     // Start a capture
-    rpc StartCapture (StartCaptureRequest) returns (StartCaptureReply) {}
+    rpc StartCapture(StartCaptureRequest) returns (StartCaptureReply) {}
 
     // Stop an active capture
-    rpc StopCapture (StopCaptureRequest) returns (StopCaptureReply) {}
+    rpc StopCapture(StopCaptureRequest) returns (StopCaptureReply) {}
 
     // Wait until a capture has completed
-    rpc WaitCapture (WaitCaptureRequest) returns (WaitCaptureReply) {}
+    rpc WaitCapture(WaitCaptureRequest) returns (WaitCaptureReply) {}
 
     // Load a capture from file.
-    rpc LoadCapture (LoadCaptureRequest) returns (LoadCaptureReply) {}
+    rpc LoadCapture(LoadCaptureRequest) returns (LoadCaptureReply) {}
 
     // Save a capture to file.
-    rpc SaveCapture (SaveCaptureRequest) returns (SaveCaptureReply) {}
+    rpc SaveCapture(SaveCaptureRequest) returns (SaveCaptureReply) {}
 
     // Close a capture.
-    // Note: It is recommended to close a capture once it is no longer being used so that any
-    //       consumed resources can be released.
-    rpc CloseCapture (CloseCaptureRequest) returns (CloseCaptureReply) {}
-  
+    // Note: It is recommended to close a capture once it is no longer being used
+    // so that any
+    //             consumed resources can be released.
+    rpc CloseCapture(CloseCaptureRequest) returns (CloseCaptureReply) {}
+
     // Add an analyzer to a capture.
-    rpc AddAnalyzer (AddAnalyzerRequest) returns (AddAnalyzerReply) {}
+    rpc AddAnalyzer(AddAnalyzerRequest) returns (AddAnalyzerReply) {}
 
     // Remove an analyzer from a capture.
-    rpc RemoveAnalyzer (RemoveAnalyzerRequest) returns (RemoveAnalyzerReply) {}
-  
+    rpc RemoveAnalyzer(RemoveAnalyzerRequest) returns (RemoveAnalyzerReply) {}
+
     // Export raw channel data to CSV files.
-    rpc ExportRawDataCsv (ExportRawDataCsvRequest) returns (ExportRawDataCsvReply) {}
+    rpc ExportRawDataCsv(ExportRawDataCsvRequest)
+            returns (ExportRawDataCsvReply) {}
 
     // Export raw channel data to binary files.
-    rpc ExportRawDataBinary (ExportRawDataBinaryRequest) returns (ExportRawDataBinaryReply) {}
-  
+    rpc ExportRawDataBinary(ExportRawDataBinaryRequest)
+            returns (ExportRawDataBinaryReply) {}
+
     // Export analyzer data to CSV file.
-    rpc ExportDataTable (ExportDataTableRequest) returns (ExportDataTableReply) {}
+    rpc ExportDataTable(ExportDataTableRequest) returns (ExportDataTableReply) {}
 
     // Export custom analyzer export data to file.
-    rpc ExportAnalyzerLegacy (ExportAnalyzerLegacyRequest) returns (ExportAnalyzerLegacyReply) {}
+    rpc ExportAnalyzerLegacy(ExportAnalyzerLegacyRequest)
+            returns (ExportAnalyzerLegacyReply) {}
 }
-
-
 
 /*****************************************************************************
  *
@@ -74,8 +75,8 @@ enum ErrorCode {
     // Request is invalid, usually because of invalid arguments.
     //
     // Examples:
-    //   Invalid Capture Id - capture does not exist
-    //   Missing filepath
+    //     Invalid Capture Id - capture does not exist
+    //     Missing filepath
     INVALID_REQUEST = 10;
 
     LOAD_CAPTURE_FAILED = 20;
@@ -175,40 +176,11 @@ message GlitchFilterEntry {
     double pulse_width = 2;
 }
 
-message CaptureSettings {
-    // Capture buffer size (in megabytes)
-    uint32 buffer_size = 1;
-    CaptureMode capture_mode = 2;
-    // Time to stop capture after (in seconds)
-    //
-    // Only applies if capture_mode is `CaptureMode.STOP_AFTER_TIME`
-    double stop_after_time = 3;
+message ManualTriggerSettings { double pre_trigger_seconds = 1; }
 
-    // Duration to trim data down to after capture completes
-    //
-    // When trigger is active, we trim relative to the trigger, not the end of capture
-    double trim_time = 4;
-
-    DigitalTriggerSettings digital_trigger = 5;
-}
-
-enum CaptureMode {
-    CIRCULAR = 0;
-    STOP_AFTER_TIME = 1;
-    STOP_ON_DIGITAL_TRIGGER = 2;
-}
-
-message DigitalTriggerSettings {
-    DigitalTriggerType trigger_type = 1;
-
-    double record_after_trigger_time = 2;
-
-    uint32 trigger_channel_index = 3;
-
-    double min_pulse_duration = 4;
-    double max_pulse_duration = 5;
-
-    repeated DigitalTriggerLinkedChannel linked_channels = 6;
+message TimedTriggerSettings {
+    double trigger_seconds = 1;
+    double pre_trigger_seconds = 2;
 }
 
 enum DigitalTriggerType {
@@ -228,8 +200,34 @@ enum DigitalTriggerLinkedChannelState {
     HIGH = 1;
 }
 
+message DigitalTriggerSettings {
+    DigitalTriggerType trigger_type = 1;
+    double pre_trigger_seconds = 2;
+    double post_trigger_seconds = 3;
 
+    uint32 trigger_channel_index = 4;
 
+    double min_pulse_duration = 5;
+    double max_pulse_duration = 6;
+
+    repeated DigitalTriggerLinkedChannel linked_channels = 7;
+}
+
+message CaptureSettings {
+    // Capture buffer size (in megabytes)
+    uint32 buffer_size = 1;
+    oneof trigger_settings {
+        ManualTriggerSettings manual_trigger_settings = 2;
+        TimedTriggerSettings timed_trigger_settings = 3;
+        DigitalTriggerSettings digital_trigger_settings = 4;
+    }
+}
+
+enum CaptureMode {
+    CIRCULAR = 0;
+    STOP_AFTER_TIME = 1;
+    STOP_ON_DIGITAL_TRIGGER = 2;
+}
 
 /*****************************************************************************
  *
@@ -237,12 +235,8 @@ enum DigitalTriggerLinkedChannelState {
  *
  ****************************************************************************/
 
-message GetDevicesRequest {
-}
-message GetDevicesReply {
-    repeated Device devices = 1;
-}
-
+message GetDevicesRequest {}
+message GetDevicesReply { repeated Device devices = 1; }
 
 // Start Capture
 message StartCaptureRequest {
@@ -254,24 +248,15 @@ message StartCaptureRequest {
 
     CaptureSettings capture_settings = 3;
 }
-message StartCaptureReply {
-    CaptureInfo capture_info = 1;
-}
-
+message StartCaptureReply { CaptureInfo capture_info = 1; }
 
 // Stop Capture
-message StopCaptureRequest {
-    uint64 capture_id = 1;
-}
-message StopCaptureReply {
-}
+message StopCaptureRequest { uint64 capture_id = 1; }
+message StopCaptureReply {}
 
 // Stop Capture
-message WaitCaptureRequest {
-    uint64 capture_id = 1;
-}
-message WaitCaptureReply {
-}
+message WaitCaptureRequest { uint64 capture_id = 1; }
+message WaitCaptureReply {}
 
 // Load Capture
 message LoadCaptureRequest {
@@ -283,7 +268,6 @@ message LoadCaptureReply {
     CaptureInfo capture_info = 1;
 }
 
-
 message SaveCaptureRequest {
     // Id of capture to save.
     uint64 capture_id = 1;
@@ -291,17 +275,13 @@ message SaveCaptureRequest {
     // Full filepath to save the file to, usually ending in ".sal".
     string filepath = 2;
 }
-message SaveCaptureReply {
-}
-
+message SaveCaptureReply {}
 
 message CloseCaptureRequest {
     // Id of capture to close.
     uint64 capture_id = 1;
 }
-message CloseCaptureReply {
-}
-
+message CloseCaptureReply {}
 
 message ExportRawDataCsvRequest {
     // Id of capture to export data from.
@@ -319,9 +299,7 @@ message ExportRawDataCsvRequest {
     // If true, timestamps will be in ISO8601 format.
     bool iso8601 = 5;
 }
-message ExportRawDataCsvReply {
-}
-
+message ExportRawDataCsvReply {}
 
 message ExportRawDataBinaryRequest {
     // Id of capture to export data from.
@@ -336,9 +314,7 @@ message ExportRawDataBinaryRequest {
     // Must be between 1 and 1,000,000, inclusive.
     uint64 analog_downsample_ratio = 4;
 }
-message ExportRawDataBinaryReply {
-}
-
+message ExportRawDataBinaryReply {}
 
 message AnalyzerSettingValue {
     oneof value {
@@ -359,15 +335,15 @@ message AddAnalyzerRequest {
     // Id of capture to add analyzer to.
     uint64 capture_id = 1;
 
-    // Name of analyzer. This should exactly match the name seen in the application.
-    // Examples: "SPI", "I2C", "Async Serial"
+    // Name of analyzer. This should exactly match the name seen in the
+    // application. Examples: "SPI", "I2C", "Async Serial"
     string analyzer_name = 2;
 
     // User-facing name for the analyzer.
     string analyzer_label = 3;
 
-    // Analyzer settings. These should match the names shown in analyzer's settings
-    // shown in the application.
+    // Analyzer settings. These should match the names shown in analyzer's
+    // settings shown in the application.
     map<string, AnalyzerSettingValue> settings = 4;
 }
 message AddAnalyzerReply {
@@ -382,8 +358,7 @@ message RemoveAnalyzerRequest {
     // Id of analyzer to remove.
     uint64 analyzer_id = 2;
 }
-message RemoveAnalyzerReply {
-}
+message RemoveAnalyzerReply {}
 
 message ExportDataTableRequest {
     // Id of capture to export data from.
@@ -398,8 +373,7 @@ message ExportDataTableRequest {
     // If true, timestamps will be in ISO8601 format.
     bool iso8601 = 5;
 }
-message ExportDataTableReply{
-}
+message ExportDataTableReply {}
 
 message ExportAnalyzerLegacyRequest {
     // Id of capture to export data from.
@@ -414,5 +388,4 @@ message ExportAnalyzerLegacyRequest {
     // Radix to use for exported data.
     RadixType radix_type = 4;
 }
-message ExportAnalyzerLegacyReply{
-}
+message ExportAnalyzerLegacyReply {}

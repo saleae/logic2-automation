@@ -140,7 +140,8 @@ class ManagerServicer(object):
 
     def CloseCapture(self, request, context):
         """Close a capture.
-        Note: It is recommended to close a capture once it is no longer being used so that any
+        Note: It is recommended to close a capture once it is no longer being used
+        so that any
         consumed resources can be released.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
