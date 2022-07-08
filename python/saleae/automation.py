@@ -113,7 +113,7 @@ class DigitalTriggerLinkedChannel:
 
 
 @dataclass
-class DigitalTriggerConfiguration:
+class DigitalTriggerCaptureMode:
     trigger_type: DigitalTriggerType
 
     trigger_channel_index: int
@@ -131,7 +131,7 @@ class DigitalTriggerConfiguration:
     post_trigger_buffer: Optional[float] = None
 
 @dataclass
-class TimerTriggerConfiguration:
+class TimedCaptureMode:
     # Trigger after X seconds
     trigger_time: float
 
@@ -140,7 +140,7 @@ class TimerTriggerConfiguration:
 
 
 @dataclass
-class ManualTriggerConfiguration:
+class ManualCaptureMode:
     """
     When this is used, a capture must be triggered/stopped manually.
     
@@ -149,13 +149,13 @@ class ManualTriggerConfiguration:
     pre_trigger_buffer: Optional[float] = None
 
 
-TriggerConfiguration = Union[ManualTriggerConfiguration, TimerTriggerConfiguration, DigitalTriggerConfiguration]
+TriggerConfiguration = Union[ManualCaptureMode, TimedCaptureMode, DigitalTriggerCaptureMode]
 
 @dataclass
-class CaptureSettings:
+class CaptureConfiguration:
     # Capture buffer size (in megabytes)
     buffer_size: Optional[int] = None
-    trigger: TriggerConfiguration = field(default_factory=ManualTriggerConfiguration)
+    trigger: TriggerConfiguration = field(default_factory=ManualCaptureMode)
 
 
 class Manager:
@@ -191,7 +191,7 @@ class Manager:
         *,
         device_configuration: DeviceConfiguration,
         device_serial_number: str,
-        capture_settings: Optional[CaptureSettings] = None,
+        capture_configuration: Optional[CaptureConfiguration] = None,
     ) -> "Capture":
         request = saleae_pb2.StartCaptureRequest()
         request.device_serial_number = device_serial_number
@@ -227,26 +227,26 @@ class Manager:
         else:
             raise TypeError("Invalid device configuration type")
         
-        if capture_settings is not None:
-            if capture_settings.buffer_size:
-                request.capture_settings.buffer_size = capture_settings.buffer_size
+        if capture_configuration is not None:
+            if capture_configuration.buffer_size:
+                request.capture_configuration.buffer_size = capture_configuration.buffer_size
 
-            if capture_settings.trigger is not None:
-                trigger = capture_settings.trigger
+            if capture_configuration.trigger is not None:
+                trigger = capture_configuration.trigger
 
-                if isinstance(trigger, ManualTriggerConfiguration):
-                    request.capture_settings.manual_trigger_settings.CopyFrom(saleae_pb2.ManualTriggerSettings(
+                if isinstance(trigger, ManualCaptureMode):
+                    request.capture_configuration.manual_capture_mode.CopyFrom(saleae_pb2.ManualCaptureMode(
                         pre_trigger_seconds=trigger.pre_trigger_buffer
                     ))
 
-                elif isinstance(trigger, TimerTriggerConfiguration):
-                    request.capture_settings.timed_trigger_settings.CopyFrom(saleae_pb2.TimedTriggerSettings(
+                elif isinstance(trigger, TimedCaptureMode):
+                    request.capture_configuration.timed_capture_mode.CopyFrom(saleae_pb2.TimedCaptureMode(
                         trigger_seconds=trigger.trigger_time,
                         pre_trigger_seconds=trigger.pre_trigger_buffer,
                     ))
 
-                elif isinstance(trigger, DigitalTriggerConfiguration):
-                    request.capture_settings.digital_trigger_settings.CopyFrom(saleae_pb2.DigitalTriggerSettings(
+                elif isinstance(trigger, DigitalTriggerCaptureMode):
+                    request.capture_configuration.digital_capture_mode.CopyFrom(saleae_pb2.DigitalCaptureMode(
                         trigger_channel_index=trigger.trigger_channel_index,
                         trigger_type=trigger.trigger_type.value,
                         min_pulse_duration=trigger.min_pulse_duration,

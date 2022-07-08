@@ -176,9 +176,9 @@ message GlitchFilterEntry {
     double pulse_width = 2;
 }
 
-message ManualTriggerSettings { double pre_trigger_seconds = 1; }
+message ManualCaptureMode { double pre_trigger_seconds = 1; }
 
-message TimedTriggerSettings {
+message TimedCaptureMode {
     double trigger_seconds = 1;
     double pre_trigger_seconds = 2;
 }
@@ -204,7 +204,7 @@ enum DigitalTriggerLinkedChannelState {
     DIGITAL_TRIGGER_LINKED_CHANNEL_STATE_HIGH = 2;
 }
 
-message DigitalTriggerSettings {
+message DigitalCaptureMode {
     DigitalTriggerType trigger_type = 1;
     double pre_trigger_seconds = 2;
     double post_trigger_seconds = 3;
@@ -217,13 +217,14 @@ message DigitalTriggerSettings {
     repeated DigitalTriggerLinkedChannel linked_channels = 7;
 }
 
-message CaptureSettings {
+message CaptureConfiguration {
     // Capture buffer size (in megabytes)
     uint32 buffer_size = 1;
-    oneof trigger_settings {
-        ManualTriggerSettings manual_trigger_settings = 2;
-        TimedTriggerSettings timed_trigger_settings = 3;
-        DigitalTriggerSettings digital_trigger_settings = 4;
+
+    oneof capture_mode {
+        ManualCaptureMode manual_capture_mode = 2;
+        TimedCaptureMode timed_capture_mode = 3;
+        DigitalCaptureMode digital_capture_mode = 4;
     }
 }
 
@@ -246,7 +247,7 @@ message StartCaptureRequest {
         LogicDeviceConfiguration logic_device_configuration = 2;
     }
 
-    CaptureSettings capture_settings = 3;
+    CaptureConfiguration capture_configuration = 3;
 }
 message StartCaptureReply { CaptureInfo capture_info = 1; }
 
