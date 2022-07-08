@@ -1,17 +1,13 @@
 from contextlib import contextmanager
-from os import PathLike
 from typing import List, Optional, Union, Dict
 from dataclasses import dataclass, field
 from enum import Enum
+import grpc
+import logging
+import re
 
 from saleae.grpc import saleae_pb2, saleae_pb2_grpc
 
-import grpc
-
-import os.path
-
-import logging
-import re
 
 logger = logging.getLogger(__name__)
 
@@ -78,7 +74,7 @@ class DeviceConfiguration:
 @dataclass
 class GlitchFilterEntry:
     channel_index: int
-    pulse_width: float
+    pulse_width_seconds: float
 
 
 @dataclass
@@ -89,7 +85,7 @@ class LogicDeviceConfiguration(DeviceConfiguration):
     analog_sample_rate: Optional[int] = None
     digital_sample_rate: Optional[int] = None
 
-    digital_threshold: Optional[float] = None
+    digital_threshold_volts: Optional[float] = None
 
     glitch_filters: List[GlitchFilterEntry] = field(default_factory=list)
 
@@ -118,25 +114,24 @@ class DigitalTriggerCaptureMode:
 
     trigger_channel_index: int
 
-    min_pulse_duration: Optional[float] = None
-    max_pulse_duration: Optional[float] = None
+    min_pulse_width_seconds: Optional[float] = None
+    max_pulse_width_seconds: Optional[float] = None
 
     linked_channels: List[DigitalTriggerLinkedChannel] = field(default_factory=list)
 
-    # Seconds of data before trigger to keep
-    # What if you only want to keep data starting _after_ the trigger - negative value?
-    pre_trigger_buffer: Optional[float] = None
+    # Seconds of data at end of capture to keep. If unspecified, all data will be kept.
+    trim_data_seconds: Optional[float] = None
 
     # Seconds of data to record after triggering
-    post_trigger_buffer: Optional[float] = None
+    after_trigger_seconds: Optional[float] = None
 
 @dataclass
 class TimedCaptureMode:
     # Trigger after X seconds
-    trigger_time: float
+    duration_seconds: float
 
-    # Seconds of data before trigger to keep. If unspecified, all data will be kept.
-    pre_trigger_buffer: Optional[float] = None
+    # Seconds of data at end of capture to keep. If unspecified, all data will be kept.
+    trim_data_seconds: Optional[float] = None
 
 
 @dataclass
@@ -145,17 +140,17 @@ class ManualCaptureMode:
     When this is used, a capture must be triggered/stopped manually.
     
     """
-    # Seconds of data before trigger to keep
-    pre_trigger_buffer: Optional[float] = None
+    # Seconds of data at end of capture to keep. If unspecified, all data will be kept.
+    trim_data_seconds: Optional[float] = None
 
 
-TriggerConfiguration = Union[ManualCaptureMode, TimedCaptureMode, DigitalTriggerCaptureMode]
+CaptureMode = Union[ManualCaptureMode, TimedCaptureMode, DigitalTriggerCaptureMode]
 
 @dataclass
 class CaptureConfiguration:
     # Capture buffer size (in megabytes)
     buffer_size: Optional[int] = None
-    trigger: TriggerConfiguration = field(default_factory=ManualCaptureMode)
+    capture_mode: CaptureMode = field(default_factory=ManualCaptureMode)
 
 
 class Manager:
@@ -211,15 +206,15 @@ class Manager:
                 request.logic_device_configuration.digital_sample_rate = (
                     device_configuration.digital_sample_rate
                 )
-            if device_configuration.digital_threshold is not None:
-                request.logic_device_configuration.digital_threshold = (
-                    device_configuration.digital_threshold
+            if device_configuration.digital_threshold_volts is not None:
+                request.logic_device_configuration.digital_threshold_volts = (
+                    device_configuration.digital_threshold_volts
                 )
             request.logic_device_configuration.glitch_filters.extend(
                 [
                     saleae_pb2.GlitchFilterEntry(
                         channel_index=glitch_filter.channel_index,
-                        pulse_width=glitch_filter.pulse_width,
+                        pulse_width_seconds=glitch_filter.pulse_width_seconds,
                     )
                     for glitch_filter in device_configuration.glitch_filters
                 ]
@@ -231,28 +226,28 @@ class Manager:
             if capture_configuration.buffer_size:
                 request.capture_configuration.buffer_size = capture_configuration.buffer_size
 
-            if capture_configuration.trigger is not None:
-                trigger = capture_configuration.trigger
+            if capture_configuration.capture_mode is not None:
+                trigger = capture_configuration.capture_mode
 
                 if isinstance(trigger, ManualCaptureMode):
                     request.capture_configuration.manual_capture_mode.CopyFrom(saleae_pb2.ManualCaptureMode(
-                        pre_trigger_seconds=trigger.pre_trigger_buffer
+                        trim_data_seconds=trigger.trim_data_seconds
                     ))
 
                 elif isinstance(trigger, TimedCaptureMode):
                     request.capture_configuration.timed_capture_mode.CopyFrom(saleae_pb2.TimedCaptureMode(
-                        trigger_seconds=trigger.trigger_time,
-                        pre_trigger_seconds=trigger.pre_trigger_buffer,
+                        duration_seconds=trigger.duration_seconds,
+                        trim_data_seconds=trigger.trim_data_seconds,
                     ))
 
                 elif isinstance(trigger, DigitalTriggerCaptureMode):
-                    request.capture_configuration.digital_capture_mode.CopyFrom(saleae_pb2.DigitalCaptureMode(
+                    request.capture_configuration.digital_capture_mode.CopyFrom(saleae_pb2.DigitalTriggerCaptureMode(
                         trigger_channel_index=trigger.trigger_channel_index,
                         trigger_type=trigger.trigger_type.value,
-                        min_pulse_duration=trigger.min_pulse_duration,
-                        max_pulse_duration=trigger.max_pulse_duration,
-                        pre_trigger_seconds=trigger.pre_trigger_buffer,
-                        post_trigger_seconds=trigger.post_trigger_buffer,
+                        min_pulse_width_seconds=trigger.min_pulse_width_seconds,
+                        max_pulse_width_seconds=trigger.max_pulse_width_seconds,
+                        after_trigger_seconds=trigger.after_trigger_seconds,
+                        trim_data_seconds=trigger.trim_data_seconds,
                         linked_channels=[
                             saleae_pb2.DigitalTriggerLinkedChannel(
                                 channel_index=linked_channel.channel_index,

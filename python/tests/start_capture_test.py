@@ -16,7 +16,7 @@ def test_start_capture(manager: automation.Manager, asset_path: str, tmp_path):
     config = automation.LogicDeviceConfiguration(
         enabled_digital_channels=[0, 3, 4, 5],
         digital_sample_rate=500_000_000,
-        digital_threshold=3.3,
+        digital_threshold_volts=3.3,
     )
     trigger = automation.ManualCaptureMode()
 
@@ -71,29 +71,29 @@ def test_start_capture(manager: automation.Manager, asset_path: str, tmp_path):
     # capture.wait()
 
 trigger_configs = [
-    automation.ManualCaptureMode(pre_trigger_buffer=None),
-    automation.ManualCaptureMode(pre_trigger_buffer=0),
-    automation.ManualCaptureMode(pre_trigger_buffer=0.2),
-    automation.ManualCaptureMode(pre_trigger_buffer=5),
+    automation.ManualCaptureMode(trim_data_seconds=None),
+    automation.ManualCaptureMode(trim_data_seconds=0),
+    automation.ManualCaptureMode(trim_data_seconds=0.2),
+    automation.ManualCaptureMode(trim_data_seconds=5),
 
-    automation.TimedCaptureMode(trigger_time=1.0),
+    automation.TimedCaptureMode(duration_seconds=1.0),
 
     automation.DigitalTriggerCaptureMode(trigger_channel_index=0, trigger_type=automation.DigitalTriggerType.FALLING),
     automation.DigitalTriggerCaptureMode(trigger_channel_index=3, trigger_type=automation.DigitalTriggerType.RISING),
-    automation.DigitalTriggerCaptureMode(trigger_channel_index=4, trigger_type=automation.DigitalTriggerType.PULSE_LOW, min_pulse_duration=1e-9, max_pulse_duration=0.5),
-    automation.DigitalTriggerCaptureMode(trigger_channel_index=5, trigger_type=automation.DigitalTriggerType.PULSE_HIGH, min_pulse_duration=1e-9, max_pulse_duration=0.5),
+    automation.DigitalTriggerCaptureMode(trigger_channel_index=4, trigger_type=automation.DigitalTriggerType.PULSE_LOW, min_pulse_width_seconds=1e-9, max_pulse_width_seconds=0.5),
+    automation.DigitalTriggerCaptureMode(trigger_channel_index=5, trigger_type=automation.DigitalTriggerType.PULSE_HIGH, min_pulse_width_seconds=1e-9, max_pulse_width_seconds=0.5),
 
 ]
 
 @pytest.mark.parametrize('trigger', trigger_configs)
-def test_trigger_config(trigger: automation.TriggerConfiguration, manager: automation.Manager, tmp_path):
+def test_trigger_config(trigger: automation.CaptureMode, manager: automation.Manager, tmp_path):
     serial = SIMULATION_LOGIC_PRO_8
     config = automation.LogicDeviceConfiguration(
         enabled_digital_channels=[0, 3, 4, 5],
         digital_sample_rate=500_000_000,
-        digital_threshold=3.3,
+        digital_threshold_volts=3.3,
     )
-    capture_settings = automation.CaptureConfiguration(trigger=trigger)
+    capture_settings = automation.CaptureConfiguration(capture_mode=trigger)
 
     with manager.start_capture(device_serial_number=serial, device_configuration=config, capture_configuration=capture_settings) as cap:
         if isinstance(trigger, automation.ManualCaptureMode):
@@ -139,7 +139,7 @@ def test_threshold_validation(scenario: ThresholdScenario, manager: automation.M
     config = automation.LogicDeviceConfiguration(
         enabled_digital_channels=[0, 3, 4],
         digital_sample_rate=100_000_000,
-        digital_threshold=scenario.threshold,
+        digital_threshold_volts=scenario.threshold,
     )
 
     try:
@@ -224,7 +224,7 @@ def test_glitch_filter(scenario: GlitchFilterScenario, manager: automation.Manag
     config = automation.LogicDeviceConfiguration(
         enabled_digital_channels=scenario.channels,
         digital_sample_rate=scenario.digital_rate,
-        glitch_filters=[automation.GlitchFilterEntry(channel_index=key, pulse_width=value) for key, value in scenario.glitch_filters.items()],
+        glitch_filters=[automation.GlitchFilterEntry(channel_index=key, pulse_width_seconds=value) for key, value in scenario.glitch_filters.items()],
     )
 
     try:
