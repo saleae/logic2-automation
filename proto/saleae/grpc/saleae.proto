@@ -67,48 +67,48 @@ service Manager {
  ****************************************************************************/
 
 enum ErrorCode {
-    UNKNOWN_ERROR_CODE = 0; // Not used
+    ERROR_CODE_UNSPECIFIED = 0; // Not used
 
     // Unexpected Saleae Internal Error.
-    INTERNAL_EXCEPTION = 1;
+    ERROR_CODE_INTERNAL_EXCEPTION = 1;
 
     // Request is invalid, usually because of invalid arguments.
     //
     // Examples:
     //     Invalid Capture Id - capture does not exist
     //     Missing filepath
-    INVALID_REQUEST = 10;
+    ERROR_CODE_INVALID_REQUEST = 10;
 
-    LOAD_CAPTURE_FAILED = 20;
-    CAPTURE_IN_PROGRESS = 21;
-    UNSUPPORTED_FILE_TYPE = 22;
+    ERROR_CODE_LOAD_CAPTURE_FAILED = 20;
+    ERROR_CODE_CAPTURE_IN_PROGRESS = 21;
+    ERROR_CODE_UNSUPPORTED_FILE_TYPE = 22;
 
-    MISSING_DEVICE = 50;
-    DEVICE_ERROR = 51;
-    OOM = 52;
+    ERROR_CODE_MISSING_DEVICE = 50;
+    ERROR_CODE_DEVICE_ERROR = 51;
+    ERROR_CODE_OOM = 52;
 }
 
 enum RadixType {
-    UNKNOWN_RADIX_TYPE = 0;
+    RADIX_TYPE_UNSPECIFIED = 0;
 
-    BINARY = 1;
-    DECIMAL = 2;
-    HEXADECIMAL = 3;
-    ASCII = 4;
+    RADIX_TYPE_BINARY = 1;
+    RADIX_TYPE_DECIMAL = 2;
+    RADIX_TYPE_HEXADECIMAL = 3;
+    RADIX_TYPE_ASCII = 4;
 };
 
 enum DeviceType {
     // Invalid Device Type
-    UNKNOWN_DEVICE_TYPE = 0;
+    DEVICE_TYPE_UNSPECIFIED = 0;
 
     // Saleae Logic 8
-    LOGIC_8 = 1;
+    DEVICE_TYPE_LOGIC_8 = 1;
 
     // Saleae Logic Pro 8
-    LOGIC_PRO_8 = 2;
+    DEVICE_TYPE_LOGIC_PRO_8 = 2;
 
     // Saleae Logic Pro 16
-    LOGIC_PRO_16 = 3;
+    DEVICE_TYPE_LOGIC_PRO_16 = 3;
 }
 
 // Device descriptor object.
@@ -124,13 +124,13 @@ message Device {
 }
 
 enum ChannelType {
-    UNKNOWN_CHANNEL_TYPE = 0;
+    CHANNEL_TYPE_UNSPECIFIED = 0;
 
     // Digial channel.
-    DIGITAL = 1;
+    CHANNEL_TYPE_DIGITAL = 1;
 
     // Analog data.
-    ANALOG = 2;
+    CHANNEL_TYPE_ANALOG = 2;
 }
 
 // Identification for a channel.
@@ -184,10 +184,12 @@ message TimedTriggerSettings {
 }
 
 enum DigitalTriggerType {
-    RISING = 0;
-    FALLING = 1;
-    PULSE_HIGH = 2;
-    PULSE_LOW = 3;
+    DIGITAL_TRIGGER_TYPE_UNSPECIFIED = 0;
+
+    DIGITAL_TRIGGER_TYPE_RISING = 1;
+    DIGITAL_TRIGGER_TYPE_FALLING = 2;
+    DIGITAL_TRIGGER_TYPE_PULSE_HIGH = 3;
+    DIGITAL_TRIGGER_TYPE_PULSE_LOW = 4;
 }
 
 message DigitalTriggerLinkedChannel {
@@ -196,8 +198,10 @@ message DigitalTriggerLinkedChannel {
 }
 
 enum DigitalTriggerLinkedChannelState {
-    LOW = 0;
-    HIGH = 1;
+    DIGITAL_TRIGGER_LINKED_CHANNEL_STATE_UNSPECIFIED = 0;
+
+    DIGITAL_TRIGGER_LINKED_CHANNEL_STATE_LOW = 1;
+    DIGITAL_TRIGGER_LINKED_CHANNEL_STATE_HIGH = 2;
 }
 
 message DigitalTriggerSettings {
@@ -223,11 +227,7 @@ message CaptureSettings {
     }
 }
 
-enum CaptureMode {
-    CIRCULAR = 0;
-    STOP_AFTER_TIME = 1;
-    STOP_ON_DIGITAL_TRIGGER = 2;
-}
+
 
 /*****************************************************************************
  *

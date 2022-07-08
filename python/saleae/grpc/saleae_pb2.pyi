@@ -4,37 +4,36 @@ from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from typing import ClassVar as _ClassVar, Iterable as _Iterable, Mapping as _Mapping, Optional as _Optional, Union as _Union
 
-ANALOG: ChannelType
-ASCII: RadixType
-BINARY: RadixType
-CAPTURE_IN_PROGRESS: ErrorCode
-CIRCULAR: CaptureMode
-DECIMAL: RadixType
+CHANNEL_TYPE_ANALOG: ChannelType
+CHANNEL_TYPE_DIGITAL: ChannelType
+CHANNEL_TYPE_UNSPECIFIED: ChannelType
 DESCRIPTOR: _descriptor.FileDescriptor
-DEVICE_ERROR: ErrorCode
-DIGITAL: ChannelType
-FALLING: DigitalTriggerType
-HEXADECIMAL: RadixType
-HIGH: DigitalTriggerLinkedChannelState
-INTERNAL_EXCEPTION: ErrorCode
-INVALID_REQUEST: ErrorCode
-LOAD_CAPTURE_FAILED: ErrorCode
-LOGIC_8: DeviceType
-LOGIC_PRO_16: DeviceType
-LOGIC_PRO_8: DeviceType
-LOW: DigitalTriggerLinkedChannelState
-MISSING_DEVICE: ErrorCode
-OOM: ErrorCode
-PULSE_HIGH: DigitalTriggerType
-PULSE_LOW: DigitalTriggerType
-RISING: DigitalTriggerType
-STOP_AFTER_TIME: CaptureMode
-STOP_ON_DIGITAL_TRIGGER: CaptureMode
-UNKNOWN_CHANNEL_TYPE: ChannelType
-UNKNOWN_DEVICE_TYPE: DeviceType
-UNKNOWN_ERROR_CODE: ErrorCode
-UNKNOWN_RADIX_TYPE: RadixType
-UNSUPPORTED_FILE_TYPE: ErrorCode
+DEVICE_TYPE_LOGIC_8: DeviceType
+DEVICE_TYPE_LOGIC_PRO_16: DeviceType
+DEVICE_TYPE_LOGIC_PRO_8: DeviceType
+DEVICE_TYPE_UNSPECIFIED: DeviceType
+DIGITAL_TRIGGER_LINKED_CHANNEL_STATE_HIGH: DigitalTriggerLinkedChannelState
+DIGITAL_TRIGGER_LINKED_CHANNEL_STATE_LOW: DigitalTriggerLinkedChannelState
+DIGITAL_TRIGGER_LINKED_CHANNEL_STATE_UNSPECIFIED: DigitalTriggerLinkedChannelState
+DIGITAL_TRIGGER_TYPE_FALLING: DigitalTriggerType
+DIGITAL_TRIGGER_TYPE_PULSE_HIGH: DigitalTriggerType
+DIGITAL_TRIGGER_TYPE_PULSE_LOW: DigitalTriggerType
+DIGITAL_TRIGGER_TYPE_RISING: DigitalTriggerType
+DIGITAL_TRIGGER_TYPE_UNSPECIFIED: DigitalTriggerType
+ERROR_CODE_CAPTURE_IN_PROGRESS: ErrorCode
+ERROR_CODE_DEVICE_ERROR: ErrorCode
+ERROR_CODE_INTERNAL_EXCEPTION: ErrorCode
+ERROR_CODE_INVALID_REQUEST: ErrorCode
+ERROR_CODE_LOAD_CAPTURE_FAILED: ErrorCode
+ERROR_CODE_MISSING_DEVICE: ErrorCode
+ERROR_CODE_OOM: ErrorCode
+ERROR_CODE_UNSPECIFIED: ErrorCode
+ERROR_CODE_UNSUPPORTED_FILE_TYPE: ErrorCode
+RADIX_TYPE_ASCII: RadixType
+RADIX_TYPE_BINARY: RadixType
+RADIX_TYPE_DECIMAL: RadixType
+RADIX_TYPE_HEXADECIMAL: RadixType
+RADIX_TYPE_UNSPECIFIED: RadixType
 
 class AddAnalyzerReply(_message.Message):
     __slots__ = ["analyzer_id"]
@@ -349,7 +348,4 @@ class DigitalTriggerType(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = []
 
 class DigitalTriggerLinkedChannelState(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
-    __slots__ = []
-
-class CaptureMode(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = []

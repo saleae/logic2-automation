@@ -4,18 +4,14 @@ from typing import List, Optional, Union, Dict
 from dataclasses import dataclass, field
 from enum import Enum
 
-from saleae.grpc import saleae_pb2
-from saleae.grpc import saleae_pb2_grpc
+from saleae.grpc import saleae_pb2, saleae_pb2_grpc
 
 import grpc
 
-import os
 import os.path
 
 import logging
 import re
-
-from saleae.grpc.saleae_pb2 import AnalyzerSettingValue, ErrorCode
 
 logger = logging.getLogger(__name__)
 
@@ -32,10 +28,10 @@ class InvalidRequest(SaleaeError):
     pass
 
 class RadixType(Enum):
-    BINARY = saleae_pb2.BINARY
-    DECIMAL = saleae_pb2.DECIMAL
-    HEXADECIMAL = saleae_pb2.HEXADECIMAL
-    ASCII = saleae_pb2.ASCII
+    BINARY = saleae_pb2.RADIX_TYPE_BINARY
+    DECIMAL = saleae_pb2.RADIX_TYPE_DECIMAL
+    HEXADECIMAL = saleae_pb2.RADIX_TYPE_HEXADECIMAL
+    ASCII = saleae_pb2.RADIX_TYPE_ASCII
 
 @contextmanager
 def error_handler():
@@ -55,8 +51,8 @@ def grpc_error_to_exception(exc: grpc.RpcError):
 
 def grpc_error_msg_to_exception(msg: str):
     code_to_exception_type = {
-        ErrorCode.INTERNAL_EXCEPTION: InternalServerError,
-        ErrorCode.INVALID_REQUEST: InvalidRequest,
+        saleae_pb2.ERROR_CODE_INTERNAL_EXCEPTION: InternalServerError,
+        saleae_pb2.ERROR_CODE_INVALID_REQUEST: InvalidRequest,
     }
 
     match = error_message_re.match(msg)
@@ -98,22 +94,16 @@ class LogicDeviceConfiguration(DeviceConfiguration):
     glitch_filters: List[GlitchFilterEntry] = field(default_factory=list)
 
 
-class CaptureMode(Enum):
-    CIRCULAR = saleae_pb2.CaptureMode.CIRCULAR
-    STOP_AFTER_TIME = saleae_pb2.CaptureMode.STOP_AFTER_TIME
-    STOP_ON_DIGITAL_TRIGGER = saleae_pb2.CaptureMode.STOP_ON_DIGITAL_TRIGGER
-
-
 class DigitalTriggerType(Enum):
-    RISING = saleae_pb2.DigitalTriggerType.RISING
-    FALLING = saleae_pb2.DigitalTriggerType.FALLING
-    PULSE_HIGH = saleae_pb2.DigitalTriggerType.PULSE_HIGH
-    PULSE_LOW = saleae_pb2.DigitalTriggerType.PULSE_LOW
+    RISING = saleae_pb2.DIGITAL_TRIGGER_TYPE_RISING
+    FALLING = saleae_pb2.DIGITAL_TRIGGER_TYPE_FALLING
+    PULSE_HIGH = saleae_pb2.DIGITAL_TRIGGER_TYPE_PULSE_HIGH
+    PULSE_LOW = saleae_pb2.DIGITAL_TRIGGER_TYPE_PULSE_LOW
 
 
 class DigitalTriggerLinkedChannelState(Enum):
-    LOW = saleae_pb2.DigitalTriggerLinkedChannelState.LOW
-    HIGH = saleae_pb2.DigitalTriggerLinkedChannelState.HIGH
+    LOW = saleae_pb2.DIGITAL_TRIGGER_LINKED_CHANNEL_STATE_LOW
+    HIGH = saleae_pb2.DIGITAL_TRIGGER_LINKED_CHANNEL_STATE_HIGH
 
 
 @dataclass
@@ -309,13 +299,13 @@ class Capture:
         if settings is not None:
             for key, value in settings.items():
                 if isinstance(value, str):
-                    v = AnalyzerSettingValue(string_value=value)
+                    v = saleae_pb2.AnalyzerSettingValue(string_value=value)
                 elif isinstance(value, int):
-                    v = AnalyzerSettingValue(int64_value=value)
+                    v = saleae_pb2.AnalyzerSettingValue(int64_value=value)
                 elif isinstance(value, float):
-                    v = AnalyzerSettingValue(double_value=value)
+                    v = saleae_pb2.AnalyzerSettingValue(double_value=value)
                 elif isinstance(value, bool):
-                    v = AnalyzerSettingValue(bool_value=value)
+                    v = saleae_pb2.AnalyzerSettingValue(bool_value=value)
                 else:
                     raise RuntimeError("Unsupported analyzer setting value type")
 
@@ -369,9 +359,9 @@ class Capture:
                             analog_downsample_ratio: int = 1, iso8601: bool = False):
         channels = []
         if analog_channels:
-            channels.extend([saleae_pb2.ChannelIdentifier(type=saleae_pb2.ANALOG, index=ch) for ch in analog_channels])
+            channels.extend([saleae_pb2.ChannelIdentifier(type=saleae_pb2.CHANNEL_TYPE_ANALOG, index=ch) for ch in analog_channels])
         if digital_channels:
-            channels.extend([saleae_pb2.ChannelIdentifier(type=saleae_pb2.DIGITAL, index=ch) for ch in digital_channels])
+            channels.extend([saleae_pb2.ChannelIdentifier(type=saleae_pb2.CHANNEL_TYPE_DIGITAL, index=ch) for ch in digital_channels])
 
         request = saleae_pb2.ExportRawDataCsvRequest(
             capture_id=self.capture_id,
@@ -389,9 +379,9 @@ class Capture:
                             analog_downsample_ratio: int = 1):
         channels = []
         if analog_channels:
-            channels.extend([saleae_pb2.ChannelIdentifier(type=saleae_pb2.ANALOG, index=ch) for ch in analog_channels])
+            channels.extend([saleae_pb2.ChannelIdentifier(type=saleae_pb2.CHANNEL_TYPE_ANALOG, index=ch) for ch in analog_channels])
         if digital_channels:
-            channels.extend([saleae_pb2.ChannelIdentifier(type=saleae_pb2.DIGITAL, index=ch) for ch in digital_channels])
+            channels.extend([saleae_pb2.ChannelIdentifier(type=saleae_pb2.CHANNEL_TYPE_DIGITAL, index=ch) for ch in digital_channels])
 
         request = saleae_pb2.ExportRawDataBinaryRequest(
             capture_id=self.capture_id,
