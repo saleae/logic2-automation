@@ -1,5 +1,6 @@
+from contextlib import contextmanager
 from os import PathLike
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Dict
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -18,13 +19,16 @@ from saleae.grpc.saleae_pb2 import AnalyzerSettingValue, ErrorCode
 
 logger = logging.getLogger(__name__)
 
-class UnknownError(Exception):
+class SaleaeError(Exception):
     pass
 
-class InternalServerError(Exception):
+class UnknownError(SaleaeError):
     pass
 
-class InvalidRequest(Exception):
+class InternalServerError(SaleaeError):
+    pass
+
+class InvalidRequest(SaleaeError):
     pass
 
 class RadixType(Enum):
@@ -33,6 +37,12 @@ class RadixType(Enum):
     HEXADECIMAL = saleae_pb2.HEXADECIMAL
     ASCII = saleae_pb2.ASCII
 
+@contextmanager
+def error_handler():
+    try:
+        yield
+    except grpc.RpcError as exc:
+        raise grpc_error_to_exception(exc) from None
 
 error_message_re = re.compile(r"^(\d+): (.*)$")
 
@@ -160,7 +170,8 @@ class Manager:
 
     def get_devices(self):
         request = saleae_pb2.GetDevicesRequest()
-        reply: saleae_pb2.GetDevicesReply = self.stub.GetDevices(request)
+        with error_handler():
+            reply: saleae_pb2.GetDevicesReply = self.stub.GetDevices(request)
 
     def start_capture(
         self,
@@ -243,7 +254,9 @@ class Manager:
                 ]
             )
 
-        reply: saleae_pb2.StartCaptureReply = self.stub.StartCapture(request)
+        with error_handler():
+            reply: saleae_pb2.StartCaptureReply = self.stub.StartCapture(request)
+
         return Capture(self, reply.capture_info.capture_id)
 
     def load_capture(self, filepath: str) -> 'Capture':
@@ -257,7 +270,9 @@ class Manager:
 
         """
         request = saleae_pb2.LoadCaptureRequest(filepath=filepath)
-        reply: saleae_pb2.LoadCaptureReply = self.stub.LoadCapture(request)
+        with error_handler():
+            reply: saleae_pb2.LoadCaptureReply = self.stub.LoadCapture(request)
+
         return Capture(self, reply.capture_info.capture_id)
 
 
@@ -268,7 +283,7 @@ class Capture:
         self.manager = manager
         self.capture_id = capture_id
 
-    def add_analyzer(self, name: str, *, label: Optional[str]=None, settings: Optional[dict[str, Union[str, int, float, bool]]]=None):
+    def add_analyzer(self, name: str, *, label: Optional[str]=None, settings: Optional[Dict[str, Union[str, int, float, bool]]]=None):
         analyzer_settings = {}
 
         if settings is not None:
@@ -326,10 +341,8 @@ class Capture:
             analyzer_ids=[h.analyzer_id for h in analyzers],
             iso8601=iso8601)
 
-        try:
+        with error_handler():
             reply = self.manager.stub.ExportDataTable(request)
-        except grpc.RpcError as exc:
-            raise grpc_error_to_exception(exc) from None
 
     def export_raw_data_csv(self, directory: str, *, analog_channels: Optional[List[int]] = None,
                             digital_channels: Optional[List[int]] = None,
@@ -348,10 +361,8 @@ class Capture:
             iso8601=iso8601
         )
 
-        try:
+        with error_handler():
             self.manager.stub.ExportRawDataCsv(request)
-        except grpc.RpcError as exc:
-            raise grpc_error_to_exception(exc) from None
 
     def export_raw_data_binary(self, directory: str, *, analog_channels: Optional[List[int]] = None,
                             digital_channels: Optional[List[int]] = None,
@@ -369,22 +380,24 @@ class Capture:
             analog_downsample_ratio=analog_downsample_ratio,
         )
 
-        try:
+        with error_handler():
             self.manager.stub.ExportRawDataBinary(request)
-        except grpc.RpcError as exc:
-            raise grpc_error_to_exception(exc) from None
 
     def close(self):
         request = saleae_pb2.CloseCaptureRequest(capture_id=self.capture_id)
-        self.manager.stub.CloseCapture(request)
+        with error_handler():
+            self.manager.stub.CloseCapture(request)
 
     def stop(self):
         request = saleae_pb2.StopCaptureRequest(capture_id=self.capture_id)
-        self.manager.stub.StopCapture(request)
+        with error_handler():
+            self.manager.stub.StopCapture(request)
 
     def wait(self):
         request = saleae_pb2.WaitCaptureRequest(capture_id=self.capture_id)
-        self.manager.stub.WaitCapture(request)
+        with error_handler():
+            self.manager.stub.WaitCapture(request)
+
 
     def __enter__(self):
         return self

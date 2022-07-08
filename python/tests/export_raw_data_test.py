@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Literal
+from typing import Literal, List
 import pytest
 import os
 import os.path
@@ -9,8 +9,8 @@ from saleae import automation
 
 @dataclass
 class CaptureDesc:
-    digital_channels: list[int] = field(default_factory=list)
-    analog_channels: list[int] = field(default_factory=list)
+    digital_channels: List[int] = field(default_factory=list)
+    analog_channels: List[int] = field(default_factory=list)
 
 capture_desc = {
     'cap1.sal': CaptureDesc(
@@ -26,7 +26,7 @@ capture_desc = {
     ),
 }
 
-def get_expected_files(type: Literal['csv', 'bin'], digital_channels: list[int], analog_channels: list[int]):
+def get_expected_files(type: Literal['csv', 'bin'], digital_channels: List[int], analog_channels: List[int]):
     """
     Get a list of expected files for export
     """
