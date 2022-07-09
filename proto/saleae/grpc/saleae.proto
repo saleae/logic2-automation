@@ -373,6 +373,8 @@ message ExportDataTableRequest {
 
     // If true, timestamps will be in ISO8601 format.
     bool iso8601 = 5;
+
+    RadixType radix_type = 6;
 }
 message ExportDataTableReply {}
 

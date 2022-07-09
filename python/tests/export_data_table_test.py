@@ -38,12 +38,12 @@ scenarios = [
     Scenario(
         capture_name='small_spi_capture.sal',
         filename='small_spi_capture/data_table_case1.csv',
-        params=dict(iso8601=False)
+        params=dict(iso8601=False,radix=automation.RadixType.ASCII)
     ),
     Scenario(
         capture_name='small_spi_capture.sal',
         filename='small_spi_capture/data_table_case2.csv',
-        params=dict(iso8601=True)
+        params=dict(iso8601=True,radix=automation.RadixType.ASCII)
     ),
 ]
 
@@ -129,7 +129,7 @@ def test_data_table_export_multiple_analyzers(manager: automation.Manager, asset
 
     export_filepath = os.path.join(tmp_path, 'data_table.csv')
 
-    cap.export_data_table(filepath=export_filepath, analyzers=[analyzer1, analyzer2, analyzer3])
+    cap.export_data_table(filepath=export_filepath, analyzers=[analyzer1, analyzer2, analyzer3],radix=automation.RadixType.ASCII)
     expected_filepath = os.path.join(asset_path, 'small_spi_capture', 'data_table_multiple.csv')
 
     assert(filecmp.cmp(export_filepath, expected_filepath))
