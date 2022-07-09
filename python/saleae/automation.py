@@ -27,6 +27,14 @@ class InternalServerError(SaleaeError):
 class InvalidRequest(SaleaeError):
     pass
 
+class CaptureError(SaleaeError):
+    pass
+class DeviceError(CaptureError):
+    pass
+
+class OOMError(CaptureError):
+    pass
+
 class RadixType(Enum):
     BINARY = saleae_pb2.RADIX_TYPE_BINARY
     DECIMAL = saleae_pb2.RADIX_TYPE_DECIMAL
@@ -53,6 +61,8 @@ def grpc_error_msg_to_exception(msg: str):
     code_to_exception_type = {
         saleae_pb2.ERROR_CODE_INTERNAL_EXCEPTION: InternalServerError,
         saleae_pb2.ERROR_CODE_INVALID_REQUEST: InvalidRequest,
+        saleae_pb2.ERROR_CODE_DEVICE_ERROR: DeviceError,
+        saleae_pb2.ERROR_CODE_OOM: OOMError,
     }
 
     match = error_message_re.match(msg)
