@@ -23,6 +23,30 @@ If any of these commands raise the `CaptureError` exception, we recommend simply
    :members:
    :undoc-members:
 
-.. autoclass:: saleae.automation.InvalidRequest
+.. autoclass:: saleae.automation.InvalidRequestError
+   :members:
+   :undoc-members:
+
+.. autoclass:: saleae.automation.LoadCaptureFailedError
+   :members:
+   :undoc-members:
+
+.. autoclass:: saleae.automation.ExportError
+   :members:
+   :undoc-members:
+
+.. autoclass:: saleae.automation.MissingDeviceError
+   :members:
+   :undoc-members:
+
+.. autoclass:: saleae.automation.CaptureError
+   :members:
+   :undoc-members:
+
+.. autoclass:: saleae.automation.DeviceError
+   :members:
+   :undoc-members:
+
+.. autoclass:: saleae.automation.OOMError
    :members:
    :undoc-members:
