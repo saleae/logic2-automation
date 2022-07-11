@@ -60,6 +60,8 @@ service Manager {
             returns (ExportAnalyzerLegacyReply) {}
 }
 
+
+
 /*****************************************************************************
  *
  * Core Types
@@ -127,10 +129,10 @@ message Device {
 enum ChannelType {
     CHANNEL_TYPE_UNSPECIFIED = 0;
 
-    // Digial channel.
+    // Digial channel
     CHANNEL_TYPE_DIGITAL = 1;
 
-    // Analog data.
+    // Analog channel
     CHANNEL_TYPE_ANALOG = 2;
 }
 
@@ -166,22 +168,31 @@ message LogicDeviceConfiguration {
 
     // For Pro 8 and Pro 16, this can be one of: 1.2, 1.8, or 3.3
     // For other devices this is ignored
-    double digital_threshold = 5;
+    double digital_threshold_volts = 5;
 
     // Glitch filter to apply to digital data
     repeated GlitchFilterEntry glitch_filters = 6;
 }
 
 message GlitchFilterEntry {
+    // Channel index
     uint32 channel_index = 1;
-    double pulse_width = 2;
+
+    // Minimum pulse width, in seconds
+    double pulse_width_seconds = 2;
 }
 
-message ManualTriggerSettings { double pre_trigger_seconds = 1; }
+message ManualCaptureMode { 
+    // Number of seconds to keep after the capture ends
+    double trim_data_seconds = 1;
+}
 
-message TimedTriggerSettings {
-    double trigger_seconds = 1;
-    double pre_trigger_seconds = 2;
+message TimedCaptureMode {
+    // Seconds of data to capture
+    double duration_seconds = 1;
+
+    // Number of seconds to keep after the capture ends
+    double trim_data_seconds = 2;
 }
 
 enum DigitalTriggerType {
@@ -205,26 +216,37 @@ enum DigitalTriggerLinkedChannelState {
     DIGITAL_TRIGGER_LINKED_CHANNEL_STATE_HIGH = 2;
 }
 
-message DigitalTriggerSettings {
+message DigitalTriggerCaptureMode {
     DigitalTriggerType trigger_type = 1;
-    double pre_trigger_seconds = 2;
-    double post_trigger_seconds = 3;
 
+    // Number of seconds to continue capturing after trigger
+    double after_trigger_seconds = 2;
+
+    // Number of seconds to keep after the capture ends
+    double trim_data_seconds = 3;
+
+    // Index of channel to trigger on
     uint32 trigger_channel_index = 4;
 
-    double min_pulse_duration = 5;
-    double max_pulse_duration = 6;
+    // Minimum pulse width to trigger on, in seconds
+    double min_pulse_width_seconds = 5;
 
+    // Maximum pulse width to trigger on, in seconds
+    double max_pulse_width_seconds = 6;
+
+    // Other channel conditions
     repeated DigitalTriggerLinkedChannel linked_channels = 7;
 }
 
-message CaptureSettings {
+message CaptureConfiguration {
     // Capture buffer size (in megabytes)
     uint32 buffer_size = 1;
-    oneof trigger_settings {
-        ManualTriggerSettings manual_trigger_settings = 2;
-        TimedTriggerSettings timed_trigger_settings = 3;
-        DigitalTriggerSettings digital_trigger_settings = 4;
+
+    // Capture mode
+    oneof capture_mode {
+        ManualCaptureMode manual_capture_mode = 2;
+        TimedCaptureMode timed_capture_mode = 3;
+        DigitalTriggerCaptureMode digital_capture_mode = 4;
     }
 }
 
@@ -247,7 +269,7 @@ message StartCaptureRequest {
         LogicDeviceConfiguration logic_device_configuration = 2;
     }
 
-    CaptureSettings capture_settings = 3;
+    CaptureConfiguration capture_configuration = 3;
 }
 message StartCaptureReply { CaptureInfo capture_info = 1; }
 
