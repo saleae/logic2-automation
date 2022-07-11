@@ -54,3 +54,16 @@ html_theme = "sphinx_rtd_theme"
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
+
+
+# auto doc configuration
+
+# Show docs for both init method and class overall
+autoclass_content = "both"
+
+# Only show the class's docstring in the class's documentation body.
+# Without this, the __init__ signature will be shown in the header.
+autoclass_content = "class"
+
+# Display the __init__ method separate from the class header.
+autodoc_class_signature = "separated"
