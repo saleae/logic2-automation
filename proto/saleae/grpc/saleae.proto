@@ -34,8 +34,7 @@ service Manager {
 
     // Close a capture.
     // Note: It is recommended to close a capture once it is no longer being used
-    // so that any
-    //             consumed resources can be released.
+    // so that any consumed resources can be released.
     rpc CloseCapture(CloseCaptureRequest) returns (CloseCaptureReply) {}
 
     // Add an analyzer to a capture.
