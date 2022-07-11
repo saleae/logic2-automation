@@ -67,3 +67,6 @@ autoclass_content = "class"
 
 # Display the __init__ method separate from the class header.
 autodoc_class_signature = "separated"
+
+# keep members ordered by source code.
+autodoc_member_order = "bysource"
