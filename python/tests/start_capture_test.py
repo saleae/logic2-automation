@@ -40,7 +40,7 @@ def test_start_capture(manager: automation.Manager, asset_path: str, tmp_path):
 
         cap.export_data_table(
             os.path.join(tmp_path, 'data_table_export.csv'),
-            analyzers=[async_analyzer, spi_analyzer])
+            analyzers=[async_analyzer, spi_analyzer], radix=automation.RadixType.ASCII)
 
         time.sleep(3)
 

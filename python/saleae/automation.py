@@ -346,7 +346,7 @@ class Capture:
         self.manager.stub.RemoveAnalyzer(request)
 
     def save_capture(self, filepath: str):
-        request = saleae_pb2.SaveCaptureRequest(filepath=filepath)
+        request = saleae_pb2.SaveCaptureRequest(capture_id=self.capture_id, filepath=filepath)
         try:
             reply = self.manager.stub.SaveCapture(request)
         except grpc.RpcError as exc:
