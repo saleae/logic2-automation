@@ -1,13 +1,24 @@
 Getting Started
 ***************
 
+Installing the Python Automation API package
+--------------------------------------------
+
 To get started, you will need the latest build of the Logic 2 Software (2.3.56+), the logic2-automation python package, and python 3.9 or newer.
 
 First, let's install the logic2-automation package. Download the package zip file, and install it like so:
 
+Download the package: :download:`_static/logic2_automation-0.0.1-py3-none-any.whl`
+
+And install it via pip:
+
 .. code-block:: bash
 
-  pip install logic2-automation.zip
+  pip install path/to/logic2_automation-0.0.1-py3-none-any.whl
+
+
+Launching Logic2
+----------------
 
 Because this feature is pre-release, the automation functionality is not available in the software by default. To activate it, the software needs to be launched with an environment variable:
 
@@ -26,15 +37,16 @@ With this flag set, the automation interface can now be enabled in the software 
 
 When the checkbox is checked, the automation server will start running in the Logic 2 software on the default port, 10430.
 
+Using the Python Automation API
+-------------------------------
+
 Next, let's run a simple example. You don't need to have a device connected for this.
 
-Create a new python file called saleae_example.py, and paste in these contents:
+Create a new python file called :code:`saleae_example.py`, and paste in these contents:
 
-.. code-block:: python
+.. literalinclude:: _static/saleae_example.py
 
-  # TODO: add python example here.
-
-Then, run the script. Make sure the software is running, and the automation interface is enabled, as shown above.
+With the software is running, and the automation interface enabled (as shown above), run the script:
 
 .. code-block:: bash
 
