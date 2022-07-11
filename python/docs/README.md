@@ -4,6 +4,8 @@ The sphinx documentation tool is used to generate the documentation for the Logi
 
 To build the documentation:
 
+Windows:
+
 ```batch
 python -m venv .venv
 .venv\Scripts\activate.bat
