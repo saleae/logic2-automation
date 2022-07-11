@@ -20,15 +20,14 @@ DIGITAL_TRIGGER_TYPE_PULSE_HIGH: DigitalTriggerType
 DIGITAL_TRIGGER_TYPE_PULSE_LOW: DigitalTriggerType
 DIGITAL_TRIGGER_TYPE_RISING: DigitalTriggerType
 DIGITAL_TRIGGER_TYPE_UNSPECIFIED: DigitalTriggerType
-ERROR_CODE_CAPTURE_IN_PROGRESS: ErrorCode
 ERROR_CODE_DEVICE_ERROR: ErrorCode
+ERROR_CODE_EXPORT_FAILED: ErrorCode
 ERROR_CODE_INTERNAL_EXCEPTION: ErrorCode
 ERROR_CODE_INVALID_REQUEST: ErrorCode
 ERROR_CODE_LOAD_CAPTURE_FAILED: ErrorCode
 ERROR_CODE_MISSING_DEVICE: ErrorCode
 ERROR_CODE_OOM: ErrorCode
 ERROR_CODE_UNSPECIFIED: ErrorCode
-ERROR_CODE_UNSUPPORTED_FILE_TYPE: ErrorCode
 RADIX_TYPE_ASCII: RadixType
 RADIX_TYPE_BINARY: RadixType
 RADIX_TYPE_DECIMAL: RadixType
@@ -167,16 +166,18 @@ class ExportDataTableReply(_message.Message):
     def __init__(self) -> None: ...
 
 class ExportDataTableRequest(_message.Message):
-    __slots__ = ["analyzer_ids", "capture_id", "filepath", "iso8601"]
+    __slots__ = ["analyzer_ids", "capture_id", "filepath", "iso8601", "radix_type"]
     ANALYZER_IDS_FIELD_NUMBER: _ClassVar[int]
     CAPTURE_ID_FIELD_NUMBER: _ClassVar[int]
     FILEPATH_FIELD_NUMBER: _ClassVar[int]
     ISO8601_FIELD_NUMBER: _ClassVar[int]
+    RADIX_TYPE_FIELD_NUMBER: _ClassVar[int]
     analyzer_ids: _containers.RepeatedScalarFieldContainer[int]
     capture_id: int
     filepath: str
     iso8601: bool
-    def __init__(self, capture_id: _Optional[int] = ..., filepath: _Optional[str] = ..., analyzer_ids: _Optional[_Iterable[int]] = ..., iso8601: bool = ...) -> None: ...
+    radix_type: RadixType
+    def __init__(self, capture_id: _Optional[int] = ..., filepath: _Optional[str] = ..., analyzer_ids: _Optional[_Iterable[int]] = ..., iso8601: bool = ..., radix_type: _Optional[_Union[RadixType, str]] = ...) -> None: ...
 
 class ExportRawDataBinaryReply(_message.Message):
     __slots__ = []

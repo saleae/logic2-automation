@@ -20,11 +20,21 @@ class UnknownError(SaleaeError):
 class InternalServerError(SaleaeError):
     pass
 
-class InvalidRequest(SaleaeError):
+class InvalidRequestError(SaleaeError):
+    pass
+
+class LoadCaptureFailedError(SaleaeError):
+    pass
+
+class ExportError(SaleaeError):
+    pass
+
+class MissingDeviceError(SaleaeError):
     pass
 
 class CaptureError(SaleaeError):
     pass
+
 class DeviceError(CaptureError):
     pass
 
@@ -53,14 +63,20 @@ def grpc_error_to_exception(exc: grpc.RpcError):
     else:
         return exc
 
-def grpc_error_msg_to_exception(msg: str):
-    code_to_exception_type = {
-        saleae_pb2.ERROR_CODE_INTERNAL_EXCEPTION: InternalServerError,
-        saleae_pb2.ERROR_CODE_INVALID_REQUEST: InvalidRequest,
-        saleae_pb2.ERROR_CODE_DEVICE_ERROR: DeviceError,
-        saleae_pb2.ERROR_CODE_OOM: OOMError,
-    }
+grpc_error_code_to_exception_type = {
+    saleae_pb2.ERROR_CODE_UNSPECIFIED: UnknownError,
 
+    saleae_pb2.ERROR_CODE_INTERNAL_EXCEPTION: InternalServerError,
+    saleae_pb2.ERROR_CODE_INVALID_REQUEST: InvalidRequestError,
+
+    saleae_pb2.ERROR_CODE_LOAD_CAPTURE_FAILED: LoadCaptureFailedError,
+    saleae_pb2.ERROR_CODE_EXPORT_FAILED: ExportError,
+
+    saleae_pb2.ERROR_CODE_MISSING_DEVICE: MissingDeviceError,
+    saleae_pb2.ERROR_CODE_DEVICE_ERROR: DeviceError,
+    saleae_pb2.ERROR_CODE_OOM: OOMError,
+}
+def grpc_error_msg_to_exception(msg: str):
     match = error_message_re.match(msg)
     if match is None:
         return UnknownError(msg)
@@ -68,7 +84,7 @@ def grpc_error_msg_to_exception(msg: str):
     code = int(match.group(1))
     error_msg = match.group(2)
 
-    exc_type = code_to_exception_type.get(code, UnknownError)
+    exc_type = grpc_error_code_to_exception_type.get(code, UnknownError)
     return exc_type(error_msg)
 
 

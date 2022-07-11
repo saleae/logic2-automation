@@ -96,7 +96,7 @@ def test_disabled_channels(capture_name: str, type: Literal['csv', 'bin'], manag
 
             # We should not get to this point
             assert(False)
-        except automation.InvalidRequest:
+        except automation.InvalidRequestError:
             pass
 
 
@@ -155,7 +155,7 @@ def test_invalid_analog_downsample_ratio(analog_downsample_ratio: int, type: Lit
 
             assert(analog_downsample_ratio >= MIN_DOWNSAMPLE_RATIO and analog_downsample_ratio <= MAX_DOWNSAMPLE_RATIO)
 
-        except automation.InvalidRequest:
+        except automation.InvalidRequestError:
             assert(analog_downsample_ratio < MIN_DOWNSAMPLE_RATIO or analog_downsample_ratio > MAX_DOWNSAMPLE_RATIO)
 
 

@@ -18,7 +18,7 @@ def test_add_analyzer(manager: automation.Manager, asset_path: str):
                 'Bits per Transfer': '8 Bits per Transfer (Standard)'        
             })
             assert(False)
-        except automation.InvalidRequest:
+        except automation.InvalidRequestError:
             pass
 
         for bitty in [1, 8, 16]:
@@ -37,7 +37,7 @@ def test_add_analyzer(manager: automation.Manager, asset_path: str):
                 'Bits per Transfer': '8 bits per Transfer (Standard)'        
             })
             assert(False)
-        except automation.InvalidRequest:
+        except automation.InvalidRequestError:
             pass
 
 
