@@ -6,16 +6,11 @@ source venv/Scripts/activate
 pip install -r requirements.txt
 ```
 
-## Testing Python Server + Client
+## Building .whl
 
-In one terminal, with the virtualenv activated, run the python server:
-
-```
-python automation_server.py
-```
-
-And in another terminal, with the virtualenv activated, run the python client:
+Run the following commands to generate a distributable package:
 
 ```
-python automation.py
+python -m pip install --upgrade build
+python -m build
 ```

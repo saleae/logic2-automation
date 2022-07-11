@@ -10,6 +10,10 @@ requires-python = ">=3.7"
 classifiers = [
    "Programming Language :: Python :: 3",
 ]
+dependencies = [
+    "grpcio==1.46.3",
+    "grpcio-tools==1.46.3",
+]
 
 [project.urls]
 "Homepage" = "https://github.com/saleae/logic2-automation"
@@ -18,3 +22,9 @@ classifiers = [
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.hatch.build]
+include = [
+    "/saleae/",
+]
+
