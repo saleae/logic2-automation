@@ -38,12 +38,12 @@ scenarios = [
     Scenario(
         capture_name='small_spi_capture.sal',
         filename='small_spi_capture/data_table_case1.csv',
-        params=dict(iso8601=False,radix=automation.RadixType.ASCII)
+        params=dict(iso8601=False, radix=automation.RadixType.ASCII)
     ),
     Scenario(
         capture_name='small_spi_capture.sal',
         filename='small_spi_capture/data_table_case2.csv',
-        params=dict(iso8601=True,radix=automation.RadixType.ASCII)
+        params=dict(iso8601=True, radix=automation.RadixType.ASCII)
     ),
 ]
 
