@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Errors &mdash; Saleae 0.0.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Automation API" href="automation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Saleae
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="launching_logic2.html">Launching the Logic 2 Software and Starting the Socket Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="automation.html">Automation API</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Errors</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Saleae</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Errors</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/errors.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="errors">
+<h1>Errors<a class="headerlink" href="#errors" title="Permalink to this heading"></a></h1>
+<p>The Logic 2 Automation Interface will return errors in certain situations. These errors fall into two main categories:</p>
+<ol class="arabic simple">
+<li><p>Errors produced by misuse of the API. These errors will contained detailed information about exactly why the command failed, and in some cases, list out what parameter was invalid, as well as the valid options. Be sure to read each error message closely! If these errors occur in production, it may mean there are still bugs in your code. These should not be handled in code.</p></li>
+<li><p>Occasional errors while recording due to USB connectivity problems. These are rare errors, but they can occur at random - like if another USB device consumes a spike of bandwidth, causing the logic analyzer stream buffer to overflow, stopping the capture. We recommend that the developer handle these errors, and restart the capture as appropriate.</p></li>
+</ol>
+<p>You will want to catch <cite>CaptureError</cite>  errors raised by <cite>start_capture</cite>, <cite>stop</cite>, and <cite>wait</cite>. If an error occurs during the capture start process, then <cite>start_capture</cite> will raise an error. If an error occurs during the capture, for example if the software wasn’t able to receive data over USB fast enough, then the capture will end prematurely. However, the python client won’t be aware of this until stop or wait is called, at which point <cite>CaptureError</cite> will be raised.</p>
+<p>If any of these commands raise the <cite>CaptureError</cite> exception, we recommend simply starting a new capture. if <cite>stop</cite> or <cite>wait</cite> raise the error, be sure to dispose of the capture before starting the next one.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="saleae.automation.SaleaeError">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">saleae.automation.</span></span><span class="sig-name descname"><span class="pre">SaleaeError</span></span><a class="headerlink" href="#saleae.automation.SaleaeError" title="Permalink to this definition"></a></dt>
+<dd><p>The base class for all Saleae exceptions. Do not catch this directly.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="saleae.automation.UnknownError">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">saleae.automation.</span></span><span class="sig-name descname"><span class="pre">UnknownError</span></span><a class="headerlink" href="#saleae.automation.UnknownError" title="Permalink to this definition"></a></dt>
+<dd><p>This indicates that the error message from the Logic 2 software was not understood by the python library.
+This could indicate a version mismatch.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="saleae.automation.InternalServerError">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">saleae.automation.</span></span><span class="sig-name descname"><span class="pre">InternalServerError</span></span><a class="headerlink" href="#saleae.automation.InternalServerError" title="Permalink to this definition"></a></dt>
+<dd><p>An unexpected error occurred in the Logic 2 software. Please submit these errors to Saleae support.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="saleae.automation.InvalidRequestError">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">saleae.automation.</span></span><span class="sig-name descname"><span class="pre">InvalidRequestError</span></span><a class="headerlink" href="#saleae.automation.InvalidRequestError" title="Permalink to this definition"></a></dt>
+<dd><p>The socket request was invalid. See exception message for details.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="saleae.automation.LoadCaptureFailedError">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">saleae.automation.</span></span><span class="sig-name descname"><span class="pre">LoadCaptureFailedError</span></span><a class="headerlink" href="#saleae.automation.LoadCaptureFailedError" title="Permalink to this definition"></a></dt>
+<dd><p>Error loading a saved capture.
+This could indicate that the file does not exist, or the file was saved with a newer version of the Logic 2 software, or that the file was not a valid saved file.
+Try manually loading the file in the Logic 2 software for more information.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="saleae.automation.ExportError">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">saleae.automation.</span></span><span class="sig-name descname"><span class="pre">ExportError</span></span><a class="headerlink" href="#saleae.automation.ExportError" title="Permalink to this definition"></a></dt>
+<dd><p>An error occurred either while exporting raw data, a single protocol analyzer, or the protocol analyzer data table.
+Check the exception message for more details.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="saleae.automation.MissingDeviceError">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">saleae.automation.</span></span><span class="sig-name descname"><span class="pre">MissingDeviceError</span></span><a class="headerlink" href="#saleae.automation.MissingDeviceError" title="Permalink to this definition"></a></dt>
+<dd><p>The device ID supplied to the start_capture function is not currently attached to the system, or it has not been detected by the software.
+For general support for device not detected errors, see this support article:
+<a class="reference external" href="https://support.saleae.com/troubleshooting/logic-not-detected">https://support.saleae.com/troubleshooting/logic-not-detected</a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="saleae.automation.CaptureError">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">saleae.automation.</span></span><span class="sig-name descname"><span class="pre">CaptureError</span></span><a class="headerlink" href="#saleae.automation.CaptureError" title="Permalink to this definition"></a></dt>
+<dd><p>The base class for all capture related errors. We recommend all automation applications handle this exception type.
+Capture failures occur rarely, and for a handful of reasons. We recommend logging the exception message for later troubleshooting.
+We do not recommend attempting to access or save captures that end in an error. Instead, we recommend starting a new capture.
+Check the exception message for details.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="saleae.automation.DeviceError">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">saleae.automation.</span></span><span class="sig-name descname"><span class="pre">DeviceError</span></span><a class="headerlink" href="#saleae.automation.DeviceError" title="Permalink to this definition"></a></dt>
+<dd><p>This error represents any device related error while capturing. USB communication or bandwidth errors, missing calibration, device disconnection while recording, and more.
+Check the exception message for details.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="saleae.automation.OOMError">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">saleae.automation.</span></span><span class="sig-name descname"><span class="pre">OOMError</span></span><a class="headerlink" href="#saleae.automation.OOMError" title="Permalink to this definition"></a></dt>
+<dd><p>This exception indicates that the capture was automatically terminated because the capture buffer was filled.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="automation.html" class="btn btn-neutral float-left" title="Automation API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Saleae Inc.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
