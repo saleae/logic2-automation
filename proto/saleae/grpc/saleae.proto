@@ -7,7 +7,6 @@ option objc_class_prefix = "Saleae";
 
 package saleae.automation;
 
-
 /*****************************************************************************
  *
  * gRPC API
@@ -16,36 +15,48 @@ package saleae.automation;
 
 service Manager {
     // Get list of connected devices.
-    rpc GetDevices (GetDevicesRequest) returns (GetDevicesReply) {}
-  
+    rpc GetDevices(GetDevicesRequest) returns (GetDevicesReply) {}
+
+    // Start a capture
+    rpc StartCapture(StartCaptureRequest) returns (StartCaptureReply) {}
+
+    // Stop an active capture
+    rpc StopCapture(StopCaptureRequest) returns (StopCaptureReply) {}
+
+    // Wait until a capture has completed
+    rpc WaitCapture(WaitCaptureRequest) returns (WaitCaptureReply) {}
+
     // Load a capture from file.
-    rpc LoadCapture (LoadCaptureRequest) returns (LoadCaptureReply) {}
+    rpc LoadCapture(LoadCaptureRequest) returns (LoadCaptureReply) {}
 
     // Save a capture to file.
-    rpc SaveCapture (SaveCaptureRequest) returns (SaveCaptureReply) {}
+    rpc SaveCapture(SaveCaptureRequest) returns (SaveCaptureReply) {}
 
     // Close a capture.
-    // Note: It is recommended to close a capture once it is no longer being used so that any
-    //       consumed resources can be released.
-    rpc CloseCapture (CloseCaptureRequest) returns (CloseCaptureReply) {}
-  
+    // Note: It is recommended to close a capture once it is no longer being used
+    // so that any consumed resources can be released.
+    rpc CloseCapture(CloseCaptureRequest) returns (CloseCaptureReply) {}
+
     // Add an analyzer to a capture.
-    rpc AddAnalyzer (AddAnalyzerRequest) returns (AddAnalyzerReply) {}
+    rpc AddAnalyzer(AddAnalyzerRequest) returns (AddAnalyzerReply) {}
 
     // Remove an analyzer from a capture.
-    rpc RemoveAnalyzer (RemoveAnalyzerRequest) returns (RemoveAnalyzerReply) {}
-  
+    rpc RemoveAnalyzer(RemoveAnalyzerRequest) returns (RemoveAnalyzerReply) {}
+
     // Export raw channel data to CSV files.
-    rpc ExportRawDataCsv (ExportRawDataCsvRequest) returns (ExportRawDataCsvReply) {}
+    rpc ExportRawDataCsv(ExportRawDataCsvRequest)
+            returns (ExportRawDataCsvReply) {}
 
     // Export raw channel data to binary files.
-    rpc ExportRawDataBinary (ExportRawDataBinaryRequest) returns (ExportRawDataBinaryReply) {}
-  
+    rpc ExportRawDataBinary(ExportRawDataBinaryRequest)
+            returns (ExportRawDataBinaryReply) {}
+
     // Export analyzer data to CSV file.
-    rpc ExportDataTable (ExportDataTableRequest) returns (ExportDataTableReply) {}
+    rpc ExportDataTable(ExportDataTableRequest) returns (ExportDataTableReply) {}
 
     // Export custom analyzer export data to file.
-    rpc ExportAnalyzerLegacy (ExportAnalyzerLegacyRequest) returns (ExportAnalyzerLegacyReply) {}
+    rpc ExportAnalyzerLegacy(ExportAnalyzerLegacyRequest)
+            returns (ExportAnalyzerLegacyReply) {}
 }
 
 
@@ -57,44 +68,47 @@ service Manager {
  ****************************************************************************/
 
 enum ErrorCode {
-    UNKNOWN_ERROR_CODE = 0; // Not used
+    ERROR_CODE_UNSPECIFIED = 0; // Not used
 
     // Unexpected Saleae Internal Error.
-    INTERNAL_EXCEPTION = 1;
+    ERROR_CODE_INTERNAL_EXCEPTION = 1;
 
     // Request is invalid, usually because of invalid arguments.
     //
     // Examples:
-    //   Invalid Capture Id - capture does not exist
-    //   Missing filepath
-    INVALID_REQUEST = 10;
+    //     Invalid Capture Id - capture does not exist
+    //     Missing filepath
+    ERROR_CODE_INVALID_REQUEST = 10;
 
-    LOAD_CAPTURE_FAILED = 20;
-    CAPTURE_IN_PROGRESS = 21;
-    UNSUPPORTED_FILE_TYPE = 22;
+    ERROR_CODE_LOAD_CAPTURE_FAILED = 20;
+    ERROR_CODE_EXPORT_FAILED = 21;
+
+    ERROR_CODE_MISSING_DEVICE = 50;
+    ERROR_CODE_DEVICE_ERROR = 51;
+    ERROR_CODE_OOM = 52;
 }
 
 enum RadixType {
-    UNKNOWN_RADIX_TYPE = 0;
+    RADIX_TYPE_UNSPECIFIED = 0;
 
-    BINARY = 1;
-    DECIMAL = 2;
-    HEXADECIMAL = 3;
-    ASCII = 4;
+    RADIX_TYPE_BINARY = 1;
+    RADIX_TYPE_DECIMAL = 2;
+    RADIX_TYPE_HEXADECIMAL = 3;
+    RADIX_TYPE_ASCII = 4;
 };
 
 enum DeviceType {
     // Invalid Device Type
-    UNKNOWN_DEVICE_TYPE = 0;
+    DEVICE_TYPE_UNSPECIFIED = 0;
 
     // Saleae Logic 8
-    LOGIC_8 = 1;
+    DEVICE_TYPE_LOGIC_8 = 1;
 
     // Saleae Logic Pro 8
-    LOGIC_PRO_8 = 2;
+    DEVICE_TYPE_LOGIC_PRO_8 = 2;
 
     // Saleae Logic Pro 16
-    LOGIC_PRO_16 = 3;
+    DEVICE_TYPE_LOGIC_PRO_16 = 3;
 }
 
 // Device descriptor object.
@@ -110,13 +124,13 @@ message Device {
 }
 
 enum ChannelType {
-    UNKNOWN_CHANNEL_TYPE = 0;
+    CHANNEL_TYPE_UNSPECIFIED = 0;
 
-    // Digial channel.
-    DIGITAL = 1;
+    // Digial channel
+    CHANNEL_TYPE_DIGITAL = 1;
 
-    // Analog data.
-    ANALOG = 2;
+    // Analog channel
+    CHANNEL_TYPE_ANALOG = 2;
 }
 
 // Identification for a channel.
@@ -136,6 +150,103 @@ message CaptureInfo {
     uint64 capture_id = 1;
 }
 
+message LogicDeviceConfiguration {
+    // Digital channel indices to enabled
+    repeated uint32 enabled_digital_channels = 1;
+
+    // Analog channel indices to enabled
+    repeated uint32 enabled_analog_channels = 2;
+
+    // Digital Sample Rate
+    uint32 digital_sample_rate = 3;
+
+    // Analog Sample Rate
+    uint32 analog_sample_rate = 4;
+
+    // For Pro 8 and Pro 16, this can be one of: 1.2, 1.8, or 3.3
+    // For other devices this is ignored
+    double digital_threshold_volts = 5;
+
+    // Glitch filter to apply to digital data
+    repeated GlitchFilterEntry glitch_filters = 6;
+}
+
+message GlitchFilterEntry {
+    // Channel index
+    uint32 channel_index = 1;
+
+    // Minimum pulse width, in seconds
+    double pulse_width_seconds = 2;
+}
+
+message ManualCaptureMode { 
+    // Number of seconds to keep after the capture ends
+    double trim_data_seconds = 1;
+}
+
+message TimedCaptureMode {
+    // Seconds of data to capture
+    double duration_seconds = 1;
+
+    // Number of seconds to keep after the capture ends
+    double trim_data_seconds = 2;
+}
+
+enum DigitalTriggerType {
+    DIGITAL_TRIGGER_TYPE_UNSPECIFIED = 0;
+
+    DIGITAL_TRIGGER_TYPE_RISING = 1;
+    DIGITAL_TRIGGER_TYPE_FALLING = 2;
+    DIGITAL_TRIGGER_TYPE_PULSE_HIGH = 3;
+    DIGITAL_TRIGGER_TYPE_PULSE_LOW = 4;
+}
+
+message DigitalTriggerLinkedChannel {
+    uint32 channel_index = 1;
+    DigitalTriggerLinkedChannelState state = 2;
+}
+
+enum DigitalTriggerLinkedChannelState {
+    DIGITAL_TRIGGER_LINKED_CHANNEL_STATE_UNSPECIFIED = 0;
+
+    DIGITAL_TRIGGER_LINKED_CHANNEL_STATE_LOW = 1;
+    DIGITAL_TRIGGER_LINKED_CHANNEL_STATE_HIGH = 2;
+}
+
+message DigitalTriggerCaptureMode {
+    DigitalTriggerType trigger_type = 1;
+
+    // Number of seconds to continue capturing after trigger
+    double after_trigger_seconds = 2;
+
+    // Number of seconds to keep after the capture ends
+    double trim_data_seconds = 3;
+
+    // Index of channel to trigger on
+    uint32 trigger_channel_index = 4;
+
+    // Minimum pulse width to trigger on, in seconds
+    double min_pulse_width_seconds = 5;
+
+    // Maximum pulse width to trigger on, in seconds
+    double max_pulse_width_seconds = 6;
+
+    // Other channel conditions
+    repeated DigitalTriggerLinkedChannel linked_channels = 7;
+}
+
+message CaptureConfiguration {
+    // Capture buffer size (in megabytes)
+    uint32 buffer_size = 1;
+
+    // Capture mode
+    oneof capture_mode {
+        ManualCaptureMode manual_capture_mode = 2;
+        TimedCaptureMode timed_capture_mode = 3;
+        DigitalTriggerCaptureMode digital_capture_mode = 4;
+    }
+}
+
 
 
 /*****************************************************************************
@@ -144,13 +255,30 @@ message CaptureInfo {
  *
  ****************************************************************************/
 
-message GetDevicesRequest {
-}
-message GetDevicesReply {
-    repeated Device devices = 1;
-}
+message GetDevicesRequest {}
+message GetDevicesReply { repeated Device devices = 1; }
 
+// Start Capture
+message StartCaptureRequest {
+    string device_serial_number = 1;
 
+    oneof device_configuration {
+        LogicDeviceConfiguration logic_device_configuration = 2;
+    }
+
+    CaptureConfiguration capture_configuration = 3;
+}
+message StartCaptureReply { CaptureInfo capture_info = 1; }
+
+// Stop Capture
+message StopCaptureRequest { uint64 capture_id = 1; }
+message StopCaptureReply {}
+
+// Stop Capture
+message WaitCaptureRequest { uint64 capture_id = 1; }
+message WaitCaptureReply {}
+
+// Load Capture
 message LoadCaptureRequest {
     // Filepath of Logic 2 .sal capture file to load.
     string filepath = 1;
@@ -160,7 +288,6 @@ message LoadCaptureReply {
     CaptureInfo capture_info = 1;
 }
 
-
 message SaveCaptureRequest {
     // Id of capture to save.
     uint64 capture_id = 1;
@@ -168,17 +295,13 @@ message SaveCaptureRequest {
     // Full filepath to save the file to, usually ending in ".sal".
     string filepath = 2;
 }
-message SaveCaptureReply {
-}
-
+message SaveCaptureReply {}
 
 message CloseCaptureRequest {
     // Id of capture to close.
     uint64 capture_id = 1;
 }
-message CloseCaptureReply {
-}
-
+message CloseCaptureReply {}
 
 message ExportRawDataCsvRequest {
     // Id of capture to export data from.
@@ -196,9 +319,7 @@ message ExportRawDataCsvRequest {
     // If true, timestamps will be in ISO8601 format.
     bool iso8601 = 5;
 }
-message ExportRawDataCsvReply {
-}
-
+message ExportRawDataCsvReply {}
 
 message ExportRawDataBinaryRequest {
     // Id of capture to export data from.
@@ -213,9 +334,7 @@ message ExportRawDataBinaryRequest {
     // Must be between 1 and 1,000,000, inclusive.
     uint64 analog_downsample_ratio = 4;
 }
-message ExportRawDataBinaryReply {
-}
-
+message ExportRawDataBinaryReply {}
 
 message AnalyzerSettingValue {
     oneof value {
@@ -236,15 +355,15 @@ message AddAnalyzerRequest {
     // Id of capture to add analyzer to.
     uint64 capture_id = 1;
 
-    // Name of analyzer. This should exactly match the name seen in the application.
-    // Examples: "SPI", "I2C", "Async Serial"
+    // Name of analyzer. This should exactly match the name seen in the
+    // application. Examples: "SPI", "I2C", "Async Serial"
     string analyzer_name = 2;
 
     // User-facing name for the analyzer.
     string analyzer_label = 3;
 
-    // Analyzer settings. These should match the names shown in analyzer's settings
-    // shown in the application.
+    // Analyzer settings. These should match the names shown in analyzer's
+    // settings shown in the application.
     map<string, AnalyzerSettingValue> settings = 4;
 }
 message AddAnalyzerReply {
@@ -259,8 +378,7 @@ message RemoveAnalyzerRequest {
     // Id of analyzer to remove.
     uint64 analyzer_id = 2;
 }
-message RemoveAnalyzerReply {
-}
+message RemoveAnalyzerReply {}
 
 message ExportDataTableRequest {
     // Id of capture to export data from.
@@ -274,9 +392,10 @@ message ExportDataTableRequest {
 
     // If true, timestamps will be in ISO8601 format.
     bool iso8601 = 5;
+
+    RadixType radix_type = 6;
 }
-message ExportDataTableReply{
-}
+message ExportDataTableReply {}
 
 message ExportAnalyzerLegacyRequest {
     // Id of capture to export data from.
@@ -291,5 +410,4 @@ message ExportAnalyzerLegacyRequest {
     // Radix to use for exported data.
     RadixType radix_type = 4;
 }
-message ExportAnalyzerLegacyReply{
-}
+message ExportAnalyzerLegacyReply {}

@@ -6,7 +6,13 @@ from saleae.grpc import saleae_pb2 as saleae_dot_grpc_dot_saleae__pb2
 
 
 class ManagerStub(object):
-    """Missing associated documentation comment in .proto file."""
+    """****************************************************************************
+
+    gRPC API
+
+    **************************************************************************
+
+    """
 
     def __init__(self, channel):
         """Constructor.
@@ -18,6 +24,21 @@ class ManagerStub(object):
                 '/saleae.automation.Manager/GetDevices',
                 request_serializer=saleae_dot_grpc_dot_saleae__pb2.GetDevicesRequest.SerializeToString,
                 response_deserializer=saleae_dot_grpc_dot_saleae__pb2.GetDevicesReply.FromString,
+                )
+        self.StartCapture = channel.unary_unary(
+                '/saleae.automation.Manager/StartCapture',
+                request_serializer=saleae_dot_grpc_dot_saleae__pb2.StartCaptureRequest.SerializeToString,
+                response_deserializer=saleae_dot_grpc_dot_saleae__pb2.StartCaptureReply.FromString,
+                )
+        self.StopCapture = channel.unary_unary(
+                '/saleae.automation.Manager/StopCapture',
+                request_serializer=saleae_dot_grpc_dot_saleae__pb2.StopCaptureRequest.SerializeToString,
+                response_deserializer=saleae_dot_grpc_dot_saleae__pb2.StopCaptureReply.FromString,
+                )
+        self.WaitCapture = channel.unary_unary(
+                '/saleae.automation.Manager/WaitCapture',
+                request_serializer=saleae_dot_grpc_dot_saleae__pb2.WaitCaptureRequest.SerializeToString,
+                response_deserializer=saleae_dot_grpc_dot_saleae__pb2.WaitCaptureReply.FromString,
                 )
         self.LoadCapture = channel.unary_unary(
                 '/saleae.automation.Manager/LoadCapture',
@@ -54,55 +75,117 @@ class ManagerStub(object):
                 request_serializer=saleae_dot_grpc_dot_saleae__pb2.ExportRawDataBinaryRequest.SerializeToString,
                 response_deserializer=saleae_dot_grpc_dot_saleae__pb2.ExportRawDataBinaryReply.FromString,
                 )
+        self.ExportDataTable = channel.unary_unary(
+                '/saleae.automation.Manager/ExportDataTable',
+                request_serializer=saleae_dot_grpc_dot_saleae__pb2.ExportDataTableRequest.SerializeToString,
+                response_deserializer=saleae_dot_grpc_dot_saleae__pb2.ExportDataTableReply.FromString,
+                )
+        self.ExportAnalyzerLegacy = channel.unary_unary(
+                '/saleae.automation.Manager/ExportAnalyzerLegacy',
+                request_serializer=saleae_dot_grpc_dot_saleae__pb2.ExportAnalyzerLegacyRequest.SerializeToString,
+                response_deserializer=saleae_dot_grpc_dot_saleae__pb2.ExportAnalyzerLegacyReply.FromString,
+                )
 
 
 class ManagerServicer(object):
-    """Missing associated documentation comment in .proto file."""
+    """****************************************************************************
+
+    gRPC API
+
+    **************************************************************************
+
+    """
 
     def GetDevices(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Get list of connected devices.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def StartCapture(self, request, context):
+        """Start a capture
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def StopCapture(self, request, context):
+        """Stop an active capture
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def WaitCapture(self, request, context):
+        """Wait until a capture has completed
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def LoadCapture(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Load a capture from file.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def SaveCapture(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Save a capture to file.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def CloseCapture(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Close a capture.
+        Note: It is recommended to close a capture once it is no longer being used
+        so that any
+        consumed resources can be released.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def AddAnalyzer(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Add an analyzer to a capture.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def RemoveAnalyzer(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Remove an analyzer from a capture.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def ExportRawDataCsv(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Export raw channel data to CSV files.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def ExportRawDataBinary(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Export raw channel data to binary files.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ExportDataTable(self, request, context):
+        """Export analyzer data to CSV file.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ExportAnalyzerLegacy(self, request, context):
+        """Export custom analyzer export data to file.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -114,6 +197,21 @@ def add_ManagerServicer_to_server(servicer, server):
                     servicer.GetDevices,
                     request_deserializer=saleae_dot_grpc_dot_saleae__pb2.GetDevicesRequest.FromString,
                     response_serializer=saleae_dot_grpc_dot_saleae__pb2.GetDevicesReply.SerializeToString,
+            ),
+            'StartCapture': grpc.unary_unary_rpc_method_handler(
+                    servicer.StartCapture,
+                    request_deserializer=saleae_dot_grpc_dot_saleae__pb2.StartCaptureRequest.FromString,
+                    response_serializer=saleae_dot_grpc_dot_saleae__pb2.StartCaptureReply.SerializeToString,
+            ),
+            'StopCapture': grpc.unary_unary_rpc_method_handler(
+                    servicer.StopCapture,
+                    request_deserializer=saleae_dot_grpc_dot_saleae__pb2.StopCaptureRequest.FromString,
+                    response_serializer=saleae_dot_grpc_dot_saleae__pb2.StopCaptureReply.SerializeToString,
+            ),
+            'WaitCapture': grpc.unary_unary_rpc_method_handler(
+                    servicer.WaitCapture,
+                    request_deserializer=saleae_dot_grpc_dot_saleae__pb2.WaitCaptureRequest.FromString,
+                    response_serializer=saleae_dot_grpc_dot_saleae__pb2.WaitCaptureReply.SerializeToString,
             ),
             'LoadCapture': grpc.unary_unary_rpc_method_handler(
                     servicer.LoadCapture,
@@ -150,6 +248,16 @@ def add_ManagerServicer_to_server(servicer, server):
                     request_deserializer=saleae_dot_grpc_dot_saleae__pb2.ExportRawDataBinaryRequest.FromString,
                     response_serializer=saleae_dot_grpc_dot_saleae__pb2.ExportRawDataBinaryReply.SerializeToString,
             ),
+            'ExportDataTable': grpc.unary_unary_rpc_method_handler(
+                    servicer.ExportDataTable,
+                    request_deserializer=saleae_dot_grpc_dot_saleae__pb2.ExportDataTableRequest.FromString,
+                    response_serializer=saleae_dot_grpc_dot_saleae__pb2.ExportDataTableReply.SerializeToString,
+            ),
+            'ExportAnalyzerLegacy': grpc.unary_unary_rpc_method_handler(
+                    servicer.ExportAnalyzerLegacy,
+                    request_deserializer=saleae_dot_grpc_dot_saleae__pb2.ExportAnalyzerLegacyRequest.FromString,
+                    response_serializer=saleae_dot_grpc_dot_saleae__pb2.ExportAnalyzerLegacyReply.SerializeToString,
+            ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
             'saleae.automation.Manager', rpc_method_handlers)
@@ -158,7 +266,13 @@ def add_ManagerServicer_to_server(servicer, server):
 
  # This class is part of an EXPERIMENTAL API.
 class Manager(object):
-    """Missing associated documentation comment in .proto file."""
+    """****************************************************************************
+
+    gRPC API
+
+    **************************************************************************
+
+    """
 
     @staticmethod
     def GetDevices(request,
@@ -174,6 +288,57 @@ class Manager(object):
         return grpc.experimental.unary_unary(request, target, '/saleae.automation.Manager/GetDevices',
             saleae_dot_grpc_dot_saleae__pb2.GetDevicesRequest.SerializeToString,
             saleae_dot_grpc_dot_saleae__pb2.GetDevicesReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def StartCapture(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/saleae.automation.Manager/StartCapture',
+            saleae_dot_grpc_dot_saleae__pb2.StartCaptureRequest.SerializeToString,
+            saleae_dot_grpc_dot_saleae__pb2.StartCaptureReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def StopCapture(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/saleae.automation.Manager/StopCapture',
+            saleae_dot_grpc_dot_saleae__pb2.StopCaptureRequest.SerializeToString,
+            saleae_dot_grpc_dot_saleae__pb2.StopCaptureReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def WaitCapture(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/saleae.automation.Manager/WaitCapture',
+            saleae_dot_grpc_dot_saleae__pb2.WaitCaptureRequest.SerializeToString,
+            saleae_dot_grpc_dot_saleae__pb2.WaitCaptureReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -293,5 +458,39 @@ class Manager(object):
         return grpc.experimental.unary_unary(request, target, '/saleae.automation.Manager/ExportRawDataBinary',
             saleae_dot_grpc_dot_saleae__pb2.ExportRawDataBinaryRequest.SerializeToString,
             saleae_dot_grpc_dot_saleae__pb2.ExportRawDataBinaryReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def ExportDataTable(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/saleae.automation.Manager/ExportDataTable',
+            saleae_dot_grpc_dot_saleae__pb2.ExportDataTableRequest.SerializeToString,
+            saleae_dot_grpc_dot_saleae__pb2.ExportDataTableReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def ExportAnalyzerLegacy(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/saleae.automation.Manager/ExportAnalyzerLegacy',
+            saleae_dot_grpc_dot_saleae__pb2.ExportAnalyzerLegacyRequest.SerializeToString,
+            saleae_dot_grpc_dot_saleae__pb2.ExportAnalyzerLegacyReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

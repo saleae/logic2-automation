@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Literal
+from typing import Literal, List
 import pytest
 import os
 import os.path
@@ -9,8 +9,8 @@ from saleae import automation
 
 @dataclass
 class CaptureDesc:
-    digital_channels: list[int] = field(default_factory=list)
-    analog_channels: list[int] = field(default_factory=list)
+    digital_channels: List[int] = field(default_factory=list)
+    analog_channels: List[int] = field(default_factory=list)
 
 capture_desc = {
     'cap1.sal': CaptureDesc(
@@ -26,7 +26,7 @@ capture_desc = {
     ),
 }
 
-def get_expected_files(type: Literal['csv', 'bin'], digital_channels: list[int], analog_channels: list[int]):
+def get_expected_files(type: Literal['csv', 'bin'], digital_channels: List[int], analog_channels: List[int]):
     """
     Get a list of expected files for export
     """
@@ -96,7 +96,7 @@ def test_disabled_channels(capture_name: str, type: Literal['csv', 'bin'], manag
 
             # We should not get to this point
             assert(False)
-        except automation.InvalidRequest:
+        except automation.InvalidRequestError:
             pass
 
 
@@ -107,22 +107,24 @@ def test_no_channels(type: Literal['csv', 'bin'], manager: automation.Manager, a
     directory = os.path.join(tmp_path, f'export_{capture_name}')
 
     with manager.load_capture(path) as cap:
-        try:
-            if type == 'csv':
-                cap.export_raw_data_csv(
-                    directory=directory,
-                    analog_channels=[],
-                    digital_channels=[])
-            else:
-                cap.export_raw_data_binary(
-                    directory=directory,
-                    analog_channels=[],
-                    digital_channels=[])
+        if type == 'csv':
+            cap.export_raw_data_csv(
+                directory=directory,
+                analog_channels=[],
+                digital_channels=[])
+        else:
+            cap.export_raw_data_binary(
+                directory=directory,
+                analog_channels=[],
+                digital_channels=[])
 
-            # We should not get to this point
-            assert(False)
-        except automation.InvalidRequest:
-            pass
+        desc = capture_desc[capture_name]
+        expected_files = get_expected_files(type, desc.digital_channels, desc.analog_channels)
+
+        files_created = os.listdir(directory)
+        assert(len(expected_files) == len(files_created))
+        for filename in expected_files:
+            assert(filename in files_created)
 
 
 MIN_DOWNSAMPLE_RATIO = 1
@@ -153,7 +155,7 @@ def test_invalid_analog_downsample_ratio(analog_downsample_ratio: int, type: Lit
 
             assert(analog_downsample_ratio >= MIN_DOWNSAMPLE_RATIO and analog_downsample_ratio <= MAX_DOWNSAMPLE_RATIO)
 
-        except automation.InvalidRequest:
+        except automation.InvalidRequestError:
             assert(analog_downsample_ratio < MIN_DOWNSAMPLE_RATIO or analog_downsample_ratio > MAX_DOWNSAMPLE_RATIO)
 
 

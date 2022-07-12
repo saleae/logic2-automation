@@ -5,7 +5,7 @@ import time
 
 from saleae import automation
 
-def test_add_analyzer(manager: automation.Manager, asset_path: str, tmp_path):
+def test_export_analyzer_legacy(manager: automation.Manager, asset_path: str, tmp_path):
     path = os.path.join(asset_path, 'small_spi_capture.sal')
 
     
