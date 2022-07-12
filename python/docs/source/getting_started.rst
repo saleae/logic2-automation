@@ -41,6 +41,9 @@ Using the Python Automation API
 -------------------------------
 
 Next, let's run a simple example. You don't need to have a device connected for this.
+This example uses a demo device, if you would like to use a connected device follow the
+steps :ref:`here<device-serial-number>` 
+to find your device's serial number and replace the demo value in the example.
 
 Create a new python file called :code:`saleae_example.py`, and paste in these contents:
 
@@ -54,8 +57,9 @@ With the software is running, and the automation interface enabled (as shown abo
 
 There you have it! Take a look at the documentation for Manager and Capture to see how the functionality all works!
 
-Also, for most automated applications, you won't want to start the software manually. See this section for more information about different ways to launch the Logic software, including through this python library.
+Also, for most automated applications, you won't want to start the software manually. See :ref:`this section<launching-and-starting-socket>` for more information about different ways to launch the Logic software, including through this python library.
 
+.. _device-serial-number:
 
 Finding the Serial Number of a Device
 -------------------------------------

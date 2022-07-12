@@ -1,3 +1,5 @@
+.. _launching-and-starting-socket:
+
 Launching the Logic 2 Software and Starting the Socket Interface
 ****************************************************************
 
@@ -25,6 +27,6 @@ In the meantime, the software can be launched with the automation server enabled
   
   # by default, the port number is 10430. However, it can be set with --automationPort N
 
-Note, both the environment variable and the command line argument need to set bet in order for the automation interface to be enabled by default.
+Note, both the environment variable and the command line argument need to be set in order for the automation interface to be enabled by default.
 
-Additionally, the automation interface can be manually enabled in the UI by following the instructions in the getting started guide.
+Additionally, the automation interface can be manually enabled in the UI by following the instructions in the :doc:`getting_started`.
