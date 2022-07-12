@@ -55,3 +55,17 @@ With the software is running, and the automation interface enabled (as shown abo
 There you have it! Take a look at the documentation for Manager and Capture to see how the functionality all works!
 
 Also, for most automated applications, you won't want to start the software manually. See this section for more information about different ways to launch the Logic software, including through this python library.
+
+
+Finding the Serial Number of a Device
+-------------------------------------
+
+To find the serial number of a connected device, open capture info sidebar and click the device dropdown in the top right:
+
+.. image:: _static/device_info.png
+
+If the device you want the serial number for is not selected, select it. Then click "Device Info" - this will open a popup with information about your device, including its serial number.
+
+.. image:: _static/device_serial.png
+
+You can copy the serial number from here and use it in your Python script.

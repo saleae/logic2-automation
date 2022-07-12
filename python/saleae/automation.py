@@ -54,7 +54,6 @@ class ExportError(SaleaeError):
 class MissingDeviceError(SaleaeError):
     """
     The device ID supplied to the start_capture function is not currently attached to the system, or it has not been detected by the software.
-    Use the get_devices function to check available devices.
     For general support for device not detected errors, see this support article:
     https://support.saleae.com/troubleshooting/logic-not-detected
     """
@@ -310,13 +309,14 @@ class Manager:
             raise RuntimeError("Cannot use Manager after it has been closed")
         return self._stub
 
-    def get_devices(self):
-        """
-        Returns a list of connected devices. Use this to find the serial numbers of the attached devices.
-        """
-        request = saleae_pb2.GetDevicesRequest()
-        with error_handler():
-            reply: saleae_pb2.GetDevicesReply = self.stub.GetDevices(request)
+    #def get_devices(self):
+        #"""
+        #Returns a list of connected devices. Use this to find the serial numbers of the attached devices.
+        #"""
+        #raise NotImplemented("get_devices is not currently implemented")
+        #request = saleae_pb2.GetDevicesRequest()
+        #with error_handler():
+            #reply: saleae_pb2.GetDevicesReply = self.stub.GetDevices(request)
 
     def start_capture(
         self,
@@ -332,7 +332,7 @@ class Manager:
         Be sure to catch DeviceError exceptions raised by this function, and handle them accordingly. See the error section of the library documentation.
 
         :param device_configuration: An instance of LogicDeviceConfiguration, complete with enabled channels, sample rates, and more.
-        :param device_serial_number: The serial number of device to record with. Use get_devices to retrieve the serial numbers of the connected device(s).
+        :param device_serial_number: The serial number of device to record with.
         :param capture_configuration: The capture configuration, which selects the capture mode: timer, digital trigger, or manual., defaults to None, indicating manual mode.
         :return: Capture instance class. Be sure to call either wait() or stop() before trying to save, export, or close the capture.
         """

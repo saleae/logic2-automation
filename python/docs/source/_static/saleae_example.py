@@ -20,6 +20,9 @@ capture_configuration = automation.CaptureConfiguration(
 )
 
 # Start a capture - the capture will be automatically closed when leaving the `with` block
+# Note: We are using serial number 'F4241' here, which is the serial number for
+#       the Logic Pro 16 demo device. You will need to use your device's serial number
+#       to use a real device. Please see the "Finding the Serial Number of a Device" section.
 with manager.start_capture(device_serial_number='F4241',
                            device_configuration=device_configuration,
                            capture_configuration=capture_configuration) as capture:
