@@ -1,0 +1,30 @@
+[project]
+name = "logic2-automation"
+version = "0.0.1"
+authors = [
+    { name="Saleae, Inc.", email="support@saleae.com" },
+]
+description = "Library for using the Saleae Logic 2 Automation API"
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+   "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "grpcio==1.46.3",
+    "grpcio-tools==1.46.3",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/saleae/logic2-automation"
+"Bug Tracker" = "https://github.com/saleae/logic2-automation/issues"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build]
+include = [
+    "/saleae/",
+]
+
