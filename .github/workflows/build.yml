@@ -22,10 +22,13 @@ jobs:
       
       - name: Build .whl
         run: |
+          cd python
           python -m pip install --upgrade build
           python -m build
+          cp dist/*.whl docs/source/_static
 
       - name: Build docs
         run: |
-          cd docs
+          cd python/docs
+          python -m pip install -r requirements.txt
           make html
