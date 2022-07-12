@@ -1,3 +1,9 @@
 # Logic2 Automation API
 
-More to come
+## Installing
+
+## Usage
+
+## Docs
+
+Read the docs at https://saleae.github.io/logic2-automation/
