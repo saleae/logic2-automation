@@ -7,24 +7,27 @@ import filecmp
 
 from saleae import automation
 
+
 @dataclass
 class CaptureDesc:
     digital_channels: List[int] = field(default_factory=list)
     analog_channels: List[int] = field(default_factory=list)
 
+
 capture_desc = {
     'cap1.sal': CaptureDesc(
-        digital_channels=[0,1],
-        analog_channels=[0,1],
+        digital_channels=[0, 1],
+        analog_channels=[0, 1],
     ),
     'cap2.sal': CaptureDesc(
-        digital_channels=[2,3],
+        digital_channels=[2, 3],
     ),
     'cap3.sal': CaptureDesc(
-        digital_channels=[4,5],
+        digital_channels=[4, 5],
         analog_channels=[4],
     ),
 }
+
 
 def get_expected_files(type: Literal['csv', 'bin'], digital_channels: List[int], analog_channels: List[int]):
     """
@@ -43,10 +46,11 @@ def get_expected_files(type: Literal['csv', 'bin'], digital_channels: List[int],
 
     return expected_files
 
+
 @pytest.mark.parametrize('capture_name', capture_desc.keys())
 @pytest.mark.parametrize('type', ['csv', 'bin'])
 def test_export(capture_name: str, type: Literal['csv', 'bin'], manager: automation.Manager, asset_path: str, tmp_path):
-    desc  = capture_desc[capture_name]
+    desc = capture_desc[capture_name]
 
     path = os.path.join(asset_path, f'{capture_name}')
 
@@ -66,7 +70,8 @@ def test_export(capture_name: str, type: Literal['csv', 'bin'], manager: automat
                 analog_channels=desc.analog_channels,
                 digital_channels=desc.digital_channels)
 
-        expected_files = get_expected_files(type, desc.digital_channels, desc.analog_channels)
+        expected_files = get_expected_files(
+            type, desc.digital_channels, desc.analog_channels)
 
         files_created = os.listdir(directory)
         assert(len(expected_files) == len(files_created))
@@ -77,15 +82,17 @@ def test_export(capture_name: str, type: Literal['csv', 'bin'], manager: automat
 @pytest.mark.parametrize('capture_name', capture_desc.keys())
 @pytest.mark.parametrize('type', ['csv', 'bin'])
 def test_disabled_channels(capture_name: str, type: Literal['csv', 'bin'], manager: automation.Manager, asset_path: str, tmp_path):
-    desc  = capture_desc[capture_name]
+    desc = capture_desc[capture_name]
 
     path = os.path.join(asset_path, f'{capture_name}')
 
     with manager.load_capture(path) as cap:
         directory = os.path.join(tmp_path, f'export_{capture_name}')
 
-        inactive_analog_channels = [ch for ch in range(0, 8) if ch not in desc.analog_channels]
-        inactive_digital_channels = [ch for ch in range(0, 8) if ch not in desc.digital_channels]
+        inactive_analog_channels = [ch for ch in range(
+            0, 8) if ch not in desc.analog_channels]
+        inactive_digital_channels = [ch for ch in range(
+            0, 8) if ch not in desc.digital_channels]
 
         try:
             fn = cap.export_raw_data_csv if type == 'csv' else cap.export_raw_data_binary
@@ -119,7 +126,8 @@ def test_no_channels(type: Literal['csv', 'bin'], manager: automation.Manager, a
                 digital_channels=[])
 
         desc = capture_desc[capture_name]
-        expected_files = get_expected_files(type, desc.digital_channels, desc.analog_channels)
+        expected_files = get_expected_files(
+            type, desc.digital_channels, desc.analog_channels)
 
         files_created = os.listdir(directory)
         assert(len(expected_files) == len(files_created))
@@ -129,12 +137,14 @@ def test_no_channels(type: Literal['csv', 'bin'], manager: automation.Manager, a
 
 MIN_DOWNSAMPLE_RATIO = 1
 MAX_DOWNSAMPLE_RATIO = 1000000
+
+
 @pytest.mark.parametrize('analog_downsample_ratio', [MIN_DOWNSAMPLE_RATIO-1, MIN_DOWNSAMPLE_RATIO, MAX_DOWNSAMPLE_RATIO, MAX_DOWNSAMPLE_RATIO+1])
 @pytest.mark.parametrize('type', ['csv', 'bin'])
 def test_invalid_analog_downsample_ratio(analog_downsample_ratio: int, type: Literal['csv', 'bin'], manager: automation.Manager, asset_path: str, tmp_path):
     capture_name = 'cap1.sal'
     path = os.path.join(asset_path, capture_name)
-    desc  = capture_desc[capture_name]
+    desc = capture_desc[capture_name]
 
     with manager.load_capture(path) as cap:
         directory = os.path.join(tmp_path, f'export_{capture_name}')
@@ -153,12 +163,12 @@ def test_invalid_analog_downsample_ratio(analog_downsample_ratio: int, type: Lit
                     analog_channels=desc.analog_channels,
                     digital_channels=desc.digital_channels)
 
-            assert(analog_downsample_ratio >= MIN_DOWNSAMPLE_RATIO and analog_downsample_ratio <= MAX_DOWNSAMPLE_RATIO)
+            assert(analog_downsample_ratio >=
+                   MIN_DOWNSAMPLE_RATIO and analog_downsample_ratio <= MAX_DOWNSAMPLE_RATIO)
 
         except automation.InvalidRequestError:
-            assert(analog_downsample_ratio < MIN_DOWNSAMPLE_RATIO or analog_downsample_ratio > MAX_DOWNSAMPLE_RATIO)
-
-
+            assert(analog_downsample_ratio <
+                   MIN_DOWNSAMPLE_RATIO or analog_downsample_ratio > MAX_DOWNSAMPLE_RATIO)
 
 
 @dataclass
@@ -176,8 +186,8 @@ comparison_scenarios = [
         type='csv',
         params=dict(
             analog_downsample_ratio=1,
-            analog_channels=[0,1],
-            digital_channels=[0,1],
+            analog_channels=[0, 1],
+            digital_channels=[0, 1],
         )
     ),
     ComparisonScenario(
@@ -186,8 +196,8 @@ comparison_scenarios = [
         type='csv',
         params=dict(
             analog_downsample_ratio=1,
-            analog_channels=[0,1],
-            digital_channels=[0,1],
+            analog_channels=[0, 1],
+            digital_channels=[0, 1],
             iso8601=True,
         )
     ),
@@ -197,7 +207,7 @@ comparison_scenarios = [
         type='csv',
         params=dict(
             analog_downsample_ratio=1,
-            analog_channels=[0,1],
+            analog_channels=[0, 1],
             digital_channels=[],
         )
     ),
@@ -208,7 +218,7 @@ comparison_scenarios = [
         params=dict(
             analog_downsample_ratio=1,
             analog_channels=[],
-            digital_channels=[0,1],
+            digital_channels=[0, 1],
         )
     ),
     ComparisonScenario(
@@ -227,8 +237,8 @@ comparison_scenarios = [
         type='bin',
         params=dict(
             analog_downsample_ratio=1,
-            analog_channels=[0,1],
-            digital_channels=[0,1],
+            analog_channels=[0, 1],
+            digital_channels=[0, 1],
         )
     ),
     ComparisonScenario(
@@ -237,7 +247,7 @@ comparison_scenarios = [
         type='bin',
         params=dict(
             analog_downsample_ratio=1,
-            analog_channels=[0,1],
+            analog_channels=[0, 1],
             digital_channels=[],
         )
     ),
@@ -248,7 +258,7 @@ comparison_scenarios = [
         params=dict(
             analog_downsample_ratio=1,
             analog_channels=[],
-            digital_channels=[0,1],
+            digital_channels=[0, 1],
         )
     ),
     ComparisonScenario(
@@ -273,11 +283,13 @@ comparison_scenarios = [
     ),
 ]
 
+
 @pytest.mark.parametrize('scenario', comparison_scenarios)
 def test_compare(scenario: ComparisonScenario, manager: automation.Manager, asset_path: str, tmp_path):
     capture_path = os.path.join(asset_path, scenario.capture_name)
 
-    export_directory = os.path.join(tmp_path, f'export_{scenario.capture_name}')
+    export_directory = os.path.join(
+        tmp_path, f'export_{scenario.capture_name}')
 
     with manager.load_capture(capture_path) as cap:
         if scenario.type == 'csv':
@@ -303,3 +315,11 @@ def test_compare(scenario: ComparisonScenario, manager: automation.Manager, asse
 
         assert(filecmp.cmp(actual_filepath, expected_filepath))
 
+
+def test_export_all(manager: automation.Manager, asset_path: str, tmp_path):
+    capture_path = os.path.join(asset_path, 'cap2.sal')
+
+    export_directory = os.path.join(tmp_path, f'export_cap2')
+
+    with manager.load_capture(capture_path) as cap:
+        cap.export_raw_data_csv(directory=export_directory)

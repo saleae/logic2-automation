@@ -1,4 +1,5 @@
 import os.path
+from tkinter import E
 
 from saleae import automation
 
@@ -32,8 +33,28 @@ def test_save_and_load(manager: automation.Manager, asset_path: str, tmp_path):
     #with manager.load_capture(save_path) as cap:
         #pass
 
-def test_load(manager: automation.Manager, asset_path: str):
+def test_load_small(manager: automation.Manager, asset_path: str):
     path = os.path.join(asset_path, 'cap1.sal')
 
     with manager.load_capture(path) as cap:
         pass
+
+def test_load_stress(manager: automation.Manager, asset_path: str, tmp_path):
+    path = os.path.join(asset_path, 'cap1.sal')
+    export_path = os.path.join(tmp_path, 'export')
+
+    with manager.load_capture(path) as cap:
+        cap.export_raw_data_binary(directory=export_path)
+        with manager.load_capture(path) as cap2:
+            cap2.export_raw_data_binary(directory=export_path)
+            bitty = 8
+            analyzer = cap2.add_analyzer('SPI',label=f'SPI (bits={bitty})', settings={
+                'MISO': 0,
+                'Clock': 1,
+                'Bits per Transfer': f'{bitty} Bits per Transfer{" (Standard)" if bitty == 8 else ""}'
+            })
+            export_filepath = os.path.join(tmp_path, 'data_table.csv')
+
+            cap2.export_data_table(filepath=export_filepath, analyzers=[],radix=automation.RadixType.ASCII)
+            cap2.save_capture(os.path.join(tmp_path, 'my_cap2.sal'))
+

@@ -152,6 +152,15 @@ def grpc_error_msg_to_exception(msg: str):
     return exc_type(error_msg)
 
 
+class DeviceType(Enum):
+    LOGIC = saleae_pb2.DEVICE_TYPE_LOGIC
+    LOGIC_4 = saleae_pb2.DEVICE_TYPE_LOGIC_4
+    LOGIC_8 = saleae_pb2.DEVICE_TYPE_LOGIC_8
+    LOGIC_16 = saleae_pb2.DEVICE_TYPE_LOGIC_16
+    LOGIC_PRO_8 = saleae_pb2.DEVICE_TYPE_LOGIC_PRO_8
+    LOGIC_PRO_16 = saleae_pb2.DEVICE_TYPE_LOGIC_PRO_16
+
+
 @dataclass
 class AnalyzerHandle:
     analyzer_id: int
@@ -159,6 +168,18 @@ class AnalyzerHandle:
 
 class DeviceConfiguration:
     pass
+
+
+@dataclass
+class DeviceDesc:
+    #: Serial number of the device
+    serial_number: str
+
+    #: Device type
+    device_type: DeviceType
+
+    #: True if this is a simulation devivce
+    is_simulation: bool
 
 
 @dataclass
@@ -244,12 +265,14 @@ class DigitalTriggerCaptureMode:
     #: Minimum pulse width in seconds. Set to zero for no minimum pulse width.
     #: PULSE_HIGH or PULSE_LOW only
     min_pulse_width_seconds: Optional[float] = None
+
     #: Maximum pulse width in seconds.
     #: PULSE_HIGH or PULSE_LOW only
     max_pulse_width_seconds: Optional[float] = None
 
     #: Optional list of channels which must be high or low when the trigger channel encounters the trigger type.
-    linked_channels: List[DigitalTriggerLinkedChannel] = field(default_factory=list)
+    linked_channels: List[DigitalTriggerLinkedChannel] = field(
+        default_factory=list)
 
     #: Seconds of data at end of capture to keep. If unspecified, all data will be kept.
     trim_data_seconds: Optional[float] = None
@@ -284,7 +307,8 @@ class ManualCaptureMode:
     trim_data_seconds: Optional[float] = None
 
 
-CaptureMode = Union[ManualCaptureMode, TimedCaptureMode, DigitalTriggerCaptureMode]
+CaptureMode = Union[ManualCaptureMode,
+                    TimedCaptureMode, DigitalTriggerCaptureMode]
 
 
 @dataclass
@@ -345,14 +369,25 @@ class Manager:
             raise RuntimeError("Cannot use Manager after it has been closed")
         return self._stub
 
-    # def get_devices(self):
-    # """
-    # Returns a list of connected devices. Use this to find the serial numbers of the attached devices.
-    # """
-    # raise NotImplemented("get_devices is not currently implemented")
-    # request = saleae_pb2.GetDevicesRequest()
-    # with error_handler():
-    # reply: saleae_pb2.GetDevicesReply = self.stub.GetDevices(request)
+    def get_devices(self, *, include_simulation_devices: bool = False) -> List[DeviceDesc]:
+        """
+        Returns a list of connected devices. Use this to find the serial numbers of the attached devices.
+
+        :param include_simulation_devices: If True, the return value will also include simulation devices. This can be useful for testing without a physical device.
+        """
+        request = saleae_pb2.GetDevicesRequest(include_simulation_devices=include_simulation_devices)
+        with error_handler():
+            reply: saleae_pb2.GetDevicesReply = self.stub.GetDevices(request)
+
+        devices = []
+        for device in reply.devices:
+            devices.append(DeviceDesc(
+                serial_number=device.serial_number,
+                device_type=DeviceType(device.device_type),
+                is_simulation=device.is_simulation,
+            ))
+
+        return devices
 
     def start_capture(
         self,
@@ -452,7 +487,8 @@ class Manager:
                     raise TypeError("Unexpected trigger type")
 
         with error_handler():
-            reply: saleae_pb2.StartCaptureReply = self.stub.StartCapture(request)
+            reply: saleae_pb2.StartCaptureReply = self.stub.StartCapture(
+                request)
 
         return Capture(self, reply.capture_info.capture_id)
 
@@ -472,6 +508,12 @@ class Manager:
             reply: saleae_pb2.LoadCaptureReply = self.stub.LoadCapture(request)
 
         return Capture(self, reply.capture_info.capture_id)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        self.close()
 
 
 class Capture:
@@ -521,7 +563,8 @@ class Capture:
                 elif isinstance(value, bool):
                     v = saleae_pb2.AnalyzerSettingValue(bool_value=value)
                 else:
-                    raise RuntimeError("Unsupported analyzer setting value type")
+                    raise RuntimeError(
+                        "Unsupported analyzer setting value type")
 
                 analyzer_settings[key] = v
 

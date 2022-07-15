@@ -40,35 +40,9 @@ def test_start_capture(manager: automation.Manager, asset_path: str, tmp_path):
 
         cap.export_data_table(
             os.path.join(tmp_path, 'data_table_export.csv'),
-            analyzers=[async_analyzer, spi_analyzer], radix=automation.RadixType.ASCII)
+            analyzers=[async_analyzer, spi_analyzer], radix=automation.RadixType.BINARY)
 
         time.sleep(3)
-
-    # capture = manager.start_capture(
-    #     device_serial_number="F4241",
-    #     device_configuration=LogicDeviceConfiguration(
-    #         enabled_digital_channels=[3, 4],
-    #         digital_sample_rate=500000000,
-    #         digital_threshold=3.3,
-    #         glitch_filters=[GlitchFilterEntry(channel_index=3, pulse_width=100e-9)],
-    #     ),
-    #     capture_settings=CaptureSettings(
-    #         buffer_size=2048,
-    #         capture_mode=CaptureMode.STOP_ON_DIGITAL_TRIGGER,
-    #         stop_after_time=5,
-    #         digital_trigger=DigitalTriggerSettings(
-    #             trigger_type=DigitalTriggerType.RISING,
-    #             record_after_trigger_time=1,
-    #             trigger_channel_index=3,
-    #             linked_channels=[
-    #                 DigitalTriggerLinkedChannel(
-    #                     4, DigitalTriggerLinkedChannelState.HIGH
-    #                 )
-    #             ],
-    #         ),
-    #     ),
-    # )
-    # capture.wait()
 
 trigger_configs = [
     automation.ManualCaptureMode(trim_data_seconds=None),
@@ -147,7 +121,6 @@ def test_threshold_validation(scenario: ThresholdScenario, manager: automation.M
             cap.stop()
         assert scenario.valid, "Expected failure, digital threshold options not available on Logic 8"
     except automation.SaleaeError as exc:
-        print(exc)
         assert not scenario.valid, "Failure not expected, digital threshold options should be valid"
 
 
@@ -232,5 +205,4 @@ def test_glitch_filter(scenario: GlitchFilterScenario, manager: automation.Manag
             cap.stop()
         assert scenario.valid, 'Expected failure'
     except automation.SaleaeError as exc:
-        print(exc)
         assert not scenario.valid, f'Failure not expected: {exc}'

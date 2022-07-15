@@ -101,26 +101,35 @@ enum DeviceType {
     // Invalid Device Type
     DEVICE_TYPE_UNSPECIFIED = 0;
 
+    // Saleae Logic
+    DEVICE_TYPE_LOGIC = 1;
+
+    // Saleae Logic 4
+    DEVICE_TYPE_LOGIC_4 = 2;
+
     // Saleae Logic 8
-    DEVICE_TYPE_LOGIC_8 = 1;
+    DEVICE_TYPE_LOGIC_8 = 3;
+
+    // Saleae Logic 16 
+    DEVICE_TYPE_LOGIC_16 = 4;
 
     // Saleae Logic Pro 8
-    DEVICE_TYPE_LOGIC_PRO_8 = 2;
+    DEVICE_TYPE_LOGIC_PRO_8 = 5;
 
     // Saleae Logic Pro 16
-    DEVICE_TYPE_LOGIC_PRO_16 = 3;
+    DEVICE_TYPE_LOGIC_PRO_16 = 6;
 }
 
 // Device descriptor object.
 message Device {
-    // The id used to identify this device
-    uint64 device_id = 1;
+    // The serial number of this device
+    string serial_number = 1;
 
     // The type of this device
     DeviceType device_type = 2;
 
-    // The serial number of this device
-    string serial_number = 3;
+    // True if this is a simulation device
+    bool is_simulation = 3;
 }
 
 enum ChannelType {
@@ -255,7 +264,10 @@ message CaptureConfiguration {
  *
  ****************************************************************************/
 
-message GetDevicesRequest {}
+message GetDevicesRequest {
+    // If true, simulation devices will be included in the response
+    bool include_simulation_devices = 1;
+}
 message GetDevicesReply { repeated Device devices = 1; }
 
 // Start Capture
