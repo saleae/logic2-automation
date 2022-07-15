@@ -120,6 +120,17 @@ In the future, we’ll add support for supplying an IP address, as well as funct
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="saleae.automation.Manager.get_devices">
+<span class="sig-name descname"><span class="pre">get_devices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_simulation_devices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#saleae.automation.Manager.get_devices" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a list of connected devices. Use this to find the serial numbers of the attached devices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">DeviceDesc</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="saleae.automation.Manager.start_capture">
 <span class="sig-name descname"><span class="pre">start_capture</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_configuration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_serial_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capture_configuration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#saleae.automation.Manager.start_capture" title="Permalink to this definition"></a></dt>
 <dd><p>Start a new capture</p>
