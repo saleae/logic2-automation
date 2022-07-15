@@ -1,0 +1,42 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "master" branch
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+      
+      - name: Build .whl
+        run: |
+          cd python
+          python -m pip install --upgrade build
+          python -m build
+          cp dist/*.whl docs/source/_static
+
+      - name: Build docs
+        run: |
+          cd python/docs
+          python -m pip install -r requirements.txt
+          make html
+          touch build/html/.nojekyll
+
+      - name: Publish docs to gh-pages branch
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: python/docs/build/html
+
