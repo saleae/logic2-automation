@@ -392,6 +392,21 @@ message RemoveAnalyzerRequest {
 }
 message RemoveAnalyzerReply {}
 
+
+message DataTableAnalyzerConfiguration {
+    // Id of analyzers to export data from.
+    uint64 analyzer_id = 1;
+
+    // Radix type to use for this analyzer
+    RadixType radix_type = 2;
+}
+message DataTableFilter {
+    // Query to filter by
+    string query = 1;
+
+    // Columns to query
+    repeated string columns = 2;
+}
 message ExportDataTableRequest {
     // Id of capture to export data from.
     uint64 capture_id = 1;
@@ -400,12 +415,15 @@ message ExportDataTableRequest {
     string filepath = 2;
 
     // Id of analyzers to export data from.
-    repeated uint64 analyzer_ids = 3;
+    repeated DataTableAnalyzerConfiguration analyzers = 3;
 
     // If true, timestamps will be in ISO8601 format.
-    bool iso8601 = 5;
+    bool iso8601 = 4;
 
-    RadixType radix_type = 6;
+    // Columns to export. If empty, all columns will be exported.
+    repeated string export_columns = 5;
+
+    DataTableFilter filter = 6;
 }
 message ExportDataTableReply {}
 

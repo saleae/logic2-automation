@@ -5,6 +5,7 @@ from enum import Enum
 import grpc
 import logging
 import re
+import saleae
 
 from saleae.grpc import saleae_pb2, saleae_pb2_grpc
 
@@ -164,6 +165,21 @@ class DeviceType(Enum):
 @dataclass
 class AnalyzerHandle:
     analyzer_id: int
+
+
+@dataclass
+class DataTableExportConfiguration:
+    analyzer: AnalyzerHandle
+    radix: RadixType
+
+
+@dataclass
+class DataTableFilter:
+    # Columns to search
+    columns: List[str]
+
+    # Query string
+    query: str
 
 
 class DeviceConfiguration:
@@ -582,7 +598,7 @@ class Capture:
 
         return AnalyzerHandle(analyzer_id=reply.analyzer_id)
 
-    def remove_analyzer(self, analyzer: "AnalyzerHandle"):
+    def remove_analyzer(self, analyzer: AnalyzerHandle):
         """
         Removes an analyzer from the capture.
 
@@ -634,9 +650,10 @@ class Capture:
     def export_data_table(
         self,
         filepath: str,
-        analyzers: List["AnalyzerHandle"],
+        analyzers: List[Union[AnalyzerHandle, DataTableExportConfiguration]],
         *,
-        radix: RadixType,
+        columns: Optional[List[str]] = None,
+        filter: Optional[DataTableFilter] = None,
         iso8601: bool = False,
     ):
         """
@@ -649,12 +666,25 @@ class Capture:
         :param radix: Display Radix, from the RadixType enumeration. Currently applies to all Analyzers in the export.
         :param iso8601: Use this to output wall clock timestamps, instead of capture relative timestamps. Defaults to False.
         """
+        analyzer_configs = []
+        for a in analyzers:
+            if isinstance(a, AnalyzerHandle):
+                analyzer_configs.append(saleae_pb2.DataTableAnalyzerConfiguration(analyzer_id=a.analyzer_id))
+            elif isinstance(a, DataTableExportConfiguration):
+                analyzer_configs.append(saleae_pb2.DataTableAnalyzerConfiguration(
+                    analyzer_id=a.analyzer.analyzer_id, radix_type=a.radix.value))
+            else:
+                raise RuntimeError(f"Unexpected type for analyzer: {type(a)}")
+
+        pb_filter = None if filter is None else saleae_pb2.DataTableFilter(query=filter.query, columns=filter.columns)
+
         request = saleae_pb2.ExportDataTableRequest(
             capture_id=self.capture_id,
             filepath=filepath,
-            analyzer_ids=[h.analyzer_id for h in analyzers],
+            analyzers=analyzer_configs,
+            export_columns=columns,
+            filter=pb_filter,
             iso8601=iso8601,
-            radix_type=radix.value,
         )
 
         with error_handler():

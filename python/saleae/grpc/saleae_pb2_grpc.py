@@ -12,6 +12,8 @@ class ManagerStub(object):
 
     **************************************************************************
 
+    Get information about the API
+    rpc GetApiInfo(GetApiInfoRequest) returns (GetApiInfoReply) {}
     """
 
     def __init__(self, channel):
@@ -94,6 +96,8 @@ class ManagerServicer(object):
 
     **************************************************************************
 
+    Get information about the API
+    rpc GetApiInfo(GetApiInfoRequest) returns (GetApiInfoReply) {}
     """
 
     def GetDevices(self, request, context):
@@ -271,6 +275,8 @@ class Manager(object):
 
     **************************************************************************
 
+    Get information about the API
+    rpc GetApiInfo(GetApiInfoRequest) returns (GetApiInfoReply) {}
     """
 
     @staticmethod
