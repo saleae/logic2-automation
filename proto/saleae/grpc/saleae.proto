@@ -272,6 +272,8 @@ message GetDevicesReply { repeated Device devices = 1; }
 
 // Start Capture
 message StartCaptureRequest {
+    // If a device serial number is not specified, the first physical device will be used.
+    // If no physical device is connected, an error will be returned
     string device_serial_number = 1;
 
     oneof device_configuration {
