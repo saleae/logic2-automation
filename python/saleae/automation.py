@@ -1,4 +1,5 @@
 from contextlib import contextmanager
+from pathlib import Path
 from typing import List, Optional, Union, Dict
 from dataclasses import dataclass, field
 from enum import Enum
@@ -6,7 +7,10 @@ import grpc
 import logging
 import re
 import saleae
+import subprocess
+import datetime
 
+import sys
 from saleae.grpc import saleae_pb2, saleae_pb2_grpc
 
 
@@ -337,7 +341,7 @@ class CaptureConfiguration:
     buffer_size: Optional[int] = None
 
     capture_mode: CaptureMode = field(default_factory=ManualCaptureMode)
-    """ 
+    """
     | The capture mode. This can be one of the following:
     | ManualCaptureMode
     |   (Looping mode in the software. Stop this capture with the stop() function)
@@ -346,6 +350,10 @@ class CaptureConfiguration:
     | DigitalTriggerCaptureMode
     |   This will set the digital trigger and record until the trigger has been found and the post-trigger length has been recorded. Use the wait() function to block until the capture is complete.
     """
+
+
+_DEFAULT_GRPC_ADDRESS = '127.0.0.1'
+_DEFAULT_GRPC_PORT = 10430
 
 
 class Manager:
@@ -357,7 +365,7 @@ class Manager:
     Please review the getting started guide for instructions on preparing the Logic 2 software for API connections.
     """
 
-    def __init__(self, port: int):
+    def __init__(self, port: int, *, address: str = _DEFAULT_GRPC_ADDRESS, logic2_process: Optional[subprocess.Popen] = None):
         """
         Create an instance of the Manager class, and connect to the Logic 2 software.
 
@@ -366,9 +374,102 @@ class Manager:
 
         :param port: Port number. By default, Logic 2 uses port 10430.
         """
-        self.channel = grpc.insecure_channel(f"127.0.0.1:{port}")
+        self.logic2_process = logic2_process
+        self.channel = grpc.insecure_channel(f"{address}:{port}")
         self.channel.subscribe(lambda value: logger.info(f"sub {value}"))
         self._stub = saleae_pb2_grpc.ManagerStub(self.channel)
+
+        def cleanup():
+            # Immediately close the gRPC channel to avoid the process from hanging
+            self.channel.close()
+
+            # Close the Logic2 process if it was launched from here
+            if logic2_process is not None:
+                logic2_process.terminate()
+                logic2_process.wait(2.0)
+
+        # Attempt to connect to endpoint
+        start_time = datetime.datetime.now()
+        while True:
+            try:
+                self._stub.GetDevices(saleae_pb2.GetDevicesRequest())
+                break
+            except grpc.RpcError as exc:
+                now = datetime.datetime.now()
+                if (exc.code() != grpc.StatusCode.UNAVAILABLE) or (now - start_time).seconds >= 10.0:
+                    # Rethrow if 5 seconds have passed or this is not a connection error
+                    cleanup()
+                    raise exc from None
+            except Exception as exc:
+                cleanup()
+                raise exc from None
+
+    @classmethod
+    def launch(cls, application_path: Optional[Union[Path, str]] = None) -> 'Manager':
+        """
+        Launch the Logic2 application and shut it down when the returned Manager is closed.
+
+        :param application_path: The path to the Logic2 binary to run. If not specified,
+                                 a locally installed copy of Logic2 will be searched for.
+
+        """
+
+        # Attempt to find application
+        import platform
+        import os
+
+        system = platform.system()
+
+        def fail(reason: str):
+            raise RuntimeError(f"Logic2 application not found: {reason}")
+
+        if application_path is None:
+            if system == 'Linux':
+                raise RuntimeError(f"launch_application() not supported on Linux without `application_path` specified")
+            elif system == 'Windows':
+                program_files_path = os.environ.get('programw6432')
+                if program_files_path is None:
+                    fail('"Program Files" not found')
+
+                logic2_bin = os.path.join(program_files_path, 'Logic', 'Logic.exe')
+
+                if not os.path.exists(logic2_bin):
+                    fail('Logic2 install not found. Go to https://www.saleae.com/downloads/ to download the installer.')
+            elif system == 'Darwin':
+                raise RuntimeError(f"launch_application() not supported on MacOS without `application_path` specified")
+            else:
+                raise RuntimeError(f"Unknown system: {system}")
+        else:
+            logic2_bin = str(application_path)
+            if not os.path.exists(logic2_bin):
+                fail(f'application path "{application_path}" does not exist')
+
+        process = subprocess.Popen([logic2_bin, '--automation', '--automationPort', str(_DEFAULT_GRPC_PORT)],
+                                   stdout=subprocess.DEVNULL,
+                                   stderr=subprocess.DEVNULL)
+
+        if system == 'Windows':
+            import win32job
+            import win32api
+            import win32con
+
+            # On Windows, we use a job to ensure that the child process is shutdown when this process exits
+            job = win32job.CreateJobObject(None, 'Logic2Monitor')
+
+            # Configure job to kill child process when this process exits
+            limits = win32job.QueryInformationJobObject(job, win32job.JobObjectExtendedLimitInformation)
+            limits['BasicLimitInformation']['LimitFlags'] = win32job.JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
+            win32job.SetInformationJobObject(job, win32job.JobObjectExtendedLimitInformation, limits)
+
+            # Get handle to child process and assign job
+            child_process_handle = win32api.OpenProcess(win32con.PROCESS_ALL_ACCESS, False, process.pid)
+            win32job.AssignProcessToJobObject(job, child_process_handle)
+
+        return cls(address=_DEFAULT_GRPC_ADDRESS, port=_DEFAULT_GRPC_PORT, logic2_process=process)
+
+    @classmethod
+    def connect(cls, *, address: str = _DEFAULT_GRPC_ADDRESS, port: int = _DEFAULT_GRPC_PORT) -> 'Manager':
+        return cls(address=address, port=port)
 
     def close(self):
         """
@@ -379,6 +480,15 @@ class Manager:
         self.channel = None
         self._stub = None
 
+        if self.logic2_process:
+            import signal
+
+            try:
+                self.logic2_process.terminate()
+                self.logic2_process.wait(2.0)
+            except:
+                pass
+            self.logic2_process = None
     @property
     def stub(self) -> saleae_pb2_grpc.ManagerStub:
         if self._stub is None:
