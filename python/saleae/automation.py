@@ -153,11 +153,22 @@ def grpc_error_msg_to_exception(msg: str):
 
 
 class DeviceType(Enum):
+    #: Saleae Logic
     LOGIC = saleae_pb2.DEVICE_TYPE_LOGIC
+
+    #: Saleae Logic 4
     LOGIC_4 = saleae_pb2.DEVICE_TYPE_LOGIC_4
+
+    #: Saleae Logic 8
     LOGIC_8 = saleae_pb2.DEVICE_TYPE_LOGIC_8
+
+    #: Saleae Logic 16
     LOGIC_16 = saleae_pb2.DEVICE_TYPE_LOGIC_16
+
+    #: Saleae Logic Pro 8
     LOGIC_PRO_8 = saleae_pb2.DEVICE_TYPE_LOGIC_PRO_8
+
+    #: Saleae Logic Pro 16
     LOGIC_PRO_16 = saleae_pb2.DEVICE_TYPE_LOGIC_PRO_16
 
 
