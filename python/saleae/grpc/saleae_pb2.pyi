@@ -62,6 +62,35 @@ class AddAnalyzerRequest(_message.Message):
     settings: _containers.MessageMap[str, AnalyzerSettingValue]
     def __init__(self, capture_id: _Optional[int] = ..., analyzer_name: _Optional[str] = ..., analyzer_label: _Optional[str] = ..., settings: _Optional[_Mapping[str, AnalyzerSettingValue]] = ...) -> None: ...
 
+class AddHighLevelAnalyzerReply(_message.Message):
+    __slots__ = ["analyzer_id"]
+    ANALYZER_ID_FIELD_NUMBER: _ClassVar[int]
+    analyzer_id: int
+    def __init__(self, analyzer_id: _Optional[int] = ...) -> None: ...
+
+class AddHighLevelAnalyzerRequest(_message.Message):
+    __slots__ = ["analyzer_label", "capture_id", "entry_point", "input_analyzer_id", "root_path", "settings"]
+    class SettingsEntry(_message.Message):
+        __slots__ = ["key", "value"]
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: HighLevelAnalyzerSettingValue
+        def __init__(self, key: _Optional[str] = ..., value: _Optional[_Union[HighLevelAnalyzerSettingValue, _Mapping]] = ...) -> None: ...
+    ANALYZER_LABEL_FIELD_NUMBER: _ClassVar[int]
+    CAPTURE_ID_FIELD_NUMBER: _ClassVar[int]
+    ENTRY_POINT_FIELD_NUMBER: _ClassVar[int]
+    INPUT_ANALYZER_ID_FIELD_NUMBER: _ClassVar[int]
+    ROOT_PATH_FIELD_NUMBER: _ClassVar[int]
+    SETTINGS_FIELD_NUMBER: _ClassVar[int]
+    analyzer_label: str
+    capture_id: int
+    entry_point: str
+    input_analyzer_id: int
+    root_path: str
+    settings: _containers.MessageMap[str, HighLevelAnalyzerSettingValue]
+    def __init__(self, capture_id: _Optional[int] = ..., root_path: _Optional[str] = ..., entry_point: _Optional[str] = ..., analyzer_label: _Optional[str] = ..., input_analyzer_id: _Optional[int] = ..., settings: _Optional[_Mapping[str, HighLevelAnalyzerSettingValue]] = ...) -> None: ...
+
 class AnalyzerSettingValue(_message.Message):
     __slots__ = ["bool_value", "double_value", "int64_value", "string_value"]
     BOOL_VALUE_FIELD_NUMBER: _ClassVar[int]
@@ -253,6 +282,14 @@ class GlitchFilterEntry(_message.Message):
     channel_index: int
     pulse_width_seconds: float
     def __init__(self, channel_index: _Optional[int] = ..., pulse_width_seconds: _Optional[float] = ...) -> None: ...
+
+class HighLevelAnalyzerSettingValue(_message.Message):
+    __slots__ = ["number_value", "string_value"]
+    NUMBER_VALUE_FIELD_NUMBER: _ClassVar[int]
+    STRING_VALUE_FIELD_NUMBER: _ClassVar[int]
+    number_value: float
+    string_value: str
+    def __init__(self, string_value: _Optional[str] = ..., number_value: _Optional[float] = ...) -> None: ...
 
 class LoadCaptureReply(_message.Message):
     __slots__ = ["capture_info"]

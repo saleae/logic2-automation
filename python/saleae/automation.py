@@ -397,7 +397,7 @@ class Manager:
             except grpc.RpcError as exc:
                 now = datetime.datetime.now()
                 if (exc.code() != grpc.StatusCode.UNAVAILABLE) or (now - start_time).seconds >= 10.0:
-                    # Rethrow if 5 seconds have passed or this is not a connection error
+                    # Rethrow if X seconds have passed or this is not a connection error
                     cleanup()
                     raise exc from None
             except Exception as exc:
@@ -489,6 +489,7 @@ class Manager:
             except:
                 pass
             self.logic2_process = None
+
     @property
     def stub(self) -> saleae_pb2_grpc.ManagerStub:
         if self._stub is None:
@@ -674,7 +675,7 @@ class Capture:
         :param name: The name of the Analyzer, as shown in the Logic 2 application add analyzer list. This must match exactly.
         :param label: The user editable display string for the analyzer. This will be shown in the analyzer data table export, defaults to None
         :param settings: All settings for the analyzer. The keys and values here must exactly match the Analyzer settings as shown in the UI, defaults to None
-        :return: Returns an AnalyzerHandle, which is used later for exporting analyzer results.
+        :return: Returns an AnalyzerHandle
         """
         analyzer_settings = {}
 
@@ -701,10 +702,55 @@ class Capture:
             settings=analyzer_settings,
         )
 
-        try:
+        with error_handler():
             reply = self.manager.stub.AddAnalyzer(request)
-        except grpc.RpcError as exc:
-            raise grpc_error_to_exception(exc) from None
+
+        return AnalyzerHandle(analyzer_id=reply.analyzer_id)
+
+    def add_high_level_analyzer(
+        self,
+        root_path: str,
+        entry_point: str,
+        *,
+        input_analyzer: AnalyzerHandle,
+        settings: Optional[Dict[str, Union[str, float]]] = None,
+        label: Optional[str] = None,
+    ) -> AnalyzerHandle:
+        """Add a high level analyzer to the capture
+
+        Note: high level analyzers already added to a loaded_capture cannot be accessed from the API at this time.
+
+        :param root_path: The root_path to use to load the Python HLA from
+        :param entry_point: The relative path from the root_path to the HLA class
+        :param label: The user editable display string for the high level analyzer. This will be shown in the analyzer data table export, defaults to None
+        :param settings: All settings for the analyzer. The keys and values here must match the HLA settings as shown in the HLA class
+        :return: Returns an AnalyzerHandle
+        """
+        analyzer_settings = {}
+
+        if settings is not None:
+            for key, value in settings.items():
+                if isinstance(value, str):
+                    v = saleae_pb2.HighLevelAnalyzerSettingValue(string_value=value)
+                elif isinstance(value, int):
+                    v = saleae_pb2.HighLevelAnalyzerSettingValue(number_value=value)
+                else:
+                    raise RuntimeError(
+                        "Unsupported high level analyzer setting value type")
+
+                analyzer_settings[key] = v
+
+        request = saleae_pb2.AddHighLevelAnalyzerRequest(
+            capture_id=self.capture_id,
+            root_path=root_path,
+            entry_point=entry_point,
+            input_analyzer_id=input_analyzer.analyzer_id,
+            settings=analyzer_settings,
+            analyzer_label=label,
+        )
+
+        with error_handler():
+            reply = self.manager.stub.AddHighLevelAnalyzer(request)
 
         return AnalyzerHandle(analyzer_id=reply.analyzer_id)
 

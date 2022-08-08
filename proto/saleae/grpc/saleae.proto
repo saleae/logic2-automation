@@ -7,6 +7,9 @@ option objc_class_prefix = "Saleae";
 
 package saleae.automation;
 
+// Saleae Logic 2 Automation API
+
+
 /*****************************************************************************
  *
  * gRPC API
@@ -42,6 +45,9 @@ service Manager {
 
     // Remove an analyzer from a capture.
     rpc RemoveAnalyzer(RemoveAnalyzerRequest) returns (RemoveAnalyzerReply) {}
+
+    // Add a high-level-analyzer to a capture.
+    rpc AddHighLevelAnalyzer(AddHighLevelAnalyzerRequest) returns (AddHighLevelAnalyzerReply) {}
 
     // Export raw channel data to CSV files.
     rpc ExportRawDataCsv(ExportRawDataCsvRequest)
@@ -379,6 +385,41 @@ message AddAnalyzerRequest {
     map<string, AnalyzerSettingValue> settings = 4;
 }
 message AddAnalyzerReply {
+    // Id of the newly created analyzer.
+    uint64 analyzer_id = 1;
+}
+
+message HighLevelAnalyzerSettingValue {
+    oneof value {
+        // String value
+        string string_value = 1;
+
+        // Double-precision floating point value
+        double number_value = 2;
+    }
+}
+message AddHighLevelAnalyzerRequest {
+    // Id of capture to add analyzer to.
+    uint64 capture_id = 1;
+
+    // The path to the root of the directory to load the HLA from.
+    string root_path = 2;
+
+    // The entry point to the HLA - this is the root-path relative path to the HLA class to add.
+    string entry_point = 3;
+
+    // User-facing name for the analyzer.
+    string analyzer_label = 4;
+
+    // Id of analyzer to use as input to this HLA
+    uint64 input_analyzer_id = 5;
+
+    // Analyzer settings. These should match the names shown in analyzer's
+    // settings shown in the application.
+    map<string, HighLevelAnalyzerSettingValue> settings = 6;
+
+}
+message AddHighLevelAnalyzerReply {
     // Id of the newly created analyzer.
     uint64 analyzer_id = 1;
 }

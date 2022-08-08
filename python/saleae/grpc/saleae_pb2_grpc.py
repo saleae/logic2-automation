@@ -6,7 +6,9 @@ from saleae.grpc import saleae_pb2 as saleae_dot_grpc_dot_saleae__pb2
 
 
 class ManagerStub(object):
-    """****************************************************************************
+    """Saleae Logic 2 Automation API
+
+    ****************************************************************************
 
     gRPC API
 
@@ -67,6 +69,11 @@ class ManagerStub(object):
                 request_serializer=saleae_dot_grpc_dot_saleae__pb2.RemoveAnalyzerRequest.SerializeToString,
                 response_deserializer=saleae_dot_grpc_dot_saleae__pb2.RemoveAnalyzerReply.FromString,
                 )
+        self.AddHighLevelAnalyzer = channel.unary_unary(
+                '/saleae.automation.Manager/AddHighLevelAnalyzer',
+                request_serializer=saleae_dot_grpc_dot_saleae__pb2.AddHighLevelAnalyzerRequest.SerializeToString,
+                response_deserializer=saleae_dot_grpc_dot_saleae__pb2.AddHighLevelAnalyzerReply.FromString,
+                )
         self.ExportRawDataCsv = channel.unary_unary(
                 '/saleae.automation.Manager/ExportRawDataCsv',
                 request_serializer=saleae_dot_grpc_dot_saleae__pb2.ExportRawDataCsvRequest.SerializeToString,
@@ -90,7 +97,9 @@ class ManagerStub(object):
 
 
 class ManagerServicer(object):
-    """****************************************************************************
+    """Saleae Logic 2 Automation API
+
+    ****************************************************************************
 
     gRPC API
 
@@ -160,6 +169,13 @@ class ManagerServicer(object):
 
     def RemoveAnalyzer(self, request, context):
         """Remove an analyzer from a capture.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def AddHighLevelAnalyzer(self, request, context):
+        """Add a high-level-analyzer to a capture.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -241,6 +257,11 @@ def add_ManagerServicer_to_server(servicer, server):
                     request_deserializer=saleae_dot_grpc_dot_saleae__pb2.RemoveAnalyzerRequest.FromString,
                     response_serializer=saleae_dot_grpc_dot_saleae__pb2.RemoveAnalyzerReply.SerializeToString,
             ),
+            'AddHighLevelAnalyzer': grpc.unary_unary_rpc_method_handler(
+                    servicer.AddHighLevelAnalyzer,
+                    request_deserializer=saleae_dot_grpc_dot_saleae__pb2.AddHighLevelAnalyzerRequest.FromString,
+                    response_serializer=saleae_dot_grpc_dot_saleae__pb2.AddHighLevelAnalyzerReply.SerializeToString,
+            ),
             'ExportRawDataCsv': grpc.unary_unary_rpc_method_handler(
                     servicer.ExportRawDataCsv,
                     request_deserializer=saleae_dot_grpc_dot_saleae__pb2.ExportRawDataCsvRequest.FromString,
@@ -269,7 +290,9 @@ def add_ManagerServicer_to_server(servicer, server):
 
  # This class is part of an EXPERIMENTAL API.
 class Manager(object):
-    """****************************************************************************
+    """Saleae Logic 2 Automation API
+
+    ****************************************************************************
 
     gRPC API
 
@@ -429,6 +452,23 @@ class Manager(object):
         return grpc.experimental.unary_unary(request, target, '/saleae.automation.Manager/RemoveAnalyzer',
             saleae_dot_grpc_dot_saleae__pb2.RemoveAnalyzerRequest.SerializeToString,
             saleae_dot_grpc_dot_saleae__pb2.RemoveAnalyzerReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def AddHighLevelAnalyzer(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/saleae.automation.Manager/AddHighLevelAnalyzer',
+            saleae_dot_grpc_dot_saleae__pb2.AddHighLevelAnalyzerRequest.SerializeToString,
+            saleae_dot_grpc_dot_saleae__pb2.AddHighLevelAnalyzerReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
