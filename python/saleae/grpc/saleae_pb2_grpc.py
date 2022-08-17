@@ -12,8 +12,6 @@ class ManagerStub(object):
 
     **************************************************************************
 
-    Get information about the API
-    rpc GetApiInfo(GetApiInfoRequest) returns (GetApiInfoReply) {}
     """
 
     def __init__(self, channel):
@@ -22,6 +20,11 @@ class ManagerStub(object):
         Args:
             channel: A grpc.Channel.
         """
+        self.GetAppInfo = channel.unary_unary(
+                '/saleae.automation.Manager/GetAppInfo',
+                request_serializer=saleae_dot_grpc_dot_saleae__pb2.GetAppInfoRequest.SerializeToString,
+                response_deserializer=saleae_dot_grpc_dot_saleae__pb2.GetAppInfoReply.FromString,
+                )
         self.GetDevices = channel.unary_unary(
                 '/saleae.automation.Manager/GetDevices',
                 request_serializer=saleae_dot_grpc_dot_saleae__pb2.GetDevicesRequest.SerializeToString,
@@ -96,9 +99,13 @@ class ManagerServicer(object):
 
     **************************************************************************
 
-    Get information about the API
-    rpc GetApiInfo(GetApiInfoRequest) returns (GetApiInfoReply) {}
     """
+
+    def GetAppInfo(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
 
     def GetDevices(self, request, context):
         """Get list of connected devices.
@@ -196,6 +203,11 @@ class ManagerServicer(object):
 
 def add_ManagerServicer_to_server(servicer, server):
     rpc_method_handlers = {
+            'GetAppInfo': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetAppInfo,
+                    request_deserializer=saleae_dot_grpc_dot_saleae__pb2.GetAppInfoRequest.FromString,
+                    response_serializer=saleae_dot_grpc_dot_saleae__pb2.GetAppInfoReply.SerializeToString,
+            ),
             'GetDevices': grpc.unary_unary_rpc_method_handler(
                     servicer.GetDevices,
                     request_deserializer=saleae_dot_grpc_dot_saleae__pb2.GetDevicesRequest.FromString,
@@ -275,9 +287,24 @@ class Manager(object):
 
     **************************************************************************
 
-    Get information about the API
-    rpc GetApiInfo(GetApiInfoRequest) returns (GetApiInfoReply) {}
     """
+
+    @staticmethod
+    def GetAppInfo(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/saleae.automation.Manager/GetAppInfo',
+            saleae_dot_grpc_dot_saleae__pb2.GetAppInfoRequest.SerializeToString,
+            saleae_dot_grpc_dot_saleae__pb2.GetAppInfoReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
     def GetDevices(request,

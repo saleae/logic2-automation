@@ -34,6 +34,24 @@ class UnknownError(SaleaeError):
     pass
 
 
+class Logic2AlreadyRunningError(SaleaeError):
+    """
+    This indicates that there was an instance of Logic 2 already running.
+
+    """
+
+    pass
+
+
+class IncompatibleApiVersionError(SaleaeError):
+    """
+    This indicates that the server is running an incompatible API version. This only happens on major
+    version changes. It is recommended to upgrade to the latest release of Logic 2 and the Python API
+
+    """
+    pass
+
+
 class InternalServerError(SaleaeError):
     """
     An unexpected error occurred in the Logic 2 software. Please submit these errors to Saleae support.
@@ -99,7 +117,7 @@ class DeviceError(CaptureError):
     pass
 
 
-class OOMError(CaptureError):
+class OutOfMemoryError(CaptureError):
     """
     This exception indicates that the capture was automatically terminated because the capture buffer was filled.
     """
@@ -141,7 +159,7 @@ grpc_error_code_to_exception_type = {
     saleae_pb2.ERROR_CODE_EXPORT_FAILED: ExportError,
     saleae_pb2.ERROR_CODE_MISSING_DEVICE: MissingDeviceError,
     saleae_pb2.ERROR_CODE_DEVICE_ERROR: DeviceError,
-    saleae_pb2.ERROR_CODE_OOM: OOMError,
+    saleae_pb2.ERROR_CODE_OUT_OF_MEMORY: OutOfMemoryError,
 }
 
 
@@ -155,6 +173,20 @@ def grpc_error_msg_to_exception(msg: str):
 
     exc_type = grpc_error_code_to_exception_type.get(code, UnknownError)
     return exc_type(error_msg)
+
+
+@dataclass
+class Version:
+    major: int
+    minor: int
+    patch: int
+
+
+@dataclass
+class AppInfo:
+    api_version: Version
+    app_version: str
+    app_pid: int
 
 
 class DeviceType(Enum):
@@ -192,8 +224,8 @@ class DeviceConfiguration:
 
 @dataclass
 class DeviceDesc:
-    #: Serial number of the device
-    serial_number: str
+    #: Id of the device
+    device_id: str
 
     #: Device type
     device_type: DeviceType
@@ -387,12 +419,21 @@ class Manager:
             if logic2_process is not None:
                 logic2_process.terminate()
                 logic2_process.wait(2.0)
+                print("process return code", logic2_process.returncode, logic2_process)
 
         # Attempt to connect to endpoint
         start_time = datetime.datetime.now()
         while True:
             try:
-                self._stub.GetDevices(saleae_pb2.GetDevicesRequest())
+                app_info = self.get_app_info()
+
+                if logic2_process:
+                    if logic2_process.pid != app_info.app_pid:
+                        raise Logic2AlreadyRunningError()
+
+                if app_info.api_version.major != saleae_pb2.THIS_API_VERSION_MAJOR:
+                    raise IncompatibleApiVersionError()
+
                 break
             except grpc.RpcError as exc:
                 now = datetime.datetime.now()
@@ -471,6 +512,20 @@ class Manager:
     def connect(cls, *, address: str = _DEFAULT_GRPC_ADDRESS, port: int = _DEFAULT_GRPC_PORT) -> 'Manager':
         return cls(address=address, port=port)
 
+    def get_app_info(self) -> AppInfo:
+        with error_handler():
+            reply: saleae_pb2.GetAppInfoReply = self.stub.GetAppInfo(saleae_pb2.GetAppInfoRequest())
+
+        return AppInfo(
+            api_version=Version(
+                major=reply.app_info.api_version.major,
+                minor=reply.app_info.api_version.minor,
+                patch=reply.app_info.api_version.patch,
+            ),
+            app_version=reply.app_info.application_version,
+            app_pid=reply.app_info.pid,
+        )
+
     def close(self):
         """
         Close connection to Saleae backend, and shut it down if it was created by Manager.
@@ -497,7 +552,7 @@ class Manager:
 
     def get_devices(self, *, include_simulation_devices: bool = False) -> List[DeviceDesc]:
         """
-        Returns a list of connected devices. Use this to find the serial numbers of the attached devices.
+        Returns a list of connected devices. Use this to find the device id of the attached devices.
 
         :param include_simulation_devices: If True, the return value will also include simulation devices. This can be useful for testing without a physical device.
         """
@@ -508,7 +563,7 @@ class Manager:
         devices = []
         for device in reply.devices:
             devices.append(DeviceDesc(
-                serial_number=device.serial_number,
+                device_id=device.device_id,
                 device_type=DeviceType(device.device_type),
                 is_simulation=device.is_simulation,
             ))
@@ -519,7 +574,7 @@ class Manager:
         self,
         *,
         device_configuration: DeviceConfiguration,
-        device_serial_number: str,
+        device_id: str,
         capture_configuration: Optional[CaptureConfiguration] = None,
     ) -> "Capture":
         """Start a new capture
@@ -529,12 +584,12 @@ class Manager:
         Be sure to catch DeviceError exceptions raised by this function, and handle them accordingly. See the error section of the library documentation.
 
         :param device_configuration: An instance of LogicDeviceConfiguration, complete with enabled channels, sample rates, and more.
-        :param device_serial_number: The serial number of device to record with.
+        :param device_id: The id of device to record with.
         :param capture_configuration: The capture configuration, which selects the capture mode: timer, digital trigger, or manual., defaults to None, indicating manual mode.
         :return: Capture instance class. Be sure to call either wait() or stop() before trying to save, export, or close the capture.
         """
         request = saleae_pb2.StartCaptureRequest()
-        request.device_serial_number = device_serial_number
+        request.device_id = device_id
 
         if isinstance(device_configuration, LogicDeviceConfiguration):
             request.logic_device_configuration.enabled_analog_channels[
@@ -728,10 +783,9 @@ class Capture:
         request = saleae_pb2.SaveCaptureRequest(
             capture_id=self.capture_id, filepath=filepath
         )
-        try:
-            reply = self.manager.stub.SaveCapture(request)
-        except grpc.RpcError as exc:
-            raise grpc_error_to_exception(exc) from None
+
+        with error_handler():
+            self.manager.stub.SaveCapture(request)
 
     def export_analyzer_legacy(
         self, filepath: str, analyzer: AnalyzerHandle, radix: RadixType
@@ -752,10 +806,8 @@ class Capture:
             radix_type=radix.value,
         )
 
-        try:
-            reply = self.manager.stub.ExportAnalyzerLegacy(request)
-        except grpc.RpcError as exc:
-            raise grpc_error_to_exception(exc) from None
+        with error_handler():
+            self.manager.stub.ExportAnalyzerLegacy(request)
 
     def export_data_table(
         self,
@@ -798,7 +850,7 @@ class Capture:
         )
 
         with error_handler():
-            reply = self.manager.stub.ExportDataTable(request)
+            self.manager.stub.ExportDataTable(request)
 
     def export_raw_data_csv(
         self,

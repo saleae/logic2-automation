@@ -29,13 +29,17 @@ ERROR_CODE_INTERNAL_EXCEPTION: ErrorCode
 ERROR_CODE_INVALID_REQUEST: ErrorCode
 ERROR_CODE_LOAD_CAPTURE_FAILED: ErrorCode
 ERROR_CODE_MISSING_DEVICE: ErrorCode
-ERROR_CODE_OOM: ErrorCode
+ERROR_CODE_OUT_OF_MEMORY: ErrorCode
 ERROR_CODE_UNSPECIFIED: ErrorCode
 RADIX_TYPE_ASCII: RadixType
 RADIX_TYPE_BINARY: RadixType
 RADIX_TYPE_DECIMAL: RadixType
 RADIX_TYPE_HEXADECIMAL: RadixType
 RADIX_TYPE_UNSPECIFIED: RadixType
+THIS_API_VERSION_MAJOR: ThisApiVersion
+THIS_API_VERSION_MINOR: ThisApiVersion
+THIS_API_VERSION_PATCH: ThisApiVersion
+THIS_API_VERSION_ZERO: ThisApiVersion
 
 class AddAnalyzerReply(_message.Message):
     __slots__ = ["analyzer_id"]
@@ -74,6 +78,16 @@ class AnalyzerSettingValue(_message.Message):
     string_value: str
     def __init__(self, string_value: _Optional[str] = ..., int64_value: _Optional[int] = ..., bool_value: bool = ..., double_value: _Optional[float] = ...) -> None: ...
 
+class AppInfo(_message.Message):
+    __slots__ = ["api_version", "application_version", "pid"]
+    API_VERSION_FIELD_NUMBER: _ClassVar[int]
+    APPLICATION_VERSION_FIELD_NUMBER: _ClassVar[int]
+    PID_FIELD_NUMBER: _ClassVar[int]
+    api_version: Version
+    application_version: str
+    pid: int
+    def __init__(self, api_version: _Optional[_Union[Version, _Mapping]] = ..., application_version: _Optional[str] = ..., pid: _Optional[int] = ...) -> None: ...
+
 class CaptureConfiguration(_message.Message):
     __slots__ = ["buffer_size", "digital_capture_mode", "manual_capture_mode", "timed_capture_mode"]
     BUFFER_SIZE_FIELD_NUMBER: _ClassVar[int]
@@ -97,10 +111,10 @@ class ChannelIdentifier(_message.Message):
     DEVICE_ID_FIELD_NUMBER: _ClassVar[int]
     INDEX_FIELD_NUMBER: _ClassVar[int]
     TYPE_FIELD_NUMBER: _ClassVar[int]
-    device_id: int
+    device_id: str
     index: int
     type: ChannelType
-    def __init__(self, device_id: _Optional[int] = ..., type: _Optional[_Union[ChannelType, str]] = ..., index: _Optional[int] = ...) -> None: ...
+    def __init__(self, device_id: _Optional[str] = ..., type: _Optional[_Union[ChannelType, str]] = ..., index: _Optional[int] = ...) -> None: ...
 
 class CloseCaptureReply(_message.Message):
     __slots__ = []
@@ -129,14 +143,14 @@ class DataTableFilter(_message.Message):
     def __init__(self, query: _Optional[str] = ..., columns: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class Device(_message.Message):
-    __slots__ = ["device_type", "is_simulation", "serial_number"]
+    __slots__ = ["device_id", "device_type", "is_simulation"]
+    DEVICE_ID_FIELD_NUMBER: _ClassVar[int]
     DEVICE_TYPE_FIELD_NUMBER: _ClassVar[int]
     IS_SIMULATION_FIELD_NUMBER: _ClassVar[int]
-    SERIAL_NUMBER_FIELD_NUMBER: _ClassVar[int]
+    device_id: str
     device_type: DeviceType
     is_simulation: bool
-    serial_number: str
-    def __init__(self, serial_number: _Optional[str] = ..., device_type: _Optional[_Union[DeviceType, str]] = ..., is_simulation: bool = ...) -> None: ...
+    def __init__(self, device_id: _Optional[str] = ..., device_type: _Optional[_Union[DeviceType, str]] = ..., is_simulation: bool = ...) -> None: ...
 
 class DigitalTriggerCaptureMode(_message.Message):
     __slots__ = ["after_trigger_seconds", "linked_channels", "max_pulse_width_seconds", "min_pulse_width_seconds", "trigger_channel_index", "trigger_type", "trim_data_seconds"]
@@ -234,6 +248,16 @@ class ExportRawDataCsvRequest(_message.Message):
     iso8601: bool
     def __init__(self, capture_id: _Optional[int] = ..., directory: _Optional[str] = ..., channels: _Optional[_Iterable[_Union[ChannelIdentifier, _Mapping]]] = ..., analog_downsample_ratio: _Optional[int] = ..., iso8601: bool = ...) -> None: ...
 
+class GetAppInfoReply(_message.Message):
+    __slots__ = ["app_info"]
+    APP_INFO_FIELD_NUMBER: _ClassVar[int]
+    app_info: AppInfo
+    def __init__(self, app_info: _Optional[_Union[AppInfo, _Mapping]] = ...) -> None: ...
+
+class GetAppInfoRequest(_message.Message):
+    __slots__ = []
+    def __init__(self) -> None: ...
+
 class GetDevicesReply(_message.Message):
     __slots__ = ["devices"]
     DEVICES_FIELD_NUMBER: _ClassVar[int]
@@ -319,14 +343,14 @@ class StartCaptureReply(_message.Message):
     def __init__(self, capture_info: _Optional[_Union[CaptureInfo, _Mapping]] = ...) -> None: ...
 
 class StartCaptureRequest(_message.Message):
-    __slots__ = ["capture_configuration", "device_serial_number", "logic_device_configuration"]
+    __slots__ = ["capture_configuration", "device_id", "logic_device_configuration"]
     CAPTURE_CONFIGURATION_FIELD_NUMBER: _ClassVar[int]
-    DEVICE_SERIAL_NUMBER_FIELD_NUMBER: _ClassVar[int]
+    DEVICE_ID_FIELD_NUMBER: _ClassVar[int]
     LOGIC_DEVICE_CONFIGURATION_FIELD_NUMBER: _ClassVar[int]
     capture_configuration: CaptureConfiguration
-    device_serial_number: str
+    device_id: str
     logic_device_configuration: LogicDeviceConfiguration
-    def __init__(self, device_serial_number: _Optional[str] = ..., logic_device_configuration: _Optional[_Union[LogicDeviceConfiguration, _Mapping]] = ..., capture_configuration: _Optional[_Union[CaptureConfiguration, _Mapping]] = ...) -> None: ...
+    def __init__(self, device_id: _Optional[str] = ..., logic_device_configuration: _Optional[_Union[LogicDeviceConfiguration, _Mapping]] = ..., capture_configuration: _Optional[_Union[CaptureConfiguration, _Mapping]] = ...) -> None: ...
 
 class StopCaptureReply(_message.Message):
     __slots__ = []
@@ -346,6 +370,16 @@ class TimedCaptureMode(_message.Message):
     trim_data_seconds: float
     def __init__(self, duration_seconds: _Optional[float] = ..., trim_data_seconds: _Optional[float] = ...) -> None: ...
 
+class Version(_message.Message):
+    __slots__ = ["major", "minor", "patch"]
+    MAJOR_FIELD_NUMBER: _ClassVar[int]
+    MINOR_FIELD_NUMBER: _ClassVar[int]
+    PATCH_FIELD_NUMBER: _ClassVar[int]
+    major: int
+    minor: int
+    patch: int
+    def __init__(self, major: _Optional[int] = ..., minor: _Optional[int] = ..., patch: _Optional[int] = ...) -> None: ...
+
 class WaitCaptureReply(_message.Message):
     __slots__ = []
     def __init__(self) -> None: ...
@@ -355,6 +389,9 @@ class WaitCaptureRequest(_message.Message):
     CAPTURE_ID_FIELD_NUMBER: _ClassVar[int]
     capture_id: int
     def __init__(self, capture_id: _Optional[int] = ...) -> None: ...
+
+class ThisApiVersion(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = []
 
 class ErrorCode(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = []

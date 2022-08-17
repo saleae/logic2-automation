@@ -1,3 +1,13 @@
+//
+// Saleae gRPC Automation API 1.0.0
+//
+// This file contains the protobuf description for the automation API integrated
+// into the Saleae Logic 2 software, versions 2.3.56 and later.
+//
+// Please see https://saleae.github.io/logic2-automation/ for more information on
+// the gRPC API and the Python wrapper library.
+//
+
 syntax = "proto3";
 
 option java_multiple_files = true;
@@ -14,6 +24,8 @@ package saleae.automation;
  ****************************************************************************/
 
 service Manager {
+    rpc GetAppInfo(GetAppInfoRequest) returns (GetAppInfoReply) {}
+
     // Get list of connected devices.
     rpc GetDevices(GetDevicesRequest) returns (GetDevicesReply) {}
 
@@ -67,6 +79,38 @@ service Manager {
  *
  ****************************************************************************/
 
+ // This enum is not used in any messages. It is here to version this .proto file, and make it accessible to
+ // users of this .proto file. Please see the automation API documentation for more info on
+ // versioning (link at top of file).
+ enum ThisApiVersion {
+    option allow_alias = true;
+
+    // ZERO value here to appease protobuf - the first enum value must be zero.
+    THIS_API_VERSION_ZERO = 0;
+
+    THIS_API_VERSION_MAJOR = 1;
+    THIS_API_VERSION_MINOR = 0;
+    THIS_API_VERSION_PATCH = 0;
+ }
+
+ message Version {
+    uint32 major = 1;
+    uint32 minor = 2;
+    uint32 patch = 3;
+ }
+
+ // Application version info for the
+ message AppInfo {
+    // The version of .proto that Logic 2 is using.
+    Version api_version = 1;
+
+    // Logic 2 Application Version
+    string application_version = 2;
+
+    // Process ID of the gRPC server
+    uint64 pid = 3;
+ }
+
 enum ErrorCode {
     ERROR_CODE_UNSPECIFIED = 0; // Not used
 
@@ -80,12 +124,20 @@ enum ErrorCode {
     //     Missing filepath
     ERROR_CODE_INVALID_REQUEST = 10;
 
+    // Loading the capture failed
     ERROR_CODE_LOAD_CAPTURE_FAILED = 20;
+
+    // Export failed
     ERROR_CODE_EXPORT_FAILED = 21;
 
+    // ??
     ERROR_CODE_MISSING_DEVICE = 50;
+
+    // There was a device error during the capture
     ERROR_CODE_DEVICE_ERROR = 51;
-    ERROR_CODE_OOM = 52;
+
+    // Ran out of memory during capture
+    ERROR_CODE_OUT_OF_MEMORY = 52;
 }
 
 enum RadixType {
@@ -101,16 +153,16 @@ enum DeviceType {
     // Invalid Device Type
     DEVICE_TYPE_UNSPECIFIED = 0;
 
-    // Saleae Logic
+    // Saleae Logic - NOT SUPPORTED
     DEVICE_TYPE_LOGIC = 1;
 
-    // Saleae Logic 4
+    // Saleae Logic 4 - NOT SUPPORTED
     DEVICE_TYPE_LOGIC_4 = 2;
 
     // Saleae Logic 8
     DEVICE_TYPE_LOGIC_8 = 3;
 
-    // Saleae Logic 16 
+    // Saleae Logic 16  - NOT SUPPORTED
     DEVICE_TYPE_LOGIC_16 = 4;
 
     // Saleae Logic Pro 8
@@ -122,8 +174,8 @@ enum DeviceType {
 
 // Device descriptor object.
 message Device {
-    // The serial number of this device
-    string serial_number = 1;
+    // The device id of this device
+    string device_id = 1;
 
     // The type of this device
     DeviceType device_type = 2;
@@ -145,7 +197,7 @@ enum ChannelType {
 // Identification for a channel.
 message ChannelIdentifier {
     // Device id
-    uint64 device_id = 1;
+    string device_id = 1;
 
     // Channel type.
     ChannelType type = 2;
@@ -177,6 +229,7 @@ message LogicDeviceConfiguration {
     double digital_threshold_volts = 5;
 
     // Glitch filter to apply to digital data
+    // See https://support.saleae.com/user-guide/using-logic/software-glitch-filter for more information
     repeated GlitchFilterEntry glitch_filters = 6;
 }
 
@@ -188,30 +241,44 @@ message GlitchFilterEntry {
     double pulse_width_seconds = 2;
 }
 
+// When in manual capture mode, the capture must be manually stopped using the StopCapture request.
 message ManualCaptureMode { 
     // Number of seconds to keep after the capture ends
     double trim_data_seconds = 1;
 }
 
+// When in timed capture mode, the capture will automatically stop after `duration_seconds`.
+// If `trim_data_seconds` is 
 message TimedCaptureMode {
     // Seconds of data to capture
     double duration_seconds = 1;
 
-    // Number of seconds to keep after the capture ends
+    // Number of seconds to keep after the capture ends.
+    // If greater than 0, only the latest `trim_data_seconds` of the capture will be kept.
     double trim_data_seconds = 2;
 }
 
 enum DigitalTriggerType {
     DIGITAL_TRIGGER_TYPE_UNSPECIFIED = 0;
 
+    // Rising edge trigger, from LOW to HIGH
     DIGITAL_TRIGGER_TYPE_RISING = 1;
+
+    // Falling edge trigger, from HIGH to LOW
     DIGITAL_TRIGGER_TYPE_FALLING = 2;
+
+    // Pulse trigger, with a rising and falling edge
     DIGITAL_TRIGGER_TYPE_PULSE_HIGH = 3;
+
+    // Pulse trigger, with a falling and rising edge
     DIGITAL_TRIGGER_TYPE_PULSE_LOW = 4;
 }
 
 message DigitalTriggerLinkedChannel {
+    // Channel to link to
     uint32 channel_index = 1;
+
+    // Expected state of channel at trigger
     DigitalTriggerLinkedChannelState state = 2;
 }
 
@@ -222,7 +289,10 @@ enum DigitalTriggerLinkedChannelState {
     DIGITAL_TRIGGER_LINKED_CHANNEL_STATE_HIGH = 2;
 }
 
+// When in digital trigger capture mode, the capture will automatically stop when the specified digital condition
+// has been met.
 message DigitalTriggerCaptureMode {
+    // Type of trigger
     DigitalTriggerType trigger_type = 1;
 
     // Number of seconds to continue capturing after trigger
@@ -231,16 +301,16 @@ message DigitalTriggerCaptureMode {
     // Number of seconds to keep after the capture ends
     double trim_data_seconds = 3;
 
-    // Index of channel to trigger on
+    // Index of channel to search for `trigger_type`
     uint32 trigger_channel_index = 4;
 
-    // Minimum pulse width to trigger on, in seconds
+    // Minimum pulse width to trigger on, in seconds (only applies when trigger_type is a pulse trigger type)
     double min_pulse_width_seconds = 5;
 
-    // Maximum pulse width to trigger on, in seconds
+    // Maximum pulse width to trigger on, in seconds (only applies when trigger_type is a pulse trigger type)
     double max_pulse_width_seconds = 6;
 
-    // Other channel conditions
+    // Conditions on other digital channels that must be met in order to meet the trigger condition
     repeated DigitalTriggerLinkedChannel linked_channels = 7;
 }
 
@@ -272,7 +342,8 @@ message GetDevicesReply { repeated Device devices = 1; }
 
 // Start Capture
 message StartCaptureRequest {
-    string device_serial_number = 1;
+    // Device id of device to capture with
+    string device_id = 1;
 
     oneof device_configuration {
         LogicDeviceConfiguration logic_device_configuration = 2;
@@ -441,3 +512,9 @@ message ExportAnalyzerLegacyRequest {
     RadixType radix_type = 4;
 }
 message ExportAnalyzerLegacyReply {}
+
+message GetAppInfoRequest {}
+message GetAppInfoReply{
+    AppInfo app_info = 1;
+}
+
