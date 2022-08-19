@@ -6,11 +6,9 @@ from enum import Enum
 import grpc
 import logging
 import re
-import saleae
 import subprocess
 import datetime
 
-import sys
 from saleae.grpc import saleae_pb2, saleae_pb2_grpc
 
 
@@ -592,12 +590,13 @@ class Manager:
         request.device_id = device_id
 
         if isinstance(device_configuration, LogicDeviceConfiguration):
-            request.logic_device_configuration.enabled_analog_channels[
-                :
-            ] = device_configuration.enabled_analog_channels
-            request.logic_device_configuration.enabled_digital_channels[
-                :
-            ] = device_configuration.enabled_digital_channels
+            request.logic_device_configuration.logic_channels.CopyFrom(
+                saleae_pb2.LogicChannels(
+                    digital_channels=device_configuration.enabled_digital_channels,
+                    analog_channels=device_configuration.enabled_analog_channels,
+                )
+            )
+
             if device_configuration.analog_sample_rate is not None:
                 request.logic_device_configuration.analog_sample_rate = (
                     device_configuration.analog_sample_rate
@@ -624,7 +623,7 @@ class Manager:
 
         if capture_configuration is not None:
             if capture_configuration.buffer_size:
-                request.capture_configuration.buffer_size = (
+                request.capture_configuration.buffer_size_megabytes = (
                     capture_configuration.buffer_size
                 )
 
@@ -799,7 +798,7 @@ class Capture:
         :param analyzer: AnalyzerHandle returned from add_analyzer()
         :param radix: Display Radix, from the RadixType enumeration.
         """
-        request = saleae_pb2.ExportAnalyzerLegacyRequest(
+        request = saleae_pb2.LegacyExportAnalyzerRequest(
             capture_id=self.capture_id,
             filepath=filepath,
             analyzer_id=analyzer.analyzer_id,
@@ -807,7 +806,7 @@ class Capture:
         )
 
         with error_handler():
-            self.manager.stub.ExportAnalyzerLegacy(request)
+            self.manager.stub.LegacyExportAnalyzer(request)
 
     def export_data_table(
         self,
@@ -816,7 +815,7 @@ class Capture:
         *,
         columns: Optional[List[str]] = None,
         filter: Optional[DataTableFilter] = None,
-        iso8601: bool = False,
+        iso8601_timestamp: bool = False,
     ):
         """
         Exports the Analyzer Data Table
@@ -826,7 +825,7 @@ class Capture:
         :param filepath: The specified output file, including extension, .csv.
         :param analyzers: A list of AnalyzerHandles that should be included in the export, returned from add_analyzer()
         :param radix: Display Radix, from the RadixType enumeration. Currently applies to all Analyzers in the export.
-        :param iso8601: Use this to output wall clock timestamps, instead of capture relative timestamps. Defaults to False.
+        :param iso8601_timestamp: Use this to output wall clock timestamps, instead of capture relative timestamps. Defaults to False.
         """
         analyzer_configs = []
         for a in analyzers:
@@ -840,17 +839,17 @@ class Capture:
 
         pb_filter = None if filter is None else saleae_pb2.DataTableFilter(query=filter.query, columns=filter.columns)
 
-        request = saleae_pb2.ExportDataTableRequest(
+        request = saleae_pb2.ExportDataTableCsvRequest(
             capture_id=self.capture_id,
             filepath=filepath,
             analyzers=analyzer_configs,
             export_columns=columns,
             filter=pb_filter,
-            iso8601=iso8601,
+            iso8601_timestamp=iso8601_timestamp,
         )
 
         with error_handler():
-            self.manager.stub.ExportDataTable(request)
+            self.manager.stub.ExportDataTableCsv(request)
 
     def export_raw_data_csv(
         self,
@@ -859,7 +858,7 @@ class Capture:
         analog_channels: Optional[List[int]] = None,
         digital_channels: Optional[List[int]] = None,
         analog_downsample_ratio: int = 1,
-        iso8601: bool = False,
+        iso8601_timestamp: bool = False,
     ):
         """Exports raw data to CSV file(s)
 
@@ -877,34 +876,19 @@ class Capture:
         :param analog_channels: list of analog channels to export, defaults to None
         :param digital_channels: list of digital channels to export, defaults to None
         :param analog_downsample_ratio: optional analog downsample ratio, useful to help reduce export file sizes where extra analog resolution isn't needed, defaults to 1
-        :param iso8601: Use this to output wall clock timestamps, instead of capture relative timestamps. Defaults to False.
+        :param iso8601_timestamp: Use this to output wall clock timestamps, instead of capture relative timestamps. Defaults to False.
         """
-        channels = []
-        if analog_channels:
-            channels.extend(
-                [
-                    saleae_pb2.ChannelIdentifier(
-                        type=saleae_pb2.CHANNEL_TYPE_ANALOG, index=ch
-                    )
-                    for ch in analog_channels
-                ]
-            )
-        if digital_channels:
-            channels.extend(
-                [
-                    saleae_pb2.ChannelIdentifier(
-                        type=saleae_pb2.CHANNEL_TYPE_DIGITAL, index=ch
-                    )
-                    for ch in digital_channels
-                ]
-            )
+        channels = saleae_pb2.LogicChannels(
+            analog_channels=[] if analog_channels is None else analog_channels,
+            digital_channels=[] if digital_channels is None else digital_channels,
+        )
 
         request = saleae_pb2.ExportRawDataCsvRequest(
             capture_id=self.capture_id,
             directory=directory,
-            channels=channels,
+            logic_channels=channels,
             analog_downsample_ratio=analog_downsample_ratio,
-            iso8601=iso8601,
+            iso8601_timestamp=iso8601_timestamp,
         )
 
         with error_handler():
@@ -936,30 +920,15 @@ class Capture:
         :param digital_channels: list of digital channels to export, defaults to None
         :param analog_downsample_ratio: optional analog downsample ratio, useful to help reduce export file sizes where extra analog resolution isn't needed, defaults to 1
         """
-        channels = []
-        if analog_channels:
-            channels.extend(
-                [
-                    saleae_pb2.ChannelIdentifier(
-                        type=saleae_pb2.CHANNEL_TYPE_ANALOG, index=ch
-                    )
-                    for ch in analog_channels
-                ]
-            )
-        if digital_channels:
-            channels.extend(
-                [
-                    saleae_pb2.ChannelIdentifier(
-                        type=saleae_pb2.CHANNEL_TYPE_DIGITAL, index=ch
-                    )
-                    for ch in digital_channels
-                ]
-            )
+        channels = saleae_pb2.LogicChannels(
+            analog_channels=[] if analog_channels is None else analog_channels,
+            digital_channels=[] if digital_channels is None else digital_channels,
+        )
 
         request = saleae_pb2.ExportRawDataBinaryRequest(
             capture_id=self.capture_id,
             directory=directory,
-            channels=channels,
+            logic_channels=channels,
             analog_downsample_ratio=analog_downsample_ratio,
         )
 

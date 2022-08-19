@@ -64,11 +64,11 @@ service Manager {
             returns (ExportRawDataBinaryReply) {}
 
     // Export analyzer data to CSV file.
-    rpc ExportDataTable(ExportDataTableRequest) returns (ExportDataTableReply) {}
+    rpc ExportDataTableCsv(ExportDataTableCsvRequest) returns (ExportDataTableCsvReply) {}
 
     // Export custom analyzer export data to file.
-    rpc ExportAnalyzerLegacy(ExportAnalyzerLegacyRequest)
-            returns (ExportAnalyzerLegacyReply) {}
+    rpc LegacyExportAnalyzer(LegacyExportAnalyzerRequest)
+            returns (LegacyExportAnalyzerReply) {}
 }
 
 
@@ -107,8 +107,8 @@ service Manager {
     // Logic 2 Application Version
     string application_version = 2;
 
-    // Process ID of the gRPC server
-    uint64 pid = 3;
+    // Process ID of the main Logic 2 process
+    uint64 launch_pid = 3;
  }
 
 enum ErrorCode {
@@ -130,7 +130,7 @@ enum ErrorCode {
     // Export failed
     ERROR_CODE_EXPORT_FAILED = 21;
 
-    // ??
+    // The specified device id does not exist
     ERROR_CODE_MISSING_DEVICE = 50;
 
     // There was a device error during the capture
@@ -194,16 +194,12 @@ enum ChannelType {
     CHANNEL_TYPE_ANALOG = 2;
 }
 
-// Identification for a channel.
-message ChannelIdentifier {
-    // Device id
-    string device_id = 1;
+message LogicChannels {
+    // Indices of Digital Channels, starting from 0
+    repeated uint32 digital_channels = 1;
 
-    // Channel type.
-    ChannelType type = 2;
-
-    // Index of channel.
-    uint64 index = 3;
+    // Indices of Analog Channels, starting from 0
+    repeated uint32 analog_channels = 2;
 }
 
 message CaptureInfo {
@@ -212,25 +208,24 @@ message CaptureInfo {
 }
 
 message LogicDeviceConfiguration {
-    // Digital channel indices to enabled
-    repeated uint32 enabled_digital_channels = 1;
+    // Analog and Digital channels to record on
+    oneof enabled_channels {
+        LogicChannels logic_channels = 1;
+    }
 
-    // Analog channel indices to enabled
-    repeated uint32 enabled_analog_channels = 2;
+    // Digital Sample Rate (samples per second)
+    uint32 digital_sample_rate = 2;
 
-    // Digital Sample Rate
-    uint32 digital_sample_rate = 3;
-
-    // Analog Sample Rate
-    uint32 analog_sample_rate = 4;
+    // Analog Sample Rate (samples per second)
+    uint32 analog_sample_rate = 3;
 
     // For Pro 8 and Pro 16, this can be one of: 1.2, 1.8, or 3.3
     // For other devices this is ignored
-    double digital_threshold_volts = 5;
+    double digital_threshold_volts = 4;
 
     // Glitch filter to apply to digital data
     // See https://support.saleae.com/user-guide/using-logic/software-glitch-filter for more information
-    repeated GlitchFilterEntry glitch_filters = 6;
+    repeated GlitchFilterEntry glitch_filters = 5;
 }
 
 message GlitchFilterEntry {
@@ -243,7 +238,8 @@ message GlitchFilterEntry {
 
 // When in manual capture mode, the capture must be manually stopped using the StopCapture request.
 message ManualCaptureMode { 
-    // Number of seconds to keep after the capture ends
+    // Number of seconds to keep after the capture ends.
+    // If greater than 0, only the latest `trim_data_seconds` of the capture will be kept, otherwise the data will not be trimmed.
     double trim_data_seconds = 1;
 }
 
@@ -254,7 +250,7 @@ message TimedCaptureMode {
     double duration_seconds = 1;
 
     // Number of seconds to keep after the capture ends.
-    // If greater than 0, only the latest `trim_data_seconds` of the capture will be kept.
+    // If greater than 0, only the latest `trim_data_seconds` of the capture will be kept, otherwise the data will not be trimmed.
     double trim_data_seconds = 2;
 }
 
@@ -285,7 +281,10 @@ message DigitalTriggerLinkedChannel {
 enum DigitalTriggerLinkedChannelState {
     DIGITAL_TRIGGER_LINKED_CHANNEL_STATE_UNSPECIFIED = 0;
 
+    // The linked channel must be LOW
     DIGITAL_TRIGGER_LINKED_CHANNEL_STATE_LOW = 1;
+
+    // The linked channel must be HIGH
     DIGITAL_TRIGGER_LINKED_CHANNEL_STATE_HIGH = 2;
 }
 
@@ -298,7 +297,8 @@ message DigitalTriggerCaptureMode {
     // Number of seconds to continue capturing after trigger
     double after_trigger_seconds = 2;
 
-    // Number of seconds to keep after the capture ends
+    // Number of seconds to keep after the capture ends.
+    // If greater than 0, only the latest `trim_data_seconds` of the capture will be kept, otherwise the data will not be trimmed.
     double trim_data_seconds = 3;
 
     // Index of channel to search for `trigger_type`
@@ -311,12 +311,21 @@ message DigitalTriggerCaptureMode {
     double max_pulse_width_seconds = 6;
 
     // Conditions on other digital channels that must be met in order to meet the trigger condition
+    // For an edge trigger, the linked channel must be in the specified state at when the trigger edge occurs.
+    // For a pulse trigger, the linked channel must be in the specified state for the duration of the pulse.
     repeated DigitalTriggerLinkedChannel linked_channels = 7;
 }
 
 message CaptureConfiguration {
-    // Capture buffer size (in megabytes)
-    uint32 buffer_size = 1;
+    // Capture buffer size
+    // This is the maximum number of megabytes allowed for storing data during a capture.
+    // When this limit is reached, what happens depends on the capture mode:
+    //
+    //   Manual - the oldest data will be deleted until the total usage is under buffer_size_megabytes
+    //   Timer - the capture will be terminated
+    //   DigitalTriggerCapture - the capture will be terminated
+    //
+    uint32 buffer_size_megabytes = 1;
 
     // Capture mode
     oneof capture_mode {
@@ -354,16 +363,18 @@ message StartCaptureRequest {
 message StartCaptureReply { CaptureInfo capture_info = 1; }
 
 // Stop Capture
+// If the capture is running, this will stop the capture, otherwise it will do nothing.
 message StopCaptureRequest { uint64 capture_id = 1; }
 message StopCaptureReply {}
 
-// Stop Capture
+// Wait Capture
+// If the capture is running, this will wait for the capture to end, otherwise it will do nothing.
+// This should not be used with ManualCaptureMode. It requires that the capture ends on its own.
 message WaitCaptureRequest { uint64 capture_id = 1; }
 message WaitCaptureReply {}
 
-// Load Capture
 message LoadCaptureRequest {
-    // Filepath of Logic 2 .sal capture file to load.
+    // Absolute filepath of Logic 2 .sal capture file to load.
     string filepath = 1;
 }
 message LoadCaptureReply {
@@ -375,7 +386,8 @@ message SaveCaptureRequest {
     // Id of capture to save.
     uint64 capture_id = 1;
 
-    // Full filepath to save the file to, usually ending in ".sal".
+    // Absolute filepath to save the file to, usually ending in ".sal".
+    // The save file will be exactly as specified, and will _NOT_ have ".sal" appended to it.
     string filepath = 2;
 }
 message SaveCaptureReply {}
@@ -394,13 +406,15 @@ message ExportRawDataCsvRequest {
     string directory = 2;
 
     // Channels to export.
-    repeated ChannelIdentifier channels = 3;
+    oneof channels {
+        LogicChannels logic_channels = 3;
+    }
 
     // Must be between 1 and 1,000,000, inclusive.
     uint64 analog_downsample_ratio = 4;
 
     // If true, timestamps will be in ISO8601 format.
-    bool iso8601 = 5;
+    bool iso8601_timestamp = 5;
 }
 message ExportRawDataCsvReply {}
 
@@ -412,7 +426,9 @@ message ExportRawDataBinaryRequest {
     string directory = 2;
 
     // Channels to export.
-    repeated ChannelIdentifier channels = 3;
+    oneof channels {
+        LogicChannels logic_channels = 3;
+    }
 
     // Must be between 1 and 1,000,000, inclusive.
     uint64 analog_downsample_ratio = 4;
@@ -478,7 +494,7 @@ message DataTableFilter {
     // Columns to query
     repeated string columns = 2;
 }
-message ExportDataTableRequest {
+message ExportDataTableCsvRequest {
     // Id of capture to export data from.
     uint64 capture_id = 1;
 
@@ -489,16 +505,16 @@ message ExportDataTableRequest {
     repeated DataTableAnalyzerConfiguration analyzers = 3;
 
     // If true, timestamps will be in ISO8601 format.
-    bool iso8601 = 4;
+    bool iso8601_timestamp = 4;
 
     // Columns to export. If empty, all columns will be exported.
     repeated string export_columns = 5;
 
     DataTableFilter filter = 6;
 }
-message ExportDataTableReply {}
+message ExportDataTableCsvReply {}
 
-message ExportAnalyzerLegacyRequest {
+message LegacyExportAnalyzerRequest {
     // Id of capture to export data from.
     uint64 capture_id = 1;
 
@@ -511,7 +527,7 @@ message ExportAnalyzerLegacyRequest {
     // Radix to use for exported data.
     RadixType radix_type = 4;
 }
-message ExportAnalyzerLegacyReply {}
+message LegacyExportAnalyzerReply {}
 
 message GetAppInfoRequest {}
 message GetAppInfoReply{

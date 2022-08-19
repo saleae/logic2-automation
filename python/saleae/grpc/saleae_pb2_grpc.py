@@ -80,15 +80,15 @@ class ManagerStub(object):
                 request_serializer=saleae_dot_grpc_dot_saleae__pb2.ExportRawDataBinaryRequest.SerializeToString,
                 response_deserializer=saleae_dot_grpc_dot_saleae__pb2.ExportRawDataBinaryReply.FromString,
                 )
-        self.ExportDataTable = channel.unary_unary(
-                '/saleae.automation.Manager/ExportDataTable',
-                request_serializer=saleae_dot_grpc_dot_saleae__pb2.ExportDataTableRequest.SerializeToString,
-                response_deserializer=saleae_dot_grpc_dot_saleae__pb2.ExportDataTableReply.FromString,
+        self.ExportDataTableCsv = channel.unary_unary(
+                '/saleae.automation.Manager/ExportDataTableCsv',
+                request_serializer=saleae_dot_grpc_dot_saleae__pb2.ExportDataTableCsvRequest.SerializeToString,
+                response_deserializer=saleae_dot_grpc_dot_saleae__pb2.ExportDataTableCsvReply.FromString,
                 )
-        self.ExportAnalyzerLegacy = channel.unary_unary(
-                '/saleae.automation.Manager/ExportAnalyzerLegacy',
-                request_serializer=saleae_dot_grpc_dot_saleae__pb2.ExportAnalyzerLegacyRequest.SerializeToString,
-                response_deserializer=saleae_dot_grpc_dot_saleae__pb2.ExportAnalyzerLegacyReply.FromString,
+        self.LegacyExportAnalyzer = channel.unary_unary(
+                '/saleae.automation.Manager/LegacyExportAnalyzer',
+                request_serializer=saleae_dot_grpc_dot_saleae__pb2.LegacyExportAnalyzerRequest.SerializeToString,
+                response_deserializer=saleae_dot_grpc_dot_saleae__pb2.LegacyExportAnalyzerReply.FromString,
                 )
 
 
@@ -186,14 +186,14 @@ class ManagerServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def ExportDataTable(self, request, context):
+    def ExportDataTableCsv(self, request, context):
         """Export analyzer data to CSV file.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def ExportAnalyzerLegacy(self, request, context):
+    def LegacyExportAnalyzer(self, request, context):
         """Export custom analyzer export data to file.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -263,15 +263,15 @@ def add_ManagerServicer_to_server(servicer, server):
                     request_deserializer=saleae_dot_grpc_dot_saleae__pb2.ExportRawDataBinaryRequest.FromString,
                     response_serializer=saleae_dot_grpc_dot_saleae__pb2.ExportRawDataBinaryReply.SerializeToString,
             ),
-            'ExportDataTable': grpc.unary_unary_rpc_method_handler(
-                    servicer.ExportDataTable,
-                    request_deserializer=saleae_dot_grpc_dot_saleae__pb2.ExportDataTableRequest.FromString,
-                    response_serializer=saleae_dot_grpc_dot_saleae__pb2.ExportDataTableReply.SerializeToString,
+            'ExportDataTableCsv': grpc.unary_unary_rpc_method_handler(
+                    servicer.ExportDataTableCsv,
+                    request_deserializer=saleae_dot_grpc_dot_saleae__pb2.ExportDataTableCsvRequest.FromString,
+                    response_serializer=saleae_dot_grpc_dot_saleae__pb2.ExportDataTableCsvReply.SerializeToString,
             ),
-            'ExportAnalyzerLegacy': grpc.unary_unary_rpc_method_handler(
-                    servicer.ExportAnalyzerLegacy,
-                    request_deserializer=saleae_dot_grpc_dot_saleae__pb2.ExportAnalyzerLegacyRequest.FromString,
-                    response_serializer=saleae_dot_grpc_dot_saleae__pb2.ExportAnalyzerLegacyReply.SerializeToString,
+            'LegacyExportAnalyzer': grpc.unary_unary_rpc_method_handler(
+                    servicer.LegacyExportAnalyzer,
+                    request_deserializer=saleae_dot_grpc_dot_saleae__pb2.LegacyExportAnalyzerRequest.FromString,
+                    response_serializer=saleae_dot_grpc_dot_saleae__pb2.LegacyExportAnalyzerReply.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -494,7 +494,7 @@ class Manager(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def ExportDataTable(request,
+    def ExportDataTableCsv(request,
             target,
             options=(),
             channel_credentials=None,
@@ -504,14 +504,14 @@ class Manager(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/saleae.automation.Manager/ExportDataTable',
-            saleae_dot_grpc_dot_saleae__pb2.ExportDataTableRequest.SerializeToString,
-            saleae_dot_grpc_dot_saleae__pb2.ExportDataTableReply.FromString,
+        return grpc.experimental.unary_unary(request, target, '/saleae.automation.Manager/ExportDataTableCsv',
+            saleae_dot_grpc_dot_saleae__pb2.ExportDataTableCsvRequest.SerializeToString,
+            saleae_dot_grpc_dot_saleae__pb2.ExportDataTableCsvReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def ExportAnalyzerLegacy(request,
+    def LegacyExportAnalyzer(request,
             target,
             options=(),
             channel_credentials=None,
@@ -521,8 +521,8 @@ class Manager(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/saleae.automation.Manager/ExportAnalyzerLegacy',
-            saleae_dot_grpc_dot_saleae__pb2.ExportAnalyzerLegacyRequest.SerializeToString,
-            saleae_dot_grpc_dot_saleae__pb2.ExportAnalyzerLegacyReply.FromString,
+        return grpc.experimental.unary_unary(request, target, '/saleae.automation.Manager/LegacyExportAnalyzer',
+            saleae_dot_grpc_dot_saleae__pb2.LegacyExportAnalyzerRequest.SerializeToString,
+            saleae_dot_grpc_dot_saleae__pb2.LegacyExportAnalyzerReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
