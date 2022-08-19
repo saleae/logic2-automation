@@ -61,7 +61,7 @@ Also, for most automated applications, you won't want to start the software manu
 
 .. _device-serial-number:
 
-Finding the Serial Number of a Device
+Finding the Serial Number (Device Id) of a Device
 -------------------------------------
 
 To find the serial number of a connected device, open capture info sidebar and click the device dropdown in the top right:
@@ -72,7 +72,7 @@ If the device you want the serial number for is not selected, select it. Then cl
 
 .. image:: _static/device_serial.png
 
-You can copy the serial number from here and use it in your Python script.
+You can copy the serial number from here and use it in your Python script where a "device_id" is required.
 
 
 Versioning
@@ -95,4 +95,4 @@ The version of the .proto file that the server is using can be retrieved using t
     * There are fixes to the API
   
 
-When implementing a client that uses the API, 
+When implementing a client that uses the API, it is recommended to always retrieve the api version via GetAppInfo to validate that the major version is the same, and that the minor version is not older than the client.

@@ -521,7 +521,7 @@ class Manager:
                 patch=reply.app_info.api_version.patch,
             ),
             app_version=reply.app_info.application_version,
-            app_pid=reply.app_info.pid,
+            app_pid=reply.app_info.launch_pid,
         )
 
     def close(self):
