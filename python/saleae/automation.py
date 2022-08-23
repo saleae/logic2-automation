@@ -776,8 +776,8 @@ class Capture:
 
     def add_high_level_analyzer(
         self,
-        root_path: str,
-        entry_point: str,
+        extension_directory: str,
+        name: str,
         *,
         input_analyzer: AnalyzerHandle,
         settings: Optional[Dict[str, Union[str, float]]] = None,
@@ -809,11 +809,11 @@ class Capture:
 
         request = saleae_pb2.AddHighLevelAnalyzerRequest(
             capture_id=self.capture_id,
-            root_path=root_path,
-            entry_point=entry_point,
+            extension_directory=extension_directory,
+            hla_name=name,
             input_analyzer_id=input_analyzer.analyzer_id,
             settings=analyzer_settings,
-            analyzer_label=label,
+            hla_label=label,
         )
 
         with error_handler():

@@ -491,14 +491,15 @@ message AddHighLevelAnalyzerRequest {
     // Id of capture to add analyzer to.
     uint64 capture_id = 1;
 
-    // The path to the root of the directory to load the HLA from.
-    string root_path = 2;
+    // The path to the extension directory containing the HLA
+    // Note: The extension directory is the directory that contains `extension.json`
+    string extension_directory = 2;
 
-    // The entry point to the HLA - this is the root-path relative path to the HLA class to add.
-    string entry_point = 3;
+    // The name of the HLA to use, as listed in `extension.json`
+    string hla_name = 3;
 
-    // User-facing name for the analyzer.
-    string analyzer_label = 4;
+    // User-facing name for the HLA.
+    string hla_label = 4;
 
     // Id of analyzer to use as input to this HLA
     uint64 input_analyzer_id = 5;

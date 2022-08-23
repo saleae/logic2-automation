@@ -73,7 +73,7 @@ class AddHighLevelAnalyzerReply(_message.Message):
     def __init__(self, analyzer_id: _Optional[int] = ...) -> None: ...
 
 class AddHighLevelAnalyzerRequest(_message.Message):
-    __slots__ = ["analyzer_label", "capture_id", "entry_point", "input_analyzer_id", "root_path", "settings"]
+    __slots__ = ["capture_id", "extension_directory", "hla_label", "hla_name", "input_analyzer_id", "settings"]
     class SettingsEntry(_message.Message):
         __slots__ = ["key", "value"]
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -81,19 +81,19 @@ class AddHighLevelAnalyzerRequest(_message.Message):
         key: str
         value: HighLevelAnalyzerSettingValue
         def __init__(self, key: _Optional[str] = ..., value: _Optional[_Union[HighLevelAnalyzerSettingValue, _Mapping]] = ...) -> None: ...
-    ANALYZER_LABEL_FIELD_NUMBER: _ClassVar[int]
     CAPTURE_ID_FIELD_NUMBER: _ClassVar[int]
-    ENTRY_POINT_FIELD_NUMBER: _ClassVar[int]
+    EXTENSION_DIRECTORY_FIELD_NUMBER: _ClassVar[int]
+    HLA_LABEL_FIELD_NUMBER: _ClassVar[int]
+    HLA_NAME_FIELD_NUMBER: _ClassVar[int]
     INPUT_ANALYZER_ID_FIELD_NUMBER: _ClassVar[int]
-    ROOT_PATH_FIELD_NUMBER: _ClassVar[int]
     SETTINGS_FIELD_NUMBER: _ClassVar[int]
-    analyzer_label: str
     capture_id: int
-    entry_point: str
+    extension_directory: str
+    hla_label: str
+    hla_name: str
     input_analyzer_id: int
-    root_path: str
     settings: _containers.MessageMap[str, HighLevelAnalyzerSettingValue]
-    def __init__(self, capture_id: _Optional[int] = ..., root_path: _Optional[str] = ..., entry_point: _Optional[str] = ..., analyzer_label: _Optional[str] = ..., input_analyzer_id: _Optional[int] = ..., settings: _Optional[_Mapping[str, HighLevelAnalyzerSettingValue]] = ...) -> None: ...
+    def __init__(self, capture_id: _Optional[int] = ..., extension_directory: _Optional[str] = ..., hla_name: _Optional[str] = ..., hla_label: _Optional[str] = ..., input_analyzer_id: _Optional[int] = ..., settings: _Optional[_Mapping[str, HighLevelAnalyzerSettingValue]] = ...) -> None: ...
 
 class AnalyzerSettingValue(_message.Message):
     __slots__ = ["bool_value", "double_value", "int64_value", "string_value"]
