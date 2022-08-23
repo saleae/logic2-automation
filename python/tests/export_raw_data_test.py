@@ -199,7 +199,7 @@ comparison_scenarios = [
             analog_downsample_ratio=1,
             analog_channels=[0, 1],
             digital_channels=[0, 1],
-            iso8601=True,
+            iso8601_timestamp=True,
         )
     ),
     ComparisonScenario(

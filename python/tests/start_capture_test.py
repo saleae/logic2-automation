@@ -12,7 +12,7 @@ SIMULATION_LOGIC_PRO_8 = 'F4244'
 SIMULATION_LOGIC_PRO_16 = 'F4241'
 
 
-def test_start_capture(manager: automation.Manager, asset_path: str, tmp_path):
+def test_start_capture(manager: automation.Manager, tmp_path):
     serial = SIMULATION_LOGIC_PRO_8
     config = automation.LogicDeviceConfiguration(
         enabled_digital_channels=[0, 3, 4, 5],
@@ -21,7 +21,7 @@ def test_start_capture(manager: automation.Manager, asset_path: str, tmp_path):
     )
     trigger = automation.ManualCaptureMode()
 
-    with manager.start_capture(device_serial_number=serial, device_configuration=config) as cap:
+    with manager.start_capture(device_id=serial, device_configuration=config) as cap:
 
         time.sleep(1)
 
@@ -68,7 +68,7 @@ trigger_configs = [
 
 
 @pytest.mark.parametrize('trigger', trigger_configs)
-def test_trigger_config(trigger: automation.CaptureMode, manager: automation.Manager, tmp_path):
+def test_trigger_config(trigger: automation.CaptureMode, manager: automation.Manager):
     serial = SIMULATION_LOGIC_PRO_8
     config = automation.LogicDeviceConfiguration(
         enabled_digital_channels=[0, 3, 4, 5],
@@ -77,7 +77,7 @@ def test_trigger_config(trigger: automation.CaptureMode, manager: automation.Man
     )
     capture_settings = automation.CaptureConfiguration(capture_mode=trigger)
 
-    with manager.start_capture(device_serial_number=serial, device_configuration=config, capture_configuration=capture_settings) as cap:
+    with manager.start_capture(device_id=serial, device_configuration=config, capture_configuration=capture_settings) as cap:
         if isinstance(trigger, automation.ManualCaptureMode):
             cap.stop()
         else:
@@ -118,7 +118,7 @@ threshold_scenarios = [
 
 
 @pytest.mark.parametrize('scenario', threshold_scenarios)
-def test_threshold_validation(scenario: ThresholdScenario, manager: automation.Manager, asset_path: str, tmp_path):
+def test_threshold_validation(scenario: ThresholdScenario, manager: automation.Manager):
     serial = scenario.serial
     config = automation.LogicDeviceConfiguration(
         enabled_digital_channels=[0, 3, 4],
@@ -127,7 +127,7 @@ def test_threshold_validation(scenario: ThresholdScenario, manager: automation.M
     )
 
     try:
-        with manager.start_capture(device_serial_number=serial, device_configuration=config) as cap:
+        with manager.start_capture(device_id=serial, device_configuration=config) as cap:
             cap.stop()
         assert scenario.valid, "Expected failure, digital threshold options not available on Logic 8"
     except automation.SaleaeError as exc:
@@ -188,7 +188,7 @@ def test_channel_validation(scenario: EnabledChannelScenario, manager: automatio
     )
 
     try:
-        with manager.start_capture(device_serial_number=serial, device_configuration=config) as cap:
+        with manager.start_capture(device_id=serial, device_configuration=config) as cap:
             cap.stop()
         assert scenario.valid, 'Expected failure'
     except automation.SaleaeError as exc:
@@ -229,7 +229,7 @@ def test_glitch_filter(scenario: GlitchFilterScenario, manager: automation.Manag
     )
 
     try:
-        with manager.start_capture(device_serial_number=serial, device_configuration=config) as cap:
+        with manager.start_capture(device_id=serial, device_configuration=config) as cap:
             cap.stop()
         assert scenario.valid, 'Expected failure'
     except automation.SaleaeError as exc:

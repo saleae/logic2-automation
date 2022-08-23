@@ -24,12 +24,12 @@ scenarios = [
     Scenario(
         capture_name='small_spi_capture.sal',
         filename='small_spi_capture/data_table_case1.csv',
-        params=dict(iso8601=False)
+        params=dict(iso8601_timestamp=False)
     ),
     Scenario(
         capture_name='small_spi_capture.sal',
         filename='small_spi_capture/data_table_case2.csv',
-        params=dict(iso8601=True)
+        params=dict(iso8601_timestamp=True)
     ),
 ]
 

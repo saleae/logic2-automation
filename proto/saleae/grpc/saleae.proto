@@ -1,3 +1,13 @@
+//
+// Saleae gRPC Automation API 1.0.0
+//
+// This file contains the protobuf description for the automation API integrated
+// into the Saleae Logic 2 software, versions 2.3.56 and later.
+//
+// Please see https://saleae.github.io/logic2-automation/ for more information on
+// the gRPC API and the Python wrapper library.
+//
+
 syntax = "proto3";
 
 option java_multiple_files = true;
@@ -17,6 +27,8 @@ package saleae.automation;
  ****************************************************************************/
 
 service Manager {
+    rpc GetAppInfo(GetAppInfoRequest) returns (GetAppInfoReply) {}
+
     // Get list of connected devices.
     rpc GetDevices(GetDevicesRequest) returns (GetDevicesReply) {}
 
@@ -58,11 +70,11 @@ service Manager {
             returns (ExportRawDataBinaryReply) {}
 
     // Export analyzer data to CSV file.
-    rpc ExportDataTable(ExportDataTableRequest) returns (ExportDataTableReply) {}
+    rpc ExportDataTableCsv(ExportDataTableCsvRequest) returns (ExportDataTableCsvReply) {}
 
     // Export custom analyzer export data to file.
-    rpc ExportAnalyzerLegacy(ExportAnalyzerLegacyRequest)
-            returns (ExportAnalyzerLegacyReply) {}
+    rpc LegacyExportAnalyzer(LegacyExportAnalyzerRequest)
+            returns (LegacyExportAnalyzerReply) {}
 }
 
 
@@ -72,6 +84,38 @@ service Manager {
  * Core Types
  *
  ****************************************************************************/
+
+ // This enum is not used in any messages. It is here to version this .proto file, and make it accessible to
+ // users of this .proto file. Please see the automation API documentation for more info on
+ // versioning (link at top of file).
+ enum ThisApiVersion {
+    option allow_alias = true;
+
+    // ZERO value here to appease protobuf - the first enum value must be zero.
+    THIS_API_VERSION_ZERO = 0;
+
+    THIS_API_VERSION_MAJOR = 1;
+    THIS_API_VERSION_MINOR = 0;
+    THIS_API_VERSION_PATCH = 0;
+ }
+
+ message Version {
+    uint32 major = 1;
+    uint32 minor = 2;
+    uint32 patch = 3;
+ }
+
+ // Application version info for the
+ message AppInfo {
+    // The version of .proto that Logic 2 is using.
+    Version api_version = 1;
+
+    // Logic 2 Application Version
+    string application_version = 2;
+
+    // Process ID of the main Logic 2 process
+    uint64 launch_pid = 3;
+ }
 
 enum ErrorCode {
     ERROR_CODE_UNSPECIFIED = 0; // Not used
@@ -86,12 +130,20 @@ enum ErrorCode {
     //     Missing filepath
     ERROR_CODE_INVALID_REQUEST = 10;
 
+    // Loading the capture failed
     ERROR_CODE_LOAD_CAPTURE_FAILED = 20;
+
+    // Export failed
     ERROR_CODE_EXPORT_FAILED = 21;
 
+    // The specified device id does not exist
     ERROR_CODE_MISSING_DEVICE = 50;
+
+    // There was a device error during the capture
     ERROR_CODE_DEVICE_ERROR = 51;
-    ERROR_CODE_OOM = 52;
+
+    // Ran out of memory during capture
+    ERROR_CODE_OUT_OF_MEMORY = 52;
 }
 
 enum RadixType {
@@ -107,16 +159,16 @@ enum DeviceType {
     // Invalid Device Type
     DEVICE_TYPE_UNSPECIFIED = 0;
 
-    // Saleae Logic
+    // Saleae Logic - NOT SUPPORTED
     DEVICE_TYPE_LOGIC = 1;
 
-    // Saleae Logic 4
+    // Saleae Logic 4 - NOT SUPPORTED
     DEVICE_TYPE_LOGIC_4 = 2;
 
     // Saleae Logic 8
     DEVICE_TYPE_LOGIC_8 = 3;
 
-    // Saleae Logic 16 
+    // Saleae Logic 16  - NOT SUPPORTED
     DEVICE_TYPE_LOGIC_16 = 4;
 
     // Saleae Logic Pro 8
@@ -128,8 +180,8 @@ enum DeviceType {
 
 // Device descriptor object.
 message Device {
-    // The serial number of this device
-    string serial_number = 1;
+    // The device id of this device
+    string device_id = 1;
 
     // The type of this device
     DeviceType device_type = 2;
@@ -148,16 +200,12 @@ enum ChannelType {
     CHANNEL_TYPE_ANALOG = 2;
 }
 
-// Identification for a channel.
-message ChannelIdentifier {
-    // Device id
-    uint64 device_id = 1;
+message LogicChannels {
+    // Indices of Digital Channels, starting from 0
+    repeated uint32 digital_channels = 1;
 
-    // Channel type.
-    ChannelType type = 2;
-
-    // Index of channel.
-    uint64 index = 3;
+    // Indices of Analog Channels, starting from 0
+    repeated uint32 analog_channels = 2;
 }
 
 message CaptureInfo {
@@ -166,24 +214,24 @@ message CaptureInfo {
 }
 
 message LogicDeviceConfiguration {
-    // Digital channel indices to enabled
-    repeated uint32 enabled_digital_channels = 1;
+    // Analog and Digital channels to record on
+    oneof enabled_channels {
+        LogicChannels logic_channels = 1;
+    }
 
-    // Analog channel indices to enabled
-    repeated uint32 enabled_analog_channels = 2;
+    // Digital Sample Rate (samples per second)
+    uint32 digital_sample_rate = 2;
 
-    // Digital Sample Rate
-    uint32 digital_sample_rate = 3;
-
-    // Analog Sample Rate
-    uint32 analog_sample_rate = 4;
+    // Analog Sample Rate (samples per second)
+    uint32 analog_sample_rate = 3;
 
     // For Pro 8 and Pro 16, this can be one of: 1.2, 1.8, or 3.3
     // For other devices this is ignored
-    double digital_threshold_volts = 5;
+    double digital_threshold_volts = 4;
 
     // Glitch filter to apply to digital data
-    repeated GlitchFilterEntry glitch_filters = 6;
+    // See https://support.saleae.com/user-guide/using-logic/software-glitch-filter for more information
+    repeated GlitchFilterEntry glitch_filters = 5;
 }
 
 message GlitchFilterEntry {
@@ -194,65 +242,96 @@ message GlitchFilterEntry {
     double pulse_width_seconds = 2;
 }
 
+// When in manual capture mode, the capture must be manually stopped using the StopCapture request.
 message ManualCaptureMode { 
-    // Number of seconds to keep after the capture ends
+    // Number of seconds to keep after the capture ends.
+    // If greater than 0, only the latest `trim_data_seconds` of the capture will be kept, otherwise the data will not be trimmed.
     double trim_data_seconds = 1;
 }
 
+// When in timed capture mode, the capture will automatically stop after `duration_seconds`.
+// If `trim_data_seconds` is 
 message TimedCaptureMode {
     // Seconds of data to capture
     double duration_seconds = 1;
 
-    // Number of seconds to keep after the capture ends
+    // Number of seconds to keep after the capture ends.
+    // If greater than 0, only the latest `trim_data_seconds` of the capture will be kept, otherwise the data will not be trimmed.
     double trim_data_seconds = 2;
 }
 
 enum DigitalTriggerType {
     DIGITAL_TRIGGER_TYPE_UNSPECIFIED = 0;
 
+    // Rising edge trigger, from LOW to HIGH
     DIGITAL_TRIGGER_TYPE_RISING = 1;
+
+    // Falling edge trigger, from HIGH to LOW
     DIGITAL_TRIGGER_TYPE_FALLING = 2;
+
+    // Pulse trigger, with a rising and falling edge
     DIGITAL_TRIGGER_TYPE_PULSE_HIGH = 3;
+
+    // Pulse trigger, with a falling and rising edge
     DIGITAL_TRIGGER_TYPE_PULSE_LOW = 4;
 }
 
 message DigitalTriggerLinkedChannel {
+    // Channel to link to
     uint32 channel_index = 1;
+
+    // Expected state of channel at trigger
     DigitalTriggerLinkedChannelState state = 2;
 }
 
 enum DigitalTriggerLinkedChannelState {
     DIGITAL_TRIGGER_LINKED_CHANNEL_STATE_UNSPECIFIED = 0;
 
+    // The linked channel must be LOW
     DIGITAL_TRIGGER_LINKED_CHANNEL_STATE_LOW = 1;
+
+    // The linked channel must be HIGH
     DIGITAL_TRIGGER_LINKED_CHANNEL_STATE_HIGH = 2;
 }
 
+// When in digital trigger capture mode, the capture will automatically stop when the specified digital condition
+// has been met.
 message DigitalTriggerCaptureMode {
+    // Type of trigger
     DigitalTriggerType trigger_type = 1;
 
     // Number of seconds to continue capturing after trigger
     double after_trigger_seconds = 2;
 
-    // Number of seconds to keep after the capture ends
+    // Number of seconds to keep after the capture ends.
+    // If greater than 0, only the latest `trim_data_seconds` of the capture will be kept, otherwise the data will not be trimmed.
     double trim_data_seconds = 3;
 
-    // Index of channel to trigger on
+    // Index of channel to search for `trigger_type`
     uint32 trigger_channel_index = 4;
 
-    // Minimum pulse width to trigger on, in seconds
+    // Minimum pulse width to trigger on, in seconds (only applies when trigger_type is a pulse trigger type)
     double min_pulse_width_seconds = 5;
 
-    // Maximum pulse width to trigger on, in seconds
+    // Maximum pulse width to trigger on, in seconds (only applies when trigger_type is a pulse trigger type)
     double max_pulse_width_seconds = 6;
 
-    // Other channel conditions
+    // Conditions on other digital channels that must be met in order to meet the trigger condition
+    // For an edge trigger, the linked channel must be in the specified state at when the trigger edge occurs.
+    // For a pulse trigger, the linked channel must be in the specified state for the duration of the pulse.
     repeated DigitalTriggerLinkedChannel linked_channels = 7;
 }
 
 message CaptureConfiguration {
-    // Capture buffer size (in megabytes)
-    uint32 buffer_size = 1;
+    // Capture buffer size
+    // This is the maximum number of megabytes allowed for storing data during a capture.
+    // When this limit is reached, what happens depends on the capture mode:
+    //
+    //   Manual - the oldest data will be deleted until the total usage is under buffer_size_megabytes
+    //   Timer - the capture will be terminated
+    //   DigitalTriggerCapture - the capture will be terminated
+    //
+    uint32 buffer_size_megabytes = 1;
 
     // Capture mode
     oneof capture_mode {
@@ -278,7 +357,10 @@ message GetDevicesReply { repeated Device devices = 1; }
 
 // Start Capture
 message StartCaptureRequest {
-    string device_serial_number = 1;
+    // Device id of device to capture with.
+    // If a device id is not specified, the first physical device will be used.
+    // If no physical device is connected, an error will be returned.
+    string device_id = 1;
 
     oneof device_configuration {
         LogicDeviceConfiguration logic_device_configuration = 2;
@@ -289,16 +371,18 @@ message StartCaptureRequest {
 message StartCaptureReply { CaptureInfo capture_info = 1; }
 
 // Stop Capture
+// If the capture is running, this will stop the capture, otherwise it will do nothing.
 message StopCaptureRequest { uint64 capture_id = 1; }
 message StopCaptureReply {}
 
-// Stop Capture
+// Wait Capture
+// If the capture is running, this will wait for the capture to end, otherwise it will do nothing.
+// This should not be used with ManualCaptureMode. It requires that the capture ends on its own.
 message WaitCaptureRequest { uint64 capture_id = 1; }
 message WaitCaptureReply {}
 
-// Load Capture
 message LoadCaptureRequest {
-    // Filepath of Logic 2 .sal capture file to load.
+    // Absolute filepath of Logic 2 .sal capture file to load.
     string filepath = 1;
 }
 message LoadCaptureReply {
@@ -310,7 +394,8 @@ message SaveCaptureRequest {
     // Id of capture to save.
     uint64 capture_id = 1;
 
-    // Full filepath to save the file to, usually ending in ".sal".
+    // Absolute filepath to save the file to, usually ending in ".sal".
+    // The save file will be exactly as specified, and will _NOT_ have ".sal" appended to it.
     string filepath = 2;
 }
 message SaveCaptureReply {}
@@ -329,13 +414,15 @@ message ExportRawDataCsvRequest {
     string directory = 2;
 
     // Channels to export.
-    repeated ChannelIdentifier channels = 3;
+    oneof channels {
+        LogicChannels logic_channels = 3;
+    }
 
     // Must be between 1 and 1,000,000, inclusive.
     uint64 analog_downsample_ratio = 4;
 
     // If true, timestamps will be in ISO8601 format.
-    bool iso8601 = 5;
+    bool iso8601_timestamp = 5;
 }
 message ExportRawDataCsvReply {}
 
@@ -347,7 +434,9 @@ message ExportRawDataBinaryRequest {
     string directory = 2;
 
     // Channels to export.
-    repeated ChannelIdentifier channels = 3;
+    oneof channels {
+        LogicChannels logic_channels = 3;
+    }
 
     // Must be between 1 and 1,000,000, inclusive.
     uint64 analog_downsample_ratio = 4;
@@ -448,7 +537,7 @@ message DataTableFilter {
     // Columns to query
     repeated string columns = 2;
 }
-message ExportDataTableRequest {
+message ExportDataTableCsvRequest {
     // Id of capture to export data from.
     uint64 capture_id = 1;
 
@@ -459,16 +548,16 @@ message ExportDataTableRequest {
     repeated DataTableAnalyzerConfiguration analyzers = 3;
 
     // If true, timestamps will be in ISO8601 format.
-    bool iso8601 = 4;
+    bool iso8601_timestamp = 4;
 
     // Columns to export. If empty, all columns will be exported.
     repeated string export_columns = 5;
 
     DataTableFilter filter = 6;
 }
-message ExportDataTableReply {}
+message ExportDataTableCsvReply {}
 
-message ExportAnalyzerLegacyRequest {
+message LegacyExportAnalyzerRequest {
     // Id of capture to export data from.
     uint64 capture_id = 1;
 
@@ -481,4 +570,10 @@ message ExportAnalyzerLegacyRequest {
     // Radix to use for exported data.
     RadixType radix_type = 4;
 }
-message ExportAnalyzerLegacyReply {}
+message LegacyExportAnalyzerReply {}
+
+message GetAppInfoRequest {}
+message GetAppInfoReply{
+    AppInfo app_info = 1;
+}
+

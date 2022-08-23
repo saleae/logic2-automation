@@ -6,11 +6,9 @@ from enum import Enum
 import grpc
 import logging
 import re
-import saleae
 import subprocess
-import datetime
+import time
 
-import sys
 from saleae.grpc import saleae_pb2, saleae_pb2_grpc
 
 
@@ -31,6 +29,24 @@ class UnknownError(SaleaeError):
     This could indicate a version mismatch.
     """
 
+    pass
+
+
+class Logic2AlreadyRunningError(SaleaeError):
+    """
+    This indicates that there was an instance of Logic 2 already running.
+
+    """
+
+    pass
+
+
+class IncompatibleApiVersionError(SaleaeError):
+    """
+    This indicates that the server is running an incompatible API version. This only happens on major
+    version changes. It is recommended to upgrade to the latest release of Logic 2 and the Python API
+
+    """
     pass
 
 
@@ -99,7 +115,7 @@ class DeviceError(CaptureError):
     pass
 
 
-class OOMError(CaptureError):
+class OutOfMemoryError(CaptureError):
     """
     This exception indicates that the capture was automatically terminated because the capture buffer was filled.
     """
@@ -141,7 +157,7 @@ grpc_error_code_to_exception_type = {
     saleae_pb2.ERROR_CODE_EXPORT_FAILED: ExportError,
     saleae_pb2.ERROR_CODE_MISSING_DEVICE: MissingDeviceError,
     saleae_pb2.ERROR_CODE_DEVICE_ERROR: DeviceError,
-    saleae_pb2.ERROR_CODE_OOM: OOMError,
+    saleae_pb2.ERROR_CODE_OUT_OF_MEMORY: OutOfMemoryError,
 }
 
 
@@ -157,12 +173,37 @@ def grpc_error_msg_to_exception(msg: str):
     return exc_type(error_msg)
 
 
+@dataclass
+class Version:
+    major: int
+    minor: int
+    patch: int
+
+
+@dataclass
+class AppInfo:
+    api_version: Version
+    app_version: str
+    app_pid: int
+
+
 class DeviceType(Enum):
+    #: Saleae Logic
     LOGIC = saleae_pb2.DEVICE_TYPE_LOGIC
+
+    #: Saleae Logic 4
     LOGIC_4 = saleae_pb2.DEVICE_TYPE_LOGIC_4
+
+    #: Saleae Logic 8
     LOGIC_8 = saleae_pb2.DEVICE_TYPE_LOGIC_8
+
+    #: Saleae Logic 16
     LOGIC_16 = saleae_pb2.DEVICE_TYPE_LOGIC_16
+
+    #: Saleae Logic Pro 8
     LOGIC_PRO_8 = saleae_pb2.DEVICE_TYPE_LOGIC_PRO_8
+
+    #: Saleae Logic Pro 16
     LOGIC_PRO_16 = saleae_pb2.DEVICE_TYPE_LOGIC_PRO_16
 
 
@@ -192,8 +233,8 @@ class DeviceConfiguration:
 
 @dataclass
 class DeviceDesc:
-    #: Serial number of the device
-    serial_number: str
+    #: Id of the device
+    device_id: str
 
     #: Device type
     device_type: DeviceType
@@ -387,16 +428,25 @@ class Manager:
             if logic2_process is not None:
                 logic2_process.terminate()
                 logic2_process.wait(2.0)
+                print("process return code", logic2_process.returncode, logic2_process)
 
         # Attempt to connect to endpoint
-        start_time = datetime.datetime.now()
+        start_time = time.monotonic()
         while True:
             try:
-                self._stub.GetDevices(saleae_pb2.GetDevicesRequest())
+                app_info = self.get_app_info()
+
+                if logic2_process:
+                    if logic2_process.pid != app_info.app_pid:
+                        raise Logic2AlreadyRunningError()
+
+                if app_info.api_version.major != saleae_pb2.THIS_API_VERSION_MAJOR:
+                    raise IncompatibleApiVersionError()
+
                 break
             except grpc.RpcError as exc:
-                now = datetime.datetime.now()
-                if (exc.code() != grpc.StatusCode.UNAVAILABLE) or (now - start_time).seconds >= 10.0:
+                now = time.monotonic()
+                if (exc.code() != grpc.StatusCode.UNAVAILABLE) or (now - start_time) >= 10.0:
                     # Rethrow if X seconds have passed or this is not a connection error
                     cleanup()
                     raise exc from None
@@ -471,6 +521,20 @@ class Manager:
     def connect(cls, *, address: str = _DEFAULT_GRPC_ADDRESS, port: int = _DEFAULT_GRPC_PORT) -> 'Manager':
         return cls(address=address, port=port)
 
+    def get_app_info(self) -> AppInfo:
+        with error_handler():
+            reply: saleae_pb2.GetAppInfoReply = self.stub.GetAppInfo(saleae_pb2.GetAppInfoRequest())
+
+        return AppInfo(
+            api_version=Version(
+                major=reply.app_info.api_version.major,
+                minor=reply.app_info.api_version.minor,
+                patch=reply.app_info.api_version.patch,
+            ),
+            app_version=reply.app_info.application_version,
+            app_pid=reply.app_info.launch_pid,
+        )
+
     def close(self):
         """
         Close connection to Saleae backend, and shut it down if it was created by Manager.
@@ -498,7 +562,7 @@ class Manager:
 
     def get_devices(self, *, include_simulation_devices: bool = False) -> List[DeviceDesc]:
         """
-        Returns a list of connected devices. Use this to find the serial numbers of the attached devices.
+        Returns a list of connected devices. Use this to find the device id of the attached devices.
 
         :param include_simulation_devices: If True, the return value will also include simulation devices. This can be useful for testing without a physical device.
         """
@@ -509,7 +573,7 @@ class Manager:
         devices = []
         for device in reply.devices:
             devices.append(DeviceDesc(
-                serial_number=device.serial_number,
+                device_id=device.device_id,
                 device_type=DeviceType(device.device_type),
                 is_simulation=device.is_simulation,
             ))
@@ -520,7 +584,7 @@ class Manager:
         self,
         *,
         device_configuration: DeviceConfiguration,
-        device_serial_number: str,
+        device_id: Optional[str] = None,
         capture_configuration: Optional[CaptureConfiguration] = None,
     ) -> "Capture":
         """Start a new capture
@@ -530,20 +594,23 @@ class Manager:
         Be sure to catch DeviceError exceptions raised by this function, and handle them accordingly. See the error section of the library documentation.
 
         :param device_configuration: An instance of LogicDeviceConfiguration, complete with enabled channels, sample rates, and more.
-        :param device_serial_number: The serial number of device to record with.
+        :param device_id: The id of device to record with.
         :param capture_configuration: The capture configuration, which selects the capture mode: timer, digital trigger, or manual., defaults to None, indicating manual mode.
         :return: Capture instance class. Be sure to call either wait() or stop() before trying to save, export, or close the capture.
         """
         request = saleae_pb2.StartCaptureRequest()
-        request.device_serial_number = device_serial_number
+
+        if device_id is not None:
+            request.device_id = device_id
 
         if isinstance(device_configuration, LogicDeviceConfiguration):
-            request.logic_device_configuration.enabled_analog_channels[
-                :
-            ] = device_configuration.enabled_analog_channels
-            request.logic_device_configuration.enabled_digital_channels[
-                :
-            ] = device_configuration.enabled_digital_channels
+            request.logic_device_configuration.logic_channels.CopyFrom(
+                saleae_pb2.LogicChannels(
+                    digital_channels=device_configuration.enabled_digital_channels,
+                    analog_channels=device_configuration.enabled_analog_channels,
+                )
+            )
+
             if device_configuration.analog_sample_rate is not None:
                 request.logic_device_configuration.analog_sample_rate = (
                     device_configuration.analog_sample_rate
@@ -570,7 +637,7 @@ class Manager:
 
         if capture_configuration is not None:
             if capture_configuration.buffer_size:
-                request.capture_configuration.buffer_size = (
+                request.capture_configuration.buffer_size_megabytes = (
                     capture_configuration.buffer_size
                 )
 
@@ -774,10 +841,9 @@ class Capture:
         request = saleae_pb2.SaveCaptureRequest(
             capture_id=self.capture_id, filepath=filepath
         )
-        try:
-            reply = self.manager.stub.SaveCapture(request)
-        except grpc.RpcError as exc:
-            raise grpc_error_to_exception(exc) from None
+
+        with error_handler():
+            self.manager.stub.SaveCapture(request)
 
     def export_analyzer_legacy(
         self, filepath: str, analyzer: AnalyzerHandle, radix: RadixType
@@ -791,17 +857,15 @@ class Capture:
         :param analyzer: AnalyzerHandle returned from add_analyzer()
         :param radix: Display Radix, from the RadixType enumeration.
         """
-        request = saleae_pb2.ExportAnalyzerLegacyRequest(
+        request = saleae_pb2.LegacyExportAnalyzerRequest(
             capture_id=self.capture_id,
             filepath=filepath,
             analyzer_id=analyzer.analyzer_id,
             radix_type=radix.value,
         )
 
-        try:
-            reply = self.manager.stub.ExportAnalyzerLegacy(request)
-        except grpc.RpcError as exc:
-            raise grpc_error_to_exception(exc) from None
+        with error_handler():
+            self.manager.stub.LegacyExportAnalyzer(request)
 
     def export_data_table(
         self,
@@ -810,7 +874,7 @@ class Capture:
         *,
         columns: Optional[List[str]] = None,
         filter: Optional[DataTableFilter] = None,
-        iso8601: bool = False,
+        iso8601_timestamp: bool = False,
     ):
         """
         Exports the Analyzer Data Table
@@ -820,7 +884,7 @@ class Capture:
         :param filepath: The specified output file, including extension, .csv.
         :param analyzers: A list of AnalyzerHandles that should be included in the export, returned from add_analyzer()
         :param radix: Display Radix, from the RadixType enumeration. Currently applies to all Analyzers in the export.
-        :param iso8601: Use this to output wall clock timestamps, instead of capture relative timestamps. Defaults to False.
+        :param iso8601_timestamp: Use this to output wall clock timestamps, instead of capture relative timestamps. Defaults to False.
         """
         analyzer_configs = []
         for a in analyzers:
@@ -834,17 +898,17 @@ class Capture:
 
         pb_filter = None if filter is None else saleae_pb2.DataTableFilter(query=filter.query, columns=filter.columns)
 
-        request = saleae_pb2.ExportDataTableRequest(
+        request = saleae_pb2.ExportDataTableCsvRequest(
             capture_id=self.capture_id,
             filepath=filepath,
             analyzers=analyzer_configs,
             export_columns=columns,
             filter=pb_filter,
-            iso8601=iso8601,
+            iso8601_timestamp=iso8601_timestamp,
         )
 
         with error_handler():
-            reply = self.manager.stub.ExportDataTable(request)
+            self.manager.stub.ExportDataTableCsv(request)
 
     def export_raw_data_csv(
         self,
@@ -853,7 +917,7 @@ class Capture:
         analog_channels: Optional[List[int]] = None,
         digital_channels: Optional[List[int]] = None,
         analog_downsample_ratio: int = 1,
-        iso8601: bool = False,
+        iso8601_timestamp: bool = False,
     ):
         """Exports raw data to CSV file(s)
 
@@ -871,34 +935,19 @@ class Capture:
         :param analog_channels: list of analog channels to export, defaults to None
         :param digital_channels: list of digital channels to export, defaults to None
         :param analog_downsample_ratio: optional analog downsample ratio, useful to help reduce export file sizes where extra analog resolution isn't needed, defaults to 1
-        :param iso8601: Use this to output wall clock timestamps, instead of capture relative timestamps. Defaults to False.
+        :param iso8601_timestamp: Use this to output wall clock timestamps, instead of capture relative timestamps. Defaults to False.
         """
-        channels = []
-        if analog_channels:
-            channels.extend(
-                [
-                    saleae_pb2.ChannelIdentifier(
-                        type=saleae_pb2.CHANNEL_TYPE_ANALOG, index=ch
-                    )
-                    for ch in analog_channels
-                ]
-            )
-        if digital_channels:
-            channels.extend(
-                [
-                    saleae_pb2.ChannelIdentifier(
-                        type=saleae_pb2.CHANNEL_TYPE_DIGITAL, index=ch
-                    )
-                    for ch in digital_channels
-                ]
-            )
+        channels = saleae_pb2.LogicChannels(
+            analog_channels=[] if analog_channels is None else analog_channels,
+            digital_channels=[] if digital_channels is None else digital_channels,
+        )
 
         request = saleae_pb2.ExportRawDataCsvRequest(
             capture_id=self.capture_id,
             directory=directory,
-            channels=channels,
+            logic_channels=channels,
             analog_downsample_ratio=analog_downsample_ratio,
-            iso8601=iso8601,
+            iso8601_timestamp=iso8601_timestamp,
         )
 
         with error_handler():
@@ -930,30 +979,15 @@ class Capture:
         :param digital_channels: list of digital channels to export, defaults to None
         :param analog_downsample_ratio: optional analog downsample ratio, useful to help reduce export file sizes where extra analog resolution isn't needed, defaults to 1
         """
-        channels = []
-        if analog_channels:
-            channels.extend(
-                [
-                    saleae_pb2.ChannelIdentifier(
-                        type=saleae_pb2.CHANNEL_TYPE_ANALOG, index=ch
-                    )
-                    for ch in analog_channels
-                ]
-            )
-        if digital_channels:
-            channels.extend(
-                [
-                    saleae_pb2.ChannelIdentifier(
-                        type=saleae_pb2.CHANNEL_TYPE_DIGITAL, index=ch
-                    )
-                    for ch in digital_channels
-                ]
-            )
+        channels = saleae_pb2.LogicChannels(
+            analog_channels=[] if analog_channels is None else analog_channels,
+            digital_channels=[] if digital_channels is None else digital_channels,
+        )
 
         request = saleae_pb2.ExportRawDataBinaryRequest(
             capture_id=self.capture_id,
             directory=directory,
-            channels=channels,
+            logic_channels=channels,
             analog_downsample_ratio=analog_downsample_ratio,
         )
 

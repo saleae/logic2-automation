@@ -61,7 +61,7 @@ Also, for most automated applications, you won't want to start the software manu
 
 .. _device-serial-number:
 
-Finding the Serial Number of a Device
+Finding the Serial Number (Device Id) of a Device
 -------------------------------------
 
 To find the serial number of a connected device, open capture info sidebar and click the device dropdown in the top right:
@@ -72,4 +72,27 @@ If the device you want the serial number for is not selected, select it. Then cl
 
 .. image:: _static/device_serial.png
 
-You can copy the serial number from here and use it in your Python script.
+You can copy the serial number from here and use it in your Python script where a "device_id" is required.
+
+
+Versioning
+----------
+
+The `saleae.proto` file contains a version (`major.minor.patch`). It can be found in the file header, and also in the
+`ThisApiVersion` enum.
+
+When generating language bindings, you can get the version of the .proto that was used through the protobuf `ThisApiVersion` enum - `THIS_API_VERSION_MAJOR`, `THIS_API_VERSION_MINOR`, and `THIS_API_VERSION_PATCH`.
+
+The version of the .proto file that the server is using can be retrieved using the `GetAppInfo` gRPC method, or the `Manager.get_app_info()` call in the Python API.
+
+  * For a given major version, the API strives to be forward and backwards compatible.
+  * The major version will change when:
+    * There are any breaking changes.
+  * The minor version will change when:
+    * New features are added
+    * Additions are made to the existing API
+  * The patch version will change when:
+    * There are fixes to the API
+  
+
+When implementing a client that uses the API, it is recommended to always retrieve the api version via GetAppInfo to validate that the major version is the same, and that the minor version is not older than the client.
