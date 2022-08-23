@@ -51,3 +51,15 @@ GlitchFilterEntry
 
 .. autoclass:: saleae.automation.GlitchFilterEntry
    :members:
+
+DeviceDesc
+----------
+
+.. autoclass:: saleae.automation.DeviceDesc
+   :members:
+
+DeviceType
+----------
+
+.. autoclass:: saleae.automation.DeviceType
+   :members:

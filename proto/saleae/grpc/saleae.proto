@@ -351,7 +351,9 @@ message GetDevicesReply { repeated Device devices = 1; }
 
 // Start Capture
 message StartCaptureRequest {
-    // Device id of device to capture with
+    // Device id of device to capture with.
+    // If a device id is not specified, the first physical device will be used.
+    // If no physical device is connected, an error will be returned.
     string device_id = 1;
 
     oneof device_configuration {

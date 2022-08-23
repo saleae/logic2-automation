@@ -7,7 +7,7 @@ import grpc
 import logging
 import re
 import subprocess
-import datetime
+import time
 
 from saleae.grpc import saleae_pb2, saleae_pb2_grpc
 
@@ -188,11 +188,22 @@ class AppInfo:
 
 
 class DeviceType(Enum):
+    #: Saleae Logic
     LOGIC = saleae_pb2.DEVICE_TYPE_LOGIC
+
+    #: Saleae Logic 4
     LOGIC_4 = saleae_pb2.DEVICE_TYPE_LOGIC_4
+
+    #: Saleae Logic 8
     LOGIC_8 = saleae_pb2.DEVICE_TYPE_LOGIC_8
+
+    #: Saleae Logic 16
     LOGIC_16 = saleae_pb2.DEVICE_TYPE_LOGIC_16
+
+    #: Saleae Logic Pro 8
     LOGIC_PRO_8 = saleae_pb2.DEVICE_TYPE_LOGIC_PRO_8
+
+    #: Saleae Logic Pro 16
     LOGIC_PRO_16 = saleae_pb2.DEVICE_TYPE_LOGIC_PRO_16
 
 
@@ -420,7 +431,7 @@ class Manager:
                 print("process return code", logic2_process.returncode, logic2_process)
 
         # Attempt to connect to endpoint
-        start_time = datetime.datetime.now()
+        start_time = time.monotonic()
         while True:
             try:
                 app_info = self.get_app_info()
@@ -434,8 +445,8 @@ class Manager:
 
                 break
             except grpc.RpcError as exc:
-                now = datetime.datetime.now()
-                if (exc.code() != grpc.StatusCode.UNAVAILABLE) or (now - start_time).seconds >= 10.0:
+                now = time.monotonic()
+                if (exc.code() != grpc.StatusCode.UNAVAILABLE) or (now - start_time) >= 10.0:
                     # Rethrow if 5 seconds have passed or this is not a connection error
                     cleanup()
                     raise exc from None
@@ -542,6 +553,7 @@ class Manager:
             except:
                 pass
             self.logic2_process = None
+
     @property
     def stub(self) -> saleae_pb2_grpc.ManagerStub:
         if self._stub is None:
@@ -572,7 +584,7 @@ class Manager:
         self,
         *,
         device_configuration: DeviceConfiguration,
-        device_id: str,
+        device_id: Optional[str] = None,
         capture_configuration: Optional[CaptureConfiguration] = None,
     ) -> "Capture":
         """Start a new capture
@@ -587,7 +599,9 @@ class Manager:
         :return: Capture instance class. Be sure to call either wait() or stop() before trying to save, export, or close the capture.
         """
         request = saleae_pb2.StartCaptureRequest()
-        request.device_id = device_id
+
+        if device_id is not None:
+            request.device_id = device_id
 
         if isinstance(device_configuration, LogicDeviceConfiguration):
             request.logic_device_configuration.logic_channels.CopyFrom(
