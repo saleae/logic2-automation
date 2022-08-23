@@ -8,6 +8,9 @@ CHANNEL_TYPE_ANALOG: ChannelType
 CHANNEL_TYPE_DIGITAL: ChannelType
 CHANNEL_TYPE_UNSPECIFIED: ChannelType
 DESCRIPTOR: _descriptor.FileDescriptor
+DEVICE_TYPE_LOGIC: DeviceType
+DEVICE_TYPE_LOGIC_16: DeviceType
+DEVICE_TYPE_LOGIC_4: DeviceType
 DEVICE_TYPE_LOGIC_8: DeviceType
 DEVICE_TYPE_LOGIC_PRO_16: DeviceType
 DEVICE_TYPE_LOGIC_PRO_8: DeviceType
@@ -109,15 +112,31 @@ class CloseCaptureRequest(_message.Message):
     capture_id: int
     def __init__(self, capture_id: _Optional[int] = ...) -> None: ...
 
+class DataTableAnalyzerConfiguration(_message.Message):
+    __slots__ = ["analyzer_id", "radix_type"]
+    ANALYZER_ID_FIELD_NUMBER: _ClassVar[int]
+    RADIX_TYPE_FIELD_NUMBER: _ClassVar[int]
+    analyzer_id: int
+    radix_type: RadixType
+    def __init__(self, analyzer_id: _Optional[int] = ..., radix_type: _Optional[_Union[RadixType, str]] = ...) -> None: ...
+
+class DataTableFilter(_message.Message):
+    __slots__ = ["columns", "query"]
+    COLUMNS_FIELD_NUMBER: _ClassVar[int]
+    QUERY_FIELD_NUMBER: _ClassVar[int]
+    columns: _containers.RepeatedScalarFieldContainer[str]
+    query: str
+    def __init__(self, query: _Optional[str] = ..., columns: _Optional[_Iterable[str]] = ...) -> None: ...
+
 class Device(_message.Message):
-    __slots__ = ["device_id", "device_type", "serial_number"]
-    DEVICE_ID_FIELD_NUMBER: _ClassVar[int]
+    __slots__ = ["device_type", "is_simulation", "serial_number"]
     DEVICE_TYPE_FIELD_NUMBER: _ClassVar[int]
+    IS_SIMULATION_FIELD_NUMBER: _ClassVar[int]
     SERIAL_NUMBER_FIELD_NUMBER: _ClassVar[int]
-    device_id: int
     device_type: DeviceType
+    is_simulation: bool
     serial_number: str
-    def __init__(self, device_id: _Optional[int] = ..., device_type: _Optional[_Union[DeviceType, str]] = ..., serial_number: _Optional[str] = ...) -> None: ...
+    def __init__(self, serial_number: _Optional[str] = ..., device_type: _Optional[_Union[DeviceType, str]] = ..., is_simulation: bool = ...) -> None: ...
 
 class DigitalTriggerCaptureMode(_message.Message):
     __slots__ = ["after_trigger_seconds", "linked_channels", "max_pulse_width_seconds", "min_pulse_width_seconds", "trigger_channel_index", "trigger_type", "trim_data_seconds"]
@@ -166,18 +185,20 @@ class ExportDataTableReply(_message.Message):
     def __init__(self) -> None: ...
 
 class ExportDataTableRequest(_message.Message):
-    __slots__ = ["analyzer_ids", "capture_id", "filepath", "iso8601", "radix_type"]
-    ANALYZER_IDS_FIELD_NUMBER: _ClassVar[int]
+    __slots__ = ["analyzers", "capture_id", "export_columns", "filepath", "filter", "iso8601"]
+    ANALYZERS_FIELD_NUMBER: _ClassVar[int]
     CAPTURE_ID_FIELD_NUMBER: _ClassVar[int]
+    EXPORT_COLUMNS_FIELD_NUMBER: _ClassVar[int]
     FILEPATH_FIELD_NUMBER: _ClassVar[int]
+    FILTER_FIELD_NUMBER: _ClassVar[int]
     ISO8601_FIELD_NUMBER: _ClassVar[int]
-    RADIX_TYPE_FIELD_NUMBER: _ClassVar[int]
-    analyzer_ids: _containers.RepeatedScalarFieldContainer[int]
+    analyzers: _containers.RepeatedCompositeFieldContainer[DataTableAnalyzerConfiguration]
     capture_id: int
+    export_columns: _containers.RepeatedScalarFieldContainer[str]
     filepath: str
+    filter: DataTableFilter
     iso8601: bool
-    radix_type: RadixType
-    def __init__(self, capture_id: _Optional[int] = ..., filepath: _Optional[str] = ..., analyzer_ids: _Optional[_Iterable[int]] = ..., iso8601: bool = ..., radix_type: _Optional[_Union[RadixType, str]] = ...) -> None: ...
+    def __init__(self, capture_id: _Optional[int] = ..., filepath: _Optional[str] = ..., analyzers: _Optional[_Iterable[_Union[DataTableAnalyzerConfiguration, _Mapping]]] = ..., iso8601: bool = ..., export_columns: _Optional[_Iterable[str]] = ..., filter: _Optional[_Union[DataTableFilter, _Mapping]] = ...) -> None: ...
 
 class ExportRawDataBinaryReply(_message.Message):
     __slots__ = []
@@ -220,8 +241,10 @@ class GetDevicesReply(_message.Message):
     def __init__(self, devices: _Optional[_Iterable[_Union[Device, _Mapping]]] = ...) -> None: ...
 
 class GetDevicesRequest(_message.Message):
-    __slots__ = []
-    def __init__(self) -> None: ...
+    __slots__ = ["include_simulation_devices"]
+    INCLUDE_SIMULATION_DEVICES_FIELD_NUMBER: _ClassVar[int]
+    include_simulation_devices: bool
+    def __init__(self, include_simulation_devices: bool = ...) -> None: ...
 
 class GlitchFilterEntry(_message.Message):
     __slots__ = ["channel_index", "pulse_width_seconds"]

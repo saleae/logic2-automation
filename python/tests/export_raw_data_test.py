@@ -4,6 +4,7 @@ import pytest
 import os
 import os.path
 import filecmp
+from . import utils
 
 from saleae import automation
 
@@ -313,7 +314,7 @@ def test_compare(scenario: ComparisonScenario, manager: automation.Manager, asse
         actual_filepath = os.path.join(export_directory, filename)
         expected_filepath = os.path.join(expected_directory, filename)
 
-        assert(filecmp.cmp(actual_filepath, expected_filepath))
+        utils.assert_files_match(actual_filepath, expected_filepath, scenario.type == 'bin')
 
 
 def test_export_all(manager: automation.Manager, asset_path: str, tmp_path):
