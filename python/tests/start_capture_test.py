@@ -12,7 +12,7 @@ SIMULATION_LOGIC_PRO_8 = 'F4244'
 SIMULATION_LOGIC_PRO_16 = 'F4241'
 
 
-def test_start_capture(manager: automation.Manager, asset_path: str, tmp_path):
+def test_start_capture(manager: automation.Manager, tmp_path):
     serial = SIMULATION_LOGIC_PRO_8
     config = automation.LogicDeviceConfiguration(
         enabled_digital_channels=[0, 3, 4, 5],
@@ -68,7 +68,7 @@ trigger_configs = [
 
 
 @pytest.mark.parametrize('trigger', trigger_configs)
-def test_trigger_config(trigger: automation.CaptureMode, manager: automation.Manager, tmp_path):
+def test_trigger_config(trigger: automation.CaptureMode, manager: automation.Manager):
     serial = SIMULATION_LOGIC_PRO_8
     config = automation.LogicDeviceConfiguration(
         enabled_digital_channels=[0, 3, 4, 5],
@@ -118,7 +118,7 @@ threshold_scenarios = [
 
 
 @pytest.mark.parametrize('scenario', threshold_scenarios)
-def test_threshold_validation(scenario: ThresholdScenario, manager: automation.Manager, asset_path: str, tmp_path):
+def test_threshold_validation(scenario: ThresholdScenario, manager: automation.Manager):
     serial = scenario.serial
     config = automation.LogicDeviceConfiguration(
         enabled_digital_channels=[0, 3, 4],

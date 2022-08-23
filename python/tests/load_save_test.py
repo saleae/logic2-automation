@@ -31,8 +31,8 @@ def test_save_and_load(manager: automation.Manager, asset_path: str, tmp_path):
         print(cap.capture_id)
         cap.save_capture(save_path)
 
-    # with manager.load_capture(save_path) as cap:
-        # pass
+    with manager.load_capture(save_path) as cap:
+        pass
 
 
 def test_load_small(manager: automation.Manager, asset_path: str):

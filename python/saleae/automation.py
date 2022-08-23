@@ -156,11 +156,22 @@ def grpc_error_msg_to_exception(msg: str):
 
 
 class DeviceType(Enum):
+    #: Saleae Logic
     LOGIC = saleae_pb2.DEVICE_TYPE_LOGIC
+
+    #: Saleae Logic 4
     LOGIC_4 = saleae_pb2.DEVICE_TYPE_LOGIC_4
+
+    #: Saleae Logic 8
     LOGIC_8 = saleae_pb2.DEVICE_TYPE_LOGIC_8
+
+    #: Saleae Logic 16
     LOGIC_16 = saleae_pb2.DEVICE_TYPE_LOGIC_16
+
+    #: Saleae Logic Pro 8
     LOGIC_PRO_8 = saleae_pb2.DEVICE_TYPE_LOGIC_PRO_8
+
+    #: Saleae Logic Pro 16
     LOGIC_PRO_16 = saleae_pb2.DEVICE_TYPE_LOGIC_PRO_16
 
 
@@ -518,7 +529,7 @@ class Manager:
         self,
         *,
         device_configuration: DeviceConfiguration,
-        device_serial_number: str,
+        device_serial_number: Optional[str] = None,
         capture_configuration: Optional[CaptureConfiguration] = None,
     ) -> "Capture":
         """Start a new capture
@@ -533,7 +544,9 @@ class Manager:
         :return: Capture instance class. Be sure to call either wait() or stop() before trying to save, export, or close the capture.
         """
         request = saleae_pb2.StartCaptureRequest()
-        request.device_serial_number = device_serial_number
+
+        if device_serial_number is not None:
+            request.device_serial_number = device_serial_number
 
         if isinstance(device_configuration, LogicDeviceConfiguration):
             request.logic_device_configuration.enabled_analog_channels[
