@@ -6,11 +6,9 @@ from enum import Enum
 import grpc
 import logging
 import re
-import saleae
 import subprocess
-import datetime
+import time
 
-import sys
 from saleae.grpc import saleae_pb2, saleae_pb2_grpc
 
 
@@ -389,14 +387,14 @@ class Manager:
                 logic2_process.wait(2.0)
 
         # Attempt to connect to endpoint
-        start_time = datetime.datetime.now()
+        start_time = time.monotonic()
         while True:
             try:
                 self._stub.GetDevices(saleae_pb2.GetDevicesRequest())
                 break
             except grpc.RpcError as exc:
-                now = datetime.datetime.now()
-                if (exc.code() != grpc.StatusCode.UNAVAILABLE) or (now - start_time).seconds >= 10.0:
+                now = time.monotonic()
+                if (exc.code() != grpc.StatusCode.UNAVAILABLE) or (now - start_time) >= 10.0:
                     # Rethrow if 5 seconds have passed or this is not a connection error
                     cleanup()
                     raise exc from None
@@ -489,6 +487,7 @@ class Manager:
             except:
                 pass
             self.logic2_process = None
+
     @property
     def stub(self) -> saleae_pb2_grpc.ManagerStub:
         if self._stub is None:
