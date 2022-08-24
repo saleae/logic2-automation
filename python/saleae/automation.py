@@ -1,6 +1,6 @@
 from contextlib import contextmanager
 from pathlib import Path
-from typing import List, Optional, Union, Dict
+from typing import Any, List, Optional, Tuple, Union, Dict
 from dataclasses import dataclass, field
 from enum import Enum
 import grpc
@@ -406,8 +406,10 @@ class Manager:
     Please review the getting started guide for instructions on preparing the Logic 2 software for API connections.
     """
 
-    def __init__(self, port: int, *, address: str = _DEFAULT_GRPC_ADDRESS, logic2_process: Optional[subprocess.Popen] = None):
+    def __init__(self, port: int, *, address: str = _DEFAULT_GRPC_ADDRESS, logic2_process: Optional[subprocess.Popen] = None, grpc_channel_arguments: Optional[List[Tuple[str, Any]]] = None):
         """
+        It is recommended that you use Manager.launch() or Manager.connect() instead of using __init__ directly.
+
         Create an instance of the Manager class, and connect to the Logic 2 software.
 
         This library currently assumes the Logic 2 software is running on the same machine, and will attempt to connect to 127.0.0.1.
@@ -416,7 +418,7 @@ class Manager:
         :param port: Port number. By default, Logic 2 uses port 10430.
         """
         self.logic2_process = logic2_process
-        self.channel = grpc.insecure_channel(f"{address}:{port}")
+        self.channel = grpc.insecure_channel(f"{address}:{port}", options=grpc_channel_arguments)
         self.channel.subscribe(lambda value: logger.info(f"sub {value}"))
         self._stub = saleae_pb2_grpc.ManagerStub(self.channel)
 
