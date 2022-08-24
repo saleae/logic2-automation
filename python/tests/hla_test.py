@@ -3,10 +3,10 @@ import os.path
 import threading
 import time
 
-from saleae import automation
+import saleae.automation
 
 
-def test_add_analyzer(manager: automation.Manager, asset_path: str):
+def test_add_analyzer(manager: saleae.automation.Manager, asset_path: str):
     path = os.path.join(asset_path, 'small_spi_capture.sal')
 
     hla_root_path = os.path.join(asset_path, 'hla/test')
@@ -26,7 +26,7 @@ def test_add_analyzer(manager: automation.Manager, asset_path: str):
                 'my_number_setting': 100,
             })
 
-            # time.sleep(3)
+            time.sleep(3)
 
             cap.remove_analyzer(hla)
 

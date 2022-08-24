@@ -6,7 +6,7 @@ import os.path
 import filecmp
 from . import utils
 
-from saleae import automation
+import saleae.automation
 
 
 @dataclass
@@ -50,7 +50,7 @@ def get_expected_files(type: Literal['csv', 'bin'], digital_channels: List[int],
 
 @pytest.mark.parametrize('capture_name', capture_desc.keys())
 @pytest.mark.parametrize('type', ['csv', 'bin'])
-def test_export(capture_name: str, type: Literal['csv', 'bin'], manager: automation.Manager, asset_path: str, tmp_path):
+def test_export(capture_name: str, type: Literal['csv', 'bin'], manager: saleae.automation.Manager, asset_path: str, tmp_path):
     desc = capture_desc[capture_name]
 
     path = os.path.join(asset_path, f'{capture_name}')
@@ -82,7 +82,7 @@ def test_export(capture_name: str, type: Literal['csv', 'bin'], manager: automat
 
 @pytest.mark.parametrize('capture_name', capture_desc.keys())
 @pytest.mark.parametrize('type', ['csv', 'bin'])
-def test_disabled_channels(capture_name: str, type: Literal['csv', 'bin'], manager: automation.Manager, asset_path: str, tmp_path):
+def test_disabled_channels(capture_name: str, type: Literal['csv', 'bin'], manager: saleae.automation.Manager, asset_path: str, tmp_path):
     desc = capture_desc[capture_name]
 
     path = os.path.join(asset_path, f'{capture_name}')
@@ -104,12 +104,12 @@ def test_disabled_channels(capture_name: str, type: Literal['csv', 'bin'], manag
 
             # We should not get to this point
             assert(False)
-        except automation.InvalidRequestError:
+        except saleae.automation.InvalidRequestError:
             pass
 
 
 @pytest.mark.parametrize('type', ['csv', 'bin'])
-def test_no_channels(type: Literal['csv', 'bin'], manager: automation.Manager, asset_path: str, tmp_path):
+def test_no_channels(type: Literal['csv', 'bin'], manager: saleae.automation.Manager, asset_path: str, tmp_path):
     capture_name = 'cap1.sal'
     path = os.path.join(asset_path, f'{capture_name}')
     directory = os.path.join(tmp_path, f'export_{capture_name}')
@@ -142,7 +142,7 @@ MAX_DOWNSAMPLE_RATIO = 1000000
 
 @pytest.mark.parametrize('analog_downsample_ratio', [MIN_DOWNSAMPLE_RATIO-1, MIN_DOWNSAMPLE_RATIO, MAX_DOWNSAMPLE_RATIO, MAX_DOWNSAMPLE_RATIO+1])
 @pytest.mark.parametrize('type', ['csv', 'bin'])
-def test_invalid_analog_downsample_ratio(analog_downsample_ratio: int, type: Literal['csv', 'bin'], manager: automation.Manager, asset_path: str, tmp_path):
+def test_invalid_analog_downsample_ratio(analog_downsample_ratio: int, type: Literal['csv', 'bin'], manager: saleae.automation.Manager, asset_path: str, tmp_path):
     capture_name = 'cap1.sal'
     path = os.path.join(asset_path, capture_name)
     desc = capture_desc[capture_name]
@@ -167,7 +167,7 @@ def test_invalid_analog_downsample_ratio(analog_downsample_ratio: int, type: Lit
             assert(analog_downsample_ratio >=
                    MIN_DOWNSAMPLE_RATIO and analog_downsample_ratio <= MAX_DOWNSAMPLE_RATIO)
 
-        except automation.InvalidRequestError:
+        except saleae.automation.InvalidRequestError:
             assert(analog_downsample_ratio <
                    MIN_DOWNSAMPLE_RATIO or analog_downsample_ratio > MAX_DOWNSAMPLE_RATIO)
 
@@ -286,7 +286,7 @@ comparison_scenarios = [
 
 
 @pytest.mark.parametrize('scenario', comparison_scenarios)
-def test_compare(scenario: ComparisonScenario, manager: automation.Manager, asset_path: str, tmp_path):
+def test_compare(scenario: ComparisonScenario, manager: saleae.automation.Manager, asset_path: str, tmp_path):
     capture_path = os.path.join(asset_path, scenario.capture_name)
 
     export_directory = os.path.join(
@@ -317,7 +317,7 @@ def test_compare(scenario: ComparisonScenario, manager: automation.Manager, asse
         utils.assert_files_match(actual_filepath, expected_filepath, scenario.type == 'bin')
 
 
-def test_export_all(manager: automation.Manager, asset_path: str, tmp_path):
+def test_export_all(manager: saleae.automation.Manager, asset_path: str, tmp_path):
     capture_path = os.path.join(asset_path, 'cap2.sal')
 
     export_directory = os.path.join(tmp_path, f'export_cap2')

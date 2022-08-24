@@ -2,7 +2,7 @@ import pytest
 import pathlib
 import os.path
 
-from saleae import automation
+import saleae.automation
 
 @pytest.fixture
 def asset_path() -> str:
@@ -11,5 +11,5 @@ def asset_path() -> str:
 
 @pytest.fixture
 def manager():
-    with automation.Manager(port=10430) as mgr:
+    with saleae.automation.Manager(port=10430) as mgr:
         yield mgr

@@ -1,21 +1,20 @@
 import os.path
 from tkinter import E
 
-from saleae import automation
+import saleae.automation
 
-
-def test_load_empty_file(manager: automation.Manager, asset_path: str, tmp_path):
+def test_load_empty_file(manager: saleae.automation.Manager, asset_path: str, tmp_path):
     path = os.path.join(asset_path, 'empty.sal')
 
     try:
         with manager.load_capture(path) as cap:
             # We should fail to load the captrue - the file doesn't exist yet
             assert(False)
-    except automation.SaleaeError:
+    except saleae.automation.SaleaeError:
         pass
 
 
-def test_save_and_load(manager: automation.Manager, asset_path: str, tmp_path):
+def test_save_and_load(manager: saleae.automation.Manager, asset_path: str, tmp_path):
     path = os.path.join(asset_path, 'cap1.sal')
 
     save_path = os.path.join(tmp_path, 'new_capture.sal')
@@ -24,7 +23,7 @@ def test_save_and_load(manager: automation.Manager, asset_path: str, tmp_path):
         with manager.load_capture(save_path) as cap:
             # We should fail to load the captrue - the file doesn't exist yet
             assert(False)
-    except automation.SaleaeError:
+    except saleae.automation.SaleaeError:
         pass
 
     with manager.load_capture(path) as cap:
@@ -35,14 +34,14 @@ def test_save_and_load(manager: automation.Manager, asset_path: str, tmp_path):
         pass
 
 
-def test_load_small(manager: automation.Manager, asset_path: str):
+def test_load_small(manager: saleae.automation.Manager, asset_path: str):
     path = os.path.join(asset_path, 'cap1.sal')
 
     with manager.load_capture(path) as cap:
         pass
 
 
-def test_load_stress(manager: automation.Manager, asset_path: str, tmp_path):
+def test_load_stress(manager: saleae.automation.Manager, asset_path: str, tmp_path):
     path = os.path.join(asset_path, 'cap1.sal')
     export_path = os.path.join(tmp_path, 'export')
 

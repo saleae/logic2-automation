@@ -3,9 +3,9 @@ import os.path
 import threading
 import time
 
-from saleae import automation
+import saleae.automation
 
-def test_export_analyzer_legacy(manager: automation.Manager, asset_path: str, tmp_path):
+def test_export_analyzer_legacy(manager: saleae.automation.Manager, asset_path: str, tmp_path):
     path = os.path.join(asset_path, 'small_spi_capture.sal')
 
     
@@ -18,7 +18,7 @@ def test_export_analyzer_legacy(manager: automation.Manager, asset_path: str, tm
             'Bits per Transfer': f'{bitty} Bits per Transfer{" (Standard)" if bitty == 8 else ""}'
         })
 
-        for type in automation.RadixType:
+        for type in saleae.automation.RadixType:
             filepath = os.path.join(tmp_path, f'export_{type.name}.csv')
             print(f"Exporting to {filepath}")
 

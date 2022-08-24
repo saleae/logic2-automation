@@ -1,5 +1,5 @@
 from typing import Dict, List
-from saleae import automation
+import saleae.automation as automation
 
 from dataclasses import dataclass
 import os.path

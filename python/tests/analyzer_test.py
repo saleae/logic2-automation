@@ -3,9 +3,9 @@ import os.path
 import threading
 import time
 
-from saleae import automation
+import saleae.automation
 
-def test_add_analyzer(manager: automation.Manager, asset_path: str):
+def test_add_analyzer(manager: saleae.automation.Manager, asset_path: str):
     path = os.path.join(asset_path, 'small_spi_capture.sal')
     
     with manager.load_capture(path) as cap:
@@ -18,7 +18,7 @@ def test_add_analyzer(manager: automation.Manager, asset_path: str):
                 'Bits per Transfer': '8 Bits per Transfer (Standard)'        
             })
             assert(False)
-        except automation.InvalidRequestError:
+        except saleae.automation.InvalidRequestError:
             pass
 
         for bitty in [1, 8, 16]:
@@ -37,11 +37,11 @@ def test_add_analyzer(manager: automation.Manager, asset_path: str):
                 'Bits per Transfer': '8 bits per Transfer (Standard)'        
             })
             assert(False)
-        except automation.InvalidRequestError:
+        except saleae.automation.InvalidRequestError:
             pass
 
 
-def test_remove_analyzer(manager: automation.Manager, asset_path: str):
+def test_remove_analyzer(manager: saleae.automation.Manager, asset_path: str):
     path = os.path.join(asset_path, 'small_spi_capture.sal')
     
     with manager.load_capture(path) as cap:
@@ -69,7 +69,7 @@ def measure(name: str):
     print(f"Took {dt} seconds to execute '{name}'")
 
 
-def test_many_analyzers(manager: automation.Manager, asset_path: str):
+def test_many_analyzers(manager: saleae.automation.Manager, asset_path: str):
     path = os.path.join(asset_path, 'small_spi_capture.sal')
     
     with manager.load_capture(path) as cap:
@@ -85,7 +85,7 @@ def test_many_analyzers(manager: automation.Manager, asset_path: str):
                 })
 
 
-def test_parallel_analyzer(manager: automation.Manager, asset_path: str):
+def test_parallel_analyzer(manager: saleae.automation.Manager, asset_path: str):
     path = os.path.join(asset_path, 'small_spi_capture.sal')
     
     with manager.load_capture(path) as cap:

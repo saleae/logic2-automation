@@ -5,7 +5,7 @@ from typing import List, Optional
 import pytest
 from . import utils
 
-from saleae import automation
+import saleae.automation as automation
 
 
 @dataclass
