@@ -4,7 +4,7 @@ Getting Started
 Installing the Python Automation API package
 --------------------------------------------
 
-To get started, you will need the latest build of the Logic 2 Software (2.3.56+), the logic2-automation python package, and python 3.9 or newer.
+To get started, you will need the latest build of the Logic 2 Software (2.3.59+), the logic2-automation python package, and Python 3.8, 3.9, or 3.10.
 
 First, let's install the logic2-automation package. Download the package zip file, and install it like so:
 
