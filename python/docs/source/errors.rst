@@ -47,6 +47,6 @@ If any of these commands raise the `CaptureError` exception, we recommend simply
    :members:
    :undoc-members:
 
-.. autoclass:: saleae.automation.OOMError
+.. autoclass:: saleae.automation.OutOfMemoryError
    :members:
    :undoc-members:

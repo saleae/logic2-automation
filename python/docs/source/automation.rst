@@ -1,7 +1,6 @@
 Automation API
 **************
 
-
 Manager
 -------
 
@@ -63,3 +62,38 @@ DeviceType
 
 .. autoclass:: saleae.automation.DeviceType
    :members:
+
+Version
+-------
+
+.. autoclass:: saleae.automation.Version
+   :members:
+
+AppInfo
+-------
+
+.. autoclass:: saleae.automation.AppInfo
+   :members:
+   :undoc-members:
+
+
+RadixType
+---------
+
+.. autoclass:: saleae.automation.RadixType
+   :members:
+   :undoc-members:
+
+DataTableExportConfiguration
+----------------------------
+
+.. autoclass:: saleae.automation.DataTableExportConfiguration
+   :members:
+   :undoc-members:
+
+DataTableFilter
+---------------
+
+.. autoclass:: saleae.automation.DataTableFilter
+   :members:
+   :undoc-members:

@@ -75,7 +75,7 @@ class GlitchFilterEntry:
 
     #: Digital channel index
     channel_index: int
-    #: minimum pulse width in seconds. The software will round this to the nearest number of samples.
+    #: Minimum pulse width in seconds. The software will round this to the nearest number of samples.
     pulse_width_seconds: float
 
 
@@ -119,9 +119,16 @@ class LogicDeviceConfiguration(DeviceConfiguration):
 
 
 class DigitalTriggerType(Enum):
+    #: Rising Edge
     RISING = saleae_pb2.DIGITAL_TRIGGER_TYPE_RISING
+
+    #: Falling Edge
     FALLING = saleae_pb2.DIGITAL_TRIGGER_TYPE_FALLING
+
+    #: High Pulse
     PULSE_HIGH = saleae_pb2.DIGITAL_TRIGGER_TYPE_PULSE_HIGH
+
+    #: Low Pulse
     PULSE_LOW = saleae_pb2.DIGITAL_TRIGGER_TYPE_PULSE_LOW
 
 
@@ -134,8 +141,9 @@ class DigitalTriggerLinkedChannelState(Enum):
 class DigitalTriggerLinkedChannel:
     """Represents a digital channel that must be either high or low while the trigger event (edge or pulse) is active"""
 
-    #: the digital channel index of the required channel
+    #: The digital channel index of the required channel
     channel_index: int
+
     #: The state of the channel (HIGH or LOW)
     state: DigitalTriggerLinkedChannelState
 
@@ -246,6 +254,10 @@ class Manager:
         In the future, we'll add support for supplying an IP address, as well as functions to help launch local copies of the application.
 
         :param port: Port number. By default, Logic 2 uses port 10430.
+        :param address: Address to connect to.
+        :param logic2_process: Process object for Logic2 if launched from Python. The process will be shutdown automatically when
+                               Manager.close() is called.
+        :param grpc_channel_arguments: A set of arguments to pass through to gRPC.
         """
         self.logic2_process = logic2_process
         self.channel = grpc.insecure_channel(f"{address}:{port}", options=grpc_channel_arguments)
@@ -351,9 +363,19 @@ class Manager:
 
     @classmethod
     def connect(cls, *, address: str = _DEFAULT_GRPC_ADDRESS, port: int = _DEFAULT_GRPC_PORT) -> 'Manager':
+        """Connect to an existing instance of Logic 2.
+
+        :param port: Port number. By default, Logic 2 uses port 10430.
+        :param address: Address to connect to.
+        """
+
         return cls(address=address, port=port)
 
     def get_app_info(self) -> AppInfo:
+        """Get information about the connected Logic 2 instance.
+
+        :return: AppInfo object for the connected Logic 2 instance.
+        """
         with errors._error_handler():
             reply: saleae_pb2.GetAppInfoReply = self.stub.GetAppInfo(saleae_pb2.GetAppInfoRequest())
 
@@ -388,6 +410,9 @@ class Manager:
 
     @property
     def stub(self) -> saleae_pb2_grpc.ManagerStub:
+        """
+        :meta private:
+        """
         if self._stub is None:
             raise RuntimeError("Cannot use Manager after it has been closed")
         return self._stub

@@ -6,6 +6,7 @@ from saleae.grpc import saleae_pb2, saleae_pb2_grpc
 from typing import List, Optional, Union, Dict
 from dataclasses import dataclass
 
+
 class RadixType(Enum):
     BINARY = saleae_pb2.RADIX_TYPE_BINARY
     DECIMAL = saleae_pb2.RADIX_TYPE_DECIMAL
@@ -15,24 +16,26 @@ class RadixType(Enum):
 
 @dataclass
 class AnalyzerHandle:
+    #: Internal Analyzer Id
     analyzer_id: int
 
 
 @dataclass
 class DataTableExportConfiguration:
+    #: Analyzer to export
     analyzer: AnalyzerHandle
+
+    #: Radix type to use for format
     radix: RadixType
 
 
 @dataclass
 class DataTableFilter:
-    # Columns to search
+    #: Columns to search
     columns: List[str]
 
-    # Query string
+    #: Query string
     query: str
-
-
 
 
 class Capture:
@@ -108,14 +111,15 @@ class Capture:
         settings: Optional[Dict[str, Union[str, float]]] = None,
         label: Optional[str] = None,
     ) -> AnalyzerHandle:
-        """Add a high level analyzer to the capture
+        """Add a high level analyzer to the capture.
 
         Note: high level analyzers already added to a loaded_capture cannot be accessed from the API at this time.
 
-        :param root_path: The root_path to use to load the Python HLA from
-        :param entry_point: The relative path from the root_path to the HLA class
-        :param label: The user editable display string for the high level analyzer. This will be shown in the analyzer data table export, defaults to None
-        :param settings: All settings for the analyzer. The keys and values here must match the HLA settings as shown in the HLA class
+        :param extension_directory: The directory of the extension that the HLA is in.
+        :param name: The name of the HLA, as specifiied in the extension.json of the extension.
+        :param input_analyzer: Handle to analyzer (added via add_analyzer) to use as input to this HLA.
+        :param settings: All settings for the analyzer. The keys and values here must match the HLA settings as shown in the HLA class.
+        :param label: The user editable display string for the high level analyzer. This will be shown in the analyzer data table export.
         :return: Returns an AnalyzerHandle
         """
         analyzer_settings = {}
@@ -156,7 +160,7 @@ class Capture:
             capture_id=self.capture_id, analyzer_id=analyzer.analyzer_id
         )
         with _error_handler():
-          self.manager.stub.RemoveAnalyzer(request)
+            self.manager.stub.RemoveAnalyzer(request)
 
     def save_capture(self, filepath: str):
         """
@@ -209,7 +213,8 @@ class Capture:
 
         :param filepath: The specified output file, including extension, .csv.
         :param analyzers: A list of AnalyzerHandles that should be included in the export, returned from add_analyzer()
-        :param radix: Display Radix, from the RadixType enumeration. Currently applies to all Analyzers in the export.
+        :param columns: Columns to include in export.
+        :param filter: Filter to apply to the exported data.
         :param iso8601_timestamp: Use this to output wall clock timestamps, instead of capture relative timestamps. Defaults to False.
         """
         analyzer_configs = []
