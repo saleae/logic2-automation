@@ -44,7 +44,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#installing-the-python-automation-api-package">Installing the Python Automation API package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#launching-logic2">Launching Logic2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#using-the-python-automation-api">Using the Python Automation API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#finding-the-serial-number-of-a-device">Finding the Serial Number of a Device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#finding-the-serial-number-device-id-of-a-device">Finding the Serial Number (Device Id) of a Device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#versioning">Versioning</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="launching_logic2.html">Launching the Logic 2 Software and Starting the Socket Interface</a></li>
@@ -80,7 +81,7 @@
 <h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this heading"></a></h1>
 <section id="installing-the-python-automation-api-package">
 <h2>Installing the Python Automation API package<a class="headerlink" href="#installing-the-python-automation-api-package" title="Permalink to this heading"></a></h2>
-<p>To get started, you will need the latest build of the Logic 2 Software (2.3.56+), the logic2-automation python package, and python 3.9 or newer.</p>
+<p>To get started, you will need the latest build of the Logic 2 Software (2.3.59+), the logic2-automation python package, and Python 3.8, 3.9, or 3.10.</p>
 <p>First, let’s install the logic2-automation package. Download the package zip file, and install it like so:</p>
 <p>Download the package: <a class="reference download internal" download="" href="_downloads/b7b928f05540d9a162879817c2b89ea3/logic2_automation-0.0.1-py3-none-any.whl"><code class="xref download docutils literal notranslate"><span class="pre">_static/logic2_automation-0.0.1-py3-none-any.whl</span></code></a></p>
 <p>And install it via pip:</p>
@@ -182,13 +183,33 @@ to find your device’s serial number and replace the demo value in the example.
 <p>There you have it! Take a look at the documentation for Manager and Capture to see how the functionality all works!</p>
 <p>Also, for most automated applications, you won’t want to start the software manually. See <a class="reference internal" href="launching_logic2.html#launching-and-starting-socket"><span class="std std-ref">this section</span></a> for more information about different ways to launch the Logic software, including through this python library.</p>
 </section>
-<section id="finding-the-serial-number-of-a-device">
-<span id="device-serial-number"></span><h2>Finding the Serial Number of a Device<a class="headerlink" href="#finding-the-serial-number-of-a-device" title="Permalink to this heading"></a></h2>
+<section id="finding-the-serial-number-device-id-of-a-device">
+<span id="device-serial-number"></span><h2>Finding the Serial Number (Device Id) of a Device<a class="headerlink" href="#finding-the-serial-number-device-id-of-a-device" title="Permalink to this heading"></a></h2>
 <p>To find the serial number of a connected device, open capture info sidebar and click the device dropdown in the top right:</p>
 <img alt="_images/device_info.png" src="_images/device_info.png" />
 <p>If the device you want the serial number for is not selected, select it. Then click “Device Info” - this will open a popup with information about your device, including its serial number.</p>
 <img alt="_images/device_serial.png" src="_images/device_serial.png" />
-<p>You can copy the serial number from here and use it in your Python script.</p>
+<p>You can copy the serial number from here and use it in your Python script where a “device_id” is required.</p>
+</section>
+<section id="versioning">
+<h2>Versioning<a class="headerlink" href="#versioning" title="Permalink to this heading"></a></h2>
+<p>The <cite>saleae.proto</cite> file contains a version (<cite>major.minor.patch</cite>). It can be found in the file header, and also in the
+<cite>ThisApiVersion</cite> enum.</p>
+<p>When generating language bindings, you can get the version of the .proto that was used through the protobuf <cite>ThisApiVersion</cite> enum - <cite>THIS_API_VERSION_MAJOR</cite>, <cite>THIS_API_VERSION_MINOR</cite>, and <cite>THIS_API_VERSION_PATCH</cite>.</p>
+<p>The version of the .proto file that the server is using can be retrieved using the <cite>GetAppInfo</cite> gRPC method, or the <cite>Manager.get_app_info()</cite> call in the Python API.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>For a given major version, the API strives to be forward and backwards compatible.</p></li>
+<li><p>The major version will change when:
+* There are any breaking changes.</p></li>
+<li><p>The minor version will change when:
+* New features are added
+* Additions are made to the existing API</p></li>
+<li><p>The patch version will change when:
+* There are fixes to the API</p></li>
+</ul>
+</div></blockquote>
+<p>When implementing a client that uses the API, it is recommended to always retrieve the api version via GetAppInfo to validate that the major version is the same, and that the minor version is not older than the client.</p>
 </section>
 </section>
 

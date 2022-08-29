@@ -51,6 +51,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#timedcapturemode">TimedCaptureMode</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#digitaltriggercapturemode">DigitalTriggerCaptureMode</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#glitchfilterentry">GlitchFilterEntry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#devicedesc">DeviceDesc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#devicetype">DeviceType</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="errors.html">Errors</a></li>
@@ -92,13 +94,49 @@
 <p>Please review the getting started guide for instructions on preparing the Logic 2 software for API connections.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="saleae.automation.Manager.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">port</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#saleae.automation.Manager.__init__" title="Permalink to this definition"></a></dt>
-<dd><p>Create an instance of the Manager class, and connect to the Logic 2 software.</p>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">port</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'127.0.0.1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logic2_process</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grpc_channel_arguments</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#saleae.automation.Manager.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>It is recommended that you use Manager.launch() or Manager.connect() instead of using __init__ directly.</p>
+<p>Create an instance of the Manager class, and connect to the Logic 2 software.</p>
 <p>This library currently assumes the Logic 2 software is running on the same machine, and will attempt to connect to 127.0.0.1.
 In the future, we’ll add support for supplying an IP address, as well as functions to help launch local copies of the application.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>port</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Port number. By default, Logic 2 uses port 10430.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="saleae.automation.Manager.launch">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">launch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">application_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#saleae.automation.Manager.launch" title="Permalink to this definition"></a></dt>
+<dd><p>Launch the Logic2 application and shut it down when the returned Manager is closed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>application_path</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – The path to the Logic2 binary to run. If not specified,
+a locally installed copy of Logic2 will be searched for.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#saleae.automation.Manager" title="saleae.automation.manager.Manager"><code class="xref py py-class docutils literal notranslate"><span class="pre">Manager</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="saleae.automation.Manager.connect">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'127.0.0.1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10430</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#saleae.automation.Manager.connect" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#saleae.automation.Manager" title="saleae.automation.manager.Manager"><code class="xref py py-class docutils literal notranslate"><span class="pre">Manager</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="saleae.automation.Manager.get_app_info">
+<span class="sig-name descname"><span class="pre">get_app_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#saleae.automation.Manager.get_app_info" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">AppInfo</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -122,20 +160,20 @@ In the future, we’ll add support for supplying an IP address, as well as funct
 <dl class="py method">
 <dt class="sig sig-object py" id="saleae.automation.Manager.get_devices">
 <span class="sig-name descname"><span class="pre">get_devices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_simulation_devices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#saleae.automation.Manager.get_devices" title="Permalink to this definition"></a></dt>
-<dd><p>Returns a list of connected devices. Use this to find the serial numbers of the attached devices.</p>
+<dd><p>Returns a list of connected devices. Use this to find the device id of the attached devices.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>include_simulation_devices</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If True, the return value will also include simulation devices. This can be useful for testing without a physical device.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">DeviceDesc</span></code>]</p>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#saleae.automation.DeviceDesc" title="saleae.automation.manager.DeviceDesc"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeviceDesc</span></code></a>]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="saleae.automation.Manager.start_capture">
-<span class="sig-name descname"><span class="pre">start_capture</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_configuration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_serial_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capture_configuration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#saleae.automation.Manager.start_capture" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">start_capture</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_configuration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capture_configuration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#saleae.automation.Manager.start_capture" title="Permalink to this definition"></a></dt>
 <dd><p>Start a new capture</p>
 <p>All capture settings need to be provided. The existing software settings, like selected device or added analyzers, are ignored.</p>
 <p>Be sure to catch DeviceError exceptions raised by this function, and handle them accordingly. See the error section of the library documentation.</p>
@@ -143,12 +181,12 @@ In the future, we’ll add support for supplying an IP address, as well as funct
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>device_configuration</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">DeviceConfiguration</span></code>) – An instance of LogicDeviceConfiguration, complete with enabled channels, sample rates, and more.</p></li>
-<li><p><strong>device_serial_number</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The serial number of device to record with.</p></li>
-<li><p><strong>capture_configuration</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="#saleae.automation.CaptureConfiguration" title="saleae.automation.CaptureConfiguration"><code class="xref py py-class docutils literal notranslate"><span class="pre">CaptureConfiguration</span></code></a>]) – The capture configuration, which selects the capture mode: timer, digital trigger, or manual., defaults to None, indicating manual mode.</p></li>
+<li><p><strong>device_id</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – The id of device to record with.</p></li>
+<li><p><strong>capture_configuration</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="#saleae.automation.CaptureConfiguration" title="saleae.automation.manager.CaptureConfiguration"><code class="xref py py-class docutils literal notranslate"><span class="pre">CaptureConfiguration</span></code></a>]) – The capture configuration, which selects the capture mode: timer, digital trigger, or manual., defaults to None, indicating manual mode.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="#saleae.automation.Capture" title="saleae.automation.Capture"><code class="xref py py-class docutils literal notranslate"><span class="pre">Capture</span></code></a></p>
+<dd class="field-even"><p><a class="reference internal" href="#saleae.automation.Capture" title="saleae.automation.capture.Capture"><code class="xref py py-class docutils literal notranslate"><span class="pre">Capture</span></code></a></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Capture instance class. Be sure to call either wait() or stop() before trying to save, export, or close the capture.</p>
@@ -167,7 +205,7 @@ In the future, we’ll add support for supplying an IP address, as well as funct
 </dl>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#saleae.automation.Capture" title="saleae.automation.Capture"><code class="xref py py-class docutils literal notranslate"><span class="pre">Capture</span></code></a></p>
+<dd class="field-odd"><p><a class="reference internal" href="#saleae.automation.Capture" title="saleae.automation.capture.Capture"><code class="xref py py-class docutils literal notranslate"><span class="pre">Capture</span></code></a></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Capture instance class.</p>
@@ -229,7 +267,7 @@ leave unspecified or 0 for Logic 8.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="saleae.automation.LogicDeviceConfiguration.glitch_filters">
-<span class="sig-name descname"><span class="pre">glitch_filters</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#saleae.automation.GlitchFilterEntry" title="saleae.automation.GlitchFilterEntry"><span class="pre">GlitchFilterEntry</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#saleae.automation.LogicDeviceConfiguration.glitch_filters" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">glitch_filters</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#saleae.automation.GlitchFilterEntry" title="saleae.automation.manager.GlitchFilterEntry"><span class="pre">GlitchFilterEntry</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#saleae.automation.LogicDeviceConfiguration.glitch_filters" title="Permalink to this definition"></a></dt>
 <dd><p>Optionally specify a glitch filter for one or more channels.
 Only applies to digital channels.</p>
 </dd></dl>
@@ -274,7 +312,30 @@ Only applies to digital channels.</p>
 <dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">AnalyzerHandle</span></code></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Returns an AnalyzerHandle, which is used later for exporting analyzer results.</p>
+<dd class="field-odd"><p>Returns an AnalyzerHandle</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="saleae.automation.Capture.add_high_level_analyzer">
+<span class="sig-name descname"><span class="pre">add_high_level_analyzer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">extension_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_analyzer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#saleae.automation.Capture.add_high_level_analyzer" title="Permalink to this definition"></a></dt>
+<dd><p>Add a high level analyzer to the capture</p>
+<p>Note: high level analyzers already added to a loaded_capture cannot be accessed from the API at this time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root_path</strong> – The root_path to use to load the Python HLA from</p></li>
+<li><p><strong>entry_point</strong> – The relative path from the root_path to the HLA class</p></li>
+<li><p><strong>label</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – The user editable display string for the high level analyzer. This will be shown in the analyzer data table export, defaults to None</p></li>
+<li><p><strong>settings</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]]) – All settings for the analyzer. The keys and values here must match the HLA settings as shown in the HLA class</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">AnalyzerHandle</span></code></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Returns an AnalyzerHandle</p>
 </dd>
 </dl>
 </dd></dl>
@@ -319,16 +380,16 @@ Only applies to digital channels.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="saleae.automation.Capture.export_data_table">
-<span class="sig-name descname"><span class="pre">export_data_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyzers</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iso8601</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#saleae.automation.Capture.export_data_table" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">export_data_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyzers</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iso8601_timestamp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#saleae.automation.Capture.export_data_table" title="Permalink to this definition"></a></dt>
 <dd><p>Exports the Analyzer Data Table</p>
 <p>We will be adding more options to this in the future, including the query string, specific columns, specific query columns, and more.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>filepath</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The specified output file, including extension, .csv.</p></li>
-<li><p><strong>analyzers</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">AnalyzerHandle</span></code>]) – A list of AnalyzerHandles that should be included in the export, returned from add_analyzer()</p></li>
-<li><p><strong>radix</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">RadixType</span></code>) – Display Radix, from the RadixType enumeration. Currently applies to all Analyzers in the export.</p></li>
-<li><p><strong>iso8601</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – Use this to output wall clock timestamps, instead of capture relative timestamps. Defaults to False.</p></li>
+<li><p><strong>analyzers</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">AnalyzerHandle</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DataTableExportConfiguration</span></code>]]) – A list of AnalyzerHandles that should be included in the export, returned from add_analyzer()</p></li>
+<li><p><strong>radix</strong> – Display Radix, from the RadixType enumeration. Currently applies to all Analyzers in the export.</p></li>
+<li><p><strong>iso8601_timestamp</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – Use this to output wall clock timestamps, instead of capture relative timestamps. Defaults to False.</p></li>
 </ul>
 </dd>
 </dl>
@@ -336,7 +397,7 @@ Only applies to digital channels.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="saleae.automation.Capture.export_raw_data_csv">
-<span class="sig-name descname"><span class="pre">export_raw_data_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analog_channels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">digital_channels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analog_downsample_ratio</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iso8601</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#saleae.automation.Capture.export_raw_data_csv" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">export_raw_data_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analog_channels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">digital_channels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analog_downsample_ratio</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iso8601_timestamp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#saleae.automation.Capture.export_raw_data_csv" title="Permalink to this definition"></a></dt>
 <dd><p>Exports raw data to CSV file(s)</p>
 <p>This produces exactly the same format as used in the Logic 2 software when using the “Export Raw Data” dialog with the “CSV” option selected.</p>
 <p>Note, the directory parameter is a specific folder that must already exist, and should not include a filename.</p>
@@ -350,7 +411,7 @@ Only applies to digital channels.</p>
 <li><p><strong>analog_channels</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]]) – list of analog channels to export, defaults to None</p></li>
 <li><p><strong>digital_channels</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]]) – list of digital channels to export, defaults to None</p></li>
 <li><p><strong>analog_downsample_ratio</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – optional analog downsample ratio, useful to help reduce export file sizes where extra analog resolution isn’t needed, defaults to 1</p></li>
-<li><p><strong>iso8601</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – Use this to output wall clock timestamps, instead of capture relative timestamps. Defaults to False.</p></li>
+<li><p><strong>iso8601_timestamp</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – Use this to output wall clock timestamps, instead of capture relative timestamps. Defaults to False.</p></li>
 </ul>
 </dd>
 </dl>
@@ -423,7 +484,7 @@ Only applies to digital channels.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="saleae.automation.CaptureConfiguration.capture_mode">
-<span class="sig-name descname"><span class="pre">capture_mode</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#saleae.automation.ManualCaptureMode" title="saleae.automation.ManualCaptureMode"><span class="pre">ManualCaptureMode</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#saleae.automation.TimedCaptureMode" title="saleae.automation.TimedCaptureMode"><span class="pre">TimedCaptureMode</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#saleae.automation.DigitalTriggerCaptureMode" title="saleae.automation.DigitalTriggerCaptureMode"><span class="pre">DigitalTriggerCaptureMode</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#saleae.automation.CaptureConfiguration.capture_mode" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">capture_mode</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#saleae.automation.ManualCaptureMode" title="saleae.automation.manager.ManualCaptureMode"><span class="pre">ManualCaptureMode</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#saleae.automation.TimedCaptureMode" title="saleae.automation.manager.TimedCaptureMode"><span class="pre">TimedCaptureMode</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#saleae.automation.DigitalTriggerCaptureMode" title="saleae.automation.manager.DigitalTriggerCaptureMode"><span class="pre">DigitalTriggerCaptureMode</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#saleae.automation.CaptureConfiguration.capture_mode" title="Permalink to this definition"></a></dt>
 <dd><div class="line-block">
 <div class="line">The capture mode. This can be one of the following:</div>
 <div class="line">ManualCaptureMode</div>
@@ -579,6 +640,83 @@ PULSE_HIGH or PULSE_LOW only</p>
 <dt class="sig sig-object py" id="saleae.automation.GlitchFilterEntry.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pulse_width_seconds</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#saleae.automation.GlitchFilterEntry.__init__" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="devicedesc">
+<h2>DeviceDesc<a class="headerlink" href="#devicedesc" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="saleae.automation.DeviceDesc">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">saleae.automation.</span></span><span class="sig-name descname"><span class="pre">DeviceDesc</span></span><a class="headerlink" href="#saleae.automation.DeviceDesc" title="Permalink to this definition"></a></dt>
+<dd><p>DeviceDesc(device_id: str, device_type: saleae.automation.manager.DeviceType, is_simulation: bool)</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="saleae.automation.DeviceDesc.device_id">
+<span class="sig-name descname"><span class="pre">device_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#saleae.automation.DeviceDesc.device_id" title="Permalink to this definition"></a></dt>
+<dd><p>Id of the device</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="saleae.automation.DeviceDesc.device_type">
+<span class="sig-name descname"><span class="pre">device_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#saleae.automation.DeviceType" title="saleae.automation.manager.DeviceType"><span class="pre">DeviceType</span></a></em><a class="headerlink" href="#saleae.automation.DeviceDesc.device_type" title="Permalink to this definition"></a></dt>
+<dd><p>Device type</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="saleae.automation.DeviceDesc.is_simulation">
+<span class="sig-name descname"><span class="pre">is_simulation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#saleae.automation.DeviceDesc.is_simulation" title="Permalink to this definition"></a></dt>
+<dd><p>True if this is a simulation devivce</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="saleae.automation.DeviceDesc.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_simulation</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#saleae.automation.DeviceDesc.__init__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="devicetype">
+<h2>DeviceType<a class="headerlink" href="#devicetype" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="saleae.automation.DeviceType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">saleae.automation.</span></span><span class="sig-name descname"><span class="pre">DeviceType</span></span><a class="headerlink" href="#saleae.automation.DeviceType" title="Permalink to this definition"></a></dt>
+<dd><p>An enumeration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="saleae.automation.DeviceType.LOGIC">
+<span class="sig-name descname"><span class="pre">LOGIC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#saleae.automation.DeviceType.LOGIC" title="Permalink to this definition"></a></dt>
+<dd><p>Saleae Logic</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="saleae.automation.DeviceType.LOGIC_4">
+<span class="sig-name descname"><span class="pre">LOGIC_4</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#saleae.automation.DeviceType.LOGIC_4" title="Permalink to this definition"></a></dt>
+<dd><p>Saleae Logic 4</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="saleae.automation.DeviceType.LOGIC_8">
+<span class="sig-name descname"><span class="pre">LOGIC_8</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#saleae.automation.DeviceType.LOGIC_8" title="Permalink to this definition"></a></dt>
+<dd><p>Saleae Logic 8</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="saleae.automation.DeviceType.LOGIC_16">
+<span class="sig-name descname"><span class="pre">LOGIC_16</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#saleae.automation.DeviceType.LOGIC_16" title="Permalink to this definition"></a></dt>
+<dd><p>Saleae Logic 16</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="saleae.automation.DeviceType.LOGIC_PRO_8">
+<span class="sig-name descname"><span class="pre">LOGIC_PRO_8</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#saleae.automation.DeviceType.LOGIC_PRO_8" title="Permalink to this definition"></a></dt>
+<dd><p>Saleae Logic Pro 8</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="saleae.automation.DeviceType.LOGIC_PRO_16">
+<span class="sig-name descname"><span class="pre">LOGIC_PRO_16</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="headerlink" href="#saleae.automation.DeviceType.LOGIC_PRO_16" title="Permalink to this definition"></a></dt>
+<dd><p>Saleae Logic Pro 16</p>
+</dd></dl>
 
 </dd></dl>
 

@@ -80,7 +80,6 @@
  | <a href="#I"><strong>I</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
- | <a href="#O"><strong>O</strong></a>
  | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
@@ -96,6 +95,8 @@
 
       <ul>
         <li><a href="automation.html#saleae.automation.CaptureConfiguration.__init__">(saleae.automation.CaptureConfiguration method)</a>
+</li>
+        <li><a href="automation.html#saleae.automation.DeviceDesc.__init__">(saleae.automation.DeviceDesc method)</a>
 </li>
         <li><a href="automation.html#saleae.automation.DigitalTriggerCaptureMode.__init__">(saleae.automation.DigitalTriggerCaptureMode method)</a>
 </li>
@@ -117,6 +118,8 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="automation.html#saleae.automation.Capture.add_analyzer">add_analyzer() (saleae.automation.Capture method)</a>
+</li>
+      <li><a href="automation.html#saleae.automation.Capture.add_high_level_analyzer">add_high_level_analyzer() (saleae.automation.Capture method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -144,10 +147,10 @@
 </li>
       <li><a href="automation.html#saleae.automation.CaptureConfiguration">CaptureConfiguration (class in saleae.automation)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="errors.html#saleae.automation.CaptureError">CaptureError (class in saleae.automation)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="automation.html#saleae.automation.GlitchFilterEntry.channel_index">channel_index (saleae.automation.GlitchFilterEntry attribute)</a>
 </li>
       <li><a href="automation.html#saleae.automation.Capture.close">close() (saleae.automation.Capture method)</a>
@@ -156,18 +159,28 @@
         <li><a href="automation.html#saleae.automation.Manager.close">(saleae.automation.Manager method)</a>
 </li>
       </ul></li>
+      <li><a href="automation.html#saleae.automation.Manager.connect">connect() (saleae.automation.Manager class method)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="errors.html#saleae.automation.DeviceError">DeviceError (class in saleae.automation)</a>
+      <li><a href="automation.html#saleae.automation.DeviceDesc.device_id">device_id (saleae.automation.DeviceDesc attribute)</a>
 </li>
-      <li><a href="automation.html#saleae.automation.LogicDeviceConfiguration.digital_sample_rate">digital_sample_rate (saleae.automation.LogicDeviceConfiguration attribute)</a>
+      <li><a href="automation.html#saleae.automation.DeviceDesc.device_type">device_type (saleae.automation.DeviceDesc attribute)</a>
+</li>
+      <li><a href="automation.html#saleae.automation.DeviceDesc">DeviceDesc (class in saleae.automation)</a>
+</li>
+      <li><a href="errors.html#saleae.automation.DeviceError">DeviceError (class in saleae.automation)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="automation.html#saleae.automation.DeviceType">DeviceType (class in saleae.automation)</a>
+</li>
+      <li><a href="automation.html#saleae.automation.LogicDeviceConfiguration.digital_sample_rate">digital_sample_rate (saleae.automation.LogicDeviceConfiguration attribute)</a>
+</li>
       <li><a href="automation.html#saleae.automation.LogicDeviceConfiguration.digital_threshold_volts">digital_threshold_volts (saleae.automation.LogicDeviceConfiguration attribute)</a>
 </li>
       <li><a href="automation.html#saleae.automation.DigitalTriggerCaptureMode">DigitalTriggerCaptureMode (class in saleae.automation)</a>
@@ -202,6 +215,8 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="automation.html#saleae.automation.Manager.get_app_info">get_app_info() (saleae.automation.Manager method)</a>
+</li>
       <li><a href="automation.html#saleae.automation.Manager.get_devices">get_devices() (saleae.automation.Manager method)</a>
 </li>
   </ul></td>
@@ -222,19 +237,35 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="errors.html#saleae.automation.InvalidRequestError">InvalidRequestError (class in saleae.automation)</a>
 </li>
+      <li><a href="automation.html#saleae.automation.DeviceDesc.is_simulation">is_simulation (saleae.automation.DeviceDesc attribute)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="automation.html#saleae.automation.Manager.launch">launch() (saleae.automation.Manager class method)</a>
+</li>
       <li><a href="automation.html#saleae.automation.DigitalTriggerCaptureMode.linked_channels">linked_channels (saleae.automation.DigitalTriggerCaptureMode attribute)</a>
 </li>
       <li><a href="automation.html#saleae.automation.Manager.load_capture">load_capture() (saleae.automation.Manager method)</a>
 </li>
+      <li><a href="errors.html#saleae.automation.LoadCaptureFailedError">LoadCaptureFailedError (class in saleae.automation)</a>
+</li>
+      <li><a href="automation.html#saleae.automation.DeviceType.LOGIC">LOGIC (saleae.automation.DeviceType attribute)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="errors.html#saleae.automation.LoadCaptureFailedError">LoadCaptureFailedError (class in saleae.automation)</a>
+      <li><a href="automation.html#saleae.automation.DeviceType.LOGIC_16">LOGIC_16 (saleae.automation.DeviceType attribute)</a>
+</li>
+      <li><a href="automation.html#saleae.automation.DeviceType.LOGIC_4">LOGIC_4 (saleae.automation.DeviceType attribute)</a>
+</li>
+      <li><a href="automation.html#saleae.automation.DeviceType.LOGIC_8">LOGIC_8 (saleae.automation.DeviceType attribute)</a>
+</li>
+      <li><a href="automation.html#saleae.automation.DeviceType.LOGIC_PRO_16">LOGIC_PRO_16 (saleae.automation.DeviceType attribute)</a>
+</li>
+      <li><a href="automation.html#saleae.automation.DeviceType.LOGIC_PRO_8">LOGIC_PRO_8 (saleae.automation.DeviceType attribute)</a>
 </li>
       <li><a href="automation.html#saleae.automation.LogicDeviceConfiguration">LogicDeviceConfiguration (class in saleae.automation)</a>
 </li>
@@ -255,14 +286,6 @@
       <li><a href="automation.html#saleae.automation.DigitalTriggerCaptureMode.min_pulse_width_seconds">min_pulse_width_seconds (saleae.automation.DigitalTriggerCaptureMode attribute)</a>
 </li>
       <li><a href="errors.html#saleae.automation.MissingDeviceError">MissingDeviceError (class in saleae.automation)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="O">O</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="errors.html#saleae.automation.OOMError">OOMError (class in saleae.automation)</a>
 </li>
   </ul></td>
 </tr></table>
