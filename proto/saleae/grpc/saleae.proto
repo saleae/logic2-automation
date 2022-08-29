@@ -58,8 +58,11 @@ service Manager {
     // Remove an analyzer from a capture.
     rpc RemoveAnalyzer(RemoveAnalyzerRequest) returns (RemoveAnalyzerReply) {}
 
-    // Add a high-level-analyzer to a capture.
+    // Add a high level analyzer to a capture.
     rpc AddHighLevelAnalyzer(AddHighLevelAnalyzerRequest) returns (AddHighLevelAnalyzerReply) {}
+
+    // Remove a high level analyzer from a capture.
+    rpc RemoveighLevelAnalyzer(RemoveHighLevelAnalyzerRequest) returns (RemoveHighLevelAnalyzerReply) {}
 
     // Export raw channel data to CSV files.
     rpc ExportRawDataCsv(ExportRawDataCsvRequest)
@@ -478,6 +481,15 @@ message AddAnalyzerReply {
     uint64 analyzer_id = 1;
 }
 
+message RemoveAnalyzerRequest {
+    // Id of capture to remove analyzer from.
+    uint64 capture_id = 1;
+
+    // Id of analyzer to remove.
+    uint64 analyzer_id = 2;
+}
+message RemoveAnalyzerReply {}
+
 message HighLevelAnalyzerSettingValue {
     oneof value {
         // String value
@@ -514,14 +526,15 @@ message AddHighLevelAnalyzerReply {
     uint64 analyzer_id = 1;
 }
 
-message RemoveAnalyzerRequest {
+message RemoveHighLevelAnalyzerRequest {
     // Id of capture to remove analyzer from.
     uint64 capture_id = 1;
 
-    // Id of analyzer to remove.
+    // Id of high level analyzer to remove.
     uint64 analyzer_id = 2;
 }
-message RemoveAnalyzerReply {}
+message RemoveHighLevelAnalyzerReply {}
+
 
 
 message DataTableAnalyzerConfiguration {
