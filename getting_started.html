@@ -116,64 +116,70 @@ to find your device’s serial number and replace the demo value in the example.
 <span class="kn">import</span> <span class="nn">os.path</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
 
-<span class="c1"># Connect to the running Logic 2 Application on port `10430`</span>
-<span class="n">manager</span> <span class="o">=</span> <span class="n">automation</span><span class="o">.</span><span class="n">Manager</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">10430</span><span class="p">)</span>
+<span class="c1"># Connect to the running Logic 2 Application on port `10430`.</span>
+<span class="c1"># Alternatively you can use automation.Manager.launch() to launch a new Logic 2 process - see</span>
+<span class="c1"># the API documentation for more details.</span>
+<span class="c1"># Using the `with` statement will automatically call manager.close() when exiting the scope. If you</span>
+<span class="c1"># want to use `automation.Manager` outside of a `with` block, you will need to call `manager.close()` manually.</span>
+<span class="k">with</span> <span class="n">automation</span><span class="o">.</span><span class="n">Manager</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">10430</span><span class="p">)</span> <span class="k">as</span> <span class="n">manager</span><span class="p">:</span>
 
-<span class="c1"># Configure the capturing device to record on digital channels 0, 1, 2, and 3,</span>
-<span class="c1"># with a sampling rate of 10 MSa/s, and a logic level of 3.3V.</span>
-<span class="n">device_configuration</span> <span class="o">=</span> <span class="n">automation</span><span class="o">.</span><span class="n">LogicDeviceConfiguration</span><span class="p">(</span>
-    <span class="n">enabled_digital_channels</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
-    <span class="n">digital_sample_rate</span><span class="o">=</span><span class="mi">10_000_000</span><span class="p">,</span>
-    <span class="n">digital_threshold_volts</span><span class="o">=</span><span class="mf">3.3</span><span class="p">,</span>
-<span class="p">)</span>
-
-<span class="c1"># Record 5 seconds of data before stopping the capture</span>
-<span class="n">capture_configuration</span> <span class="o">=</span> <span class="n">automation</span><span class="o">.</span><span class="n">CaptureConfiguration</span><span class="p">(</span>
-    <span class="n">capture_mode</span><span class="o">=</span><span class="n">automation</span><span class="o">.</span><span class="n">TimedCaptureMode</span><span class="p">(</span><span class="n">duration_seconds</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span>
-<span class="p">)</span>
-
-<span class="c1"># Start a capture - the capture will be automatically closed when leaving the `with` block</span>
-<span class="c1"># Note: We are using serial number &#39;F4241&#39; here, which is the serial number for</span>
-<span class="c1">#       the Logic Pro 16 demo device. You will need to use your device&#39;s serial number</span>
-<span class="c1">#       to use a real device. Please see the &quot;Finding the Serial Number of a Device&quot; section.</span>
-<span class="k">with</span> <span class="n">manager</span><span class="o">.</span><span class="n">start_capture</span><span class="p">(</span><span class="n">device_serial_number</span><span class="o">=</span><span class="s1">&#39;F4241&#39;</span><span class="p">,</span>
-                           <span class="n">device_configuration</span><span class="o">=</span><span class="n">device_configuration</span><span class="p">,</span>
-                           <span class="n">capture_configuration</span><span class="o">=</span><span class="n">capture_configuration</span><span class="p">)</span> <span class="k">as</span> <span class="n">capture</span><span class="p">:</span>
-
-    <span class="c1"># Wait until the capture has finished</span>
-    <span class="c1"># This will take about 5 seconds because we are using a timed capture mode</span>
-    <span class="n">capture</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
-
-    <span class="c1"># Add an analyzer to the capture</span>
-    <span class="c1"># Note: The simulator output is not actual SPI data</span>
-    <span class="n">spi_analyzer</span> <span class="o">=</span> <span class="n">capture</span><span class="o">.</span><span class="n">add_analyzer</span><span class="p">(</span><span class="s1">&#39;SPI&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">f</span><span class="s1">&#39;Test Analyzer&#39;</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="p">{</span>
-        <span class="s1">&#39;MISO&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="s1">&#39;Clock&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="s1">&#39;Enable&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
-        <span class="s1">&#39;Bits per Transfer&#39;</span><span class="p">:</span> <span class="s1">&#39;8 Bits per Transfer (Standard)&#39;</span>
-    <span class="p">})</span>
-
-    <span class="c1"># Store output in a timestamped directory</span>
-    <span class="n">output_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="n">f</span><span class="s1">&#39;output-{datetime.now().strftime(&quot;%Y-%m-</span><span class="si">%d</span><span class="s1">_%H-%M-%S&quot;)}&#39;</span><span class="p">)</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
-
-    <span class="c1"># Export analyzer data to a CSV file</span>
-    <span class="n">analyzer_export_filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;spi_export.csv&#39;</span><span class="p">)</span>
-    <span class="n">capture</span><span class="o">.</span><span class="n">export_data_table</span><span class="p">(</span>
-        <span class="n">filepath</span><span class="o">=</span><span class="n">analyzer_export_filepath</span><span class="p">,</span>
-        <span class="n">analyzers</span><span class="o">=</span><span class="p">[</span><span class="n">spi_analyzer</span><span class="p">],</span>
-        <span class="n">radix</span><span class="o">=</span><span class="n">automation</span><span class="o">.</span><span class="n">RadixType</span><span class="o">.</span><span class="n">ASCII</span>
+    <span class="c1"># Configure the capturing device to record on digital channels 0, 1, 2, and 3,</span>
+    <span class="c1"># with a sampling rate of 10 MSa/s, and a logic level of 3.3V.</span>
+    <span class="c1"># The settings chosen here will depend on your device&#39;s capablities wnad what</span>
+    <span class="c1"># you can configure in the Logic 2 UI.</span>
+    <span class="n">device_configuration</span> <span class="o">=</span> <span class="n">automation</span><span class="o">.</span><span class="n">LogicDeviceConfiguration</span><span class="p">(</span>
+        <span class="n">enabled_digital_channels</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+        <span class="n">digital_sample_rate</span><span class="o">=</span><span class="mi">10_000_000</span><span class="p">,</span>
+        <span class="n">digital_threshold_volts</span><span class="o">=</span><span class="mf">3.3</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="c1"># Export raw digital data to a CSV file</span>
-    <span class="n">capture</span><span class="o">.</span><span class="n">export_raw_data_csv</span><span class="p">(</span><span class="n">directory</span><span class="o">=</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">digital_channels</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+    <span class="c1"># Record 5 seconds of data before stopping the capture</span>
+    <span class="n">capture_configuration</span> <span class="o">=</span> <span class="n">automation</span><span class="o">.</span><span class="n">CaptureConfiguration</span><span class="p">(</span>
+        <span class="n">capture_mode</span><span class="o">=</span><span class="n">automation</span><span class="o">.</span><span class="n">TimedCaptureMode</span><span class="p">(</span><span class="n">duration_seconds</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span>
+    <span class="p">)</span>
 
-    <span class="c1"># Finally, save the capture to a file</span>
-    <span class="n">capture_filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;example_capture.sal&#39;</span><span class="p">)</span>
-    <span class="n">capture</span><span class="o">.</span><span class="n">save_capture</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">capture_filepath</span><span class="p">)</span>
+    <span class="c1"># Start a capture - the capture will be automatically closed when leaving the `with` block</span>
+    <span class="c1"># Note: We are using serial number &#39;F4241&#39; here, which is the serial number for</span>
+    <span class="c1">#       the Logic Pro 16 demo device. You can remove the device_id and the first physical</span>
+    <span class="c1">#       device found will be used, or you can use your device&#39;s serial number.</span>
+    <span class="c1">#       See the &quot;Finding the Serial Number of a Device&quot; section for information on finding your</span>
+    <span class="c1">#       device&#39;s serial number.</span>
+    <span class="k">with</span> <span class="n">manager</span><span class="o">.</span><span class="n">start_capture</span><span class="p">(</span>
+        <span class="n">device_id</span><span class="o">=</span><span class="s1">&#39;F4241&#39;</span><span class="p">,</span>
+            <span class="n">device_configuration</span><span class="o">=</span><span class="n">device_configuration</span><span class="p">,</span>
+                               <span class="n">capture_configuration</span><span class="o">=</span><span class="n">capture_configuration</span><span class="p">)</span> <span class="k">as</span> <span class="n">capture</span><span class="p">:</span>
 
-<span class="c1"># Close the connection</span>
-<span class="n">manager</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="c1"># Wait until the capture has finished</span>
+        <span class="c1"># This will take about 5 seconds because we are using a timed capture mode</span>
+        <span class="n">capture</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+
+        <span class="c1"># Add an analyzer to the capture</span>
+        <span class="c1"># Note: The simulator output is not actual SPI data</span>
+        <span class="n">spi_analyzer</span> <span class="o">=</span> <span class="n">capture</span><span class="o">.</span><span class="n">add_analyzer</span><span class="p">(</span><span class="s1">&#39;SPI&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">f</span><span class="s1">&#39;Test Analyzer&#39;</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="p">{</span>
+            <span class="s1">&#39;MISO&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s1">&#39;Clock&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s1">&#39;Enable&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="s1">&#39;Bits per Transfer&#39;</span><span class="p">:</span> <span class="s1">&#39;8 Bits per Transfer (Standard)&#39;</span>
+        <span class="p">})</span>
+
+        <span class="c1"># Store output in a timestamped directory</span>
+        <span class="n">output_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="n">f</span><span class="s1">&#39;output-{datetime.now().strftime(&quot;%Y-%m-</span><span class="si">%d</span><span class="s1">_%H-%M-%S&quot;)}&#39;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
+
+        <span class="c1"># Export analyzer data to a CSV file</span>
+        <span class="n">analyzer_export_filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;spi_export.csv&#39;</span><span class="p">)</span>
+        <span class="n">capture</span><span class="o">.</span><span class="n">export_data_table</span><span class="p">(</span>
+            <span class="n">filepath</span><span class="o">=</span><span class="n">analyzer_export_filepath</span><span class="p">,</span>
+            <span class="n">analyzers</span><span class="o">=</span><span class="p">[</span><span class="n">spi_analyzer</span><span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Export raw digital data to a CSV file</span>
+        <span class="n">capture</span><span class="o">.</span><span class="n">export_raw_data_csv</span><span class="p">(</span><span class="n">directory</span><span class="o">=</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">digital_channels</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+
+        <span class="c1"># Finally, save the capture to a file</span>
+        <span class="n">capture_filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;example_capture.sal&#39;</span><span class="p">)</span>
+        <span class="n">capture</span><span class="o">.</span><span class="n">save_capture</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">capture_filepath</span><span class="p">)</span>
+
 </pre></div>
 </div>
 <p>With the software is running, and the automation interface enabled (as shown above), run the script:</p>
