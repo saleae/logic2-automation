@@ -24,7 +24,7 @@ copyright = "2022, Saleae Inc"
 author = "Ryan, John, and Mark"
 
 # The full version, including alpha/beta/rc tags
-release = "0.0.1"
+release = "0.9.0"
 
 
 # -- General configuration ---------------------------------------------------
