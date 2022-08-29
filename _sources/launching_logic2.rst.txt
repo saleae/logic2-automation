@@ -19,7 +19,7 @@ In the meantime, the software can be launched with the automation server enabled
   
   # Linux
   export ENABLE_AUTOMATION=1
-  ./Logic-2.3.56-master.AppImage --automation
+  ./Logic-2.3.59-master.AppImage --automation
   
   # Windows powershell
   $Env:ENABLE_AUTOMATION=1
