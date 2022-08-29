@@ -6,7 +6,7 @@ Installing the Python Automation API package
 
 To get started, you will need the latest build of the Logic 2 Software (2.3.59+), the logic2-automation python package, and Python 3.8, 3.9, or 3.10.
 
-First, let's install the logic2-automation package. Download the package zip file, and install it like so:
+First, let's install the logic2-automation package.
 
 Download the package: :download:`_static/logic2_automation-0.9.0-py3-none-any.whl`
 
@@ -62,7 +62,7 @@ Also, for most automated applications, you won't want to start the software manu
 .. _device-serial-number:
 
 Finding the Serial Number (Device Id) of a Device
--------------------------------------
+-------------------------------------------------
 
 To find the serial number of a connected device, open capture info sidebar and click the device dropdown in the top right:
 
@@ -85,14 +85,19 @@ When generating language bindings, you can get the version of the .proto that wa
 
 The version of the .proto file that the server is using can be retrieved using the `GetAppInfo` gRPC method, or the `Manager.get_app_info()` call in the Python API.
 
-  * For a given major version, the API strives to be forward and backwards compatible.
-  * The major version will change when:
-    * There are any breaking changes.
-  * The minor version will change when:
-    * New features are added
-    * Additions are made to the existing API
-  * The patch version will change when:
-    * There are fixes to the API
-  
+* For a given major version, the API strives to be forward and backwards compatible.
+* The major version will change when:
 
-When implementing a client that uses the API, it is recommended to always retrieve the api version via GetAppInfo to validate that the major version is the same, and that the minor version is not older than the client.
+  * There are any breaking changes
+
+* The minor version will change when:
+
+  * New features are added
+  * Additions are made to the existing API
+
+* The patch version will change when:
+
+  * There are fixes to the API
+
+
+When implementing a client that uses the gRPC API directly, it is recommended to always retrieve the api version via GetAppInfo to validate that the major version is the same, and that the minor version is not older than the client. The Python API does this automatically on creation of the Manager object.

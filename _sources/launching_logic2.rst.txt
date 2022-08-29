@@ -3,9 +3,7 @@
 Launching the Logic 2 Software and Starting the Socket Interface
 ****************************************************************
 
-We'll be adding functionality to the python library to launch the Logic 2 software soon, but it's not available yet.
-
-In the meantime, the software can be launched with the automation server enabled with the following commands:
+The software can be launched with the automation server enabled with the following commands:
 
 .. code-block:: bash
   
