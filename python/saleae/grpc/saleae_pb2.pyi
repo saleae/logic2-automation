@@ -357,6 +357,18 @@ class RemoveAnalyzerRequest(_message.Message):
     capture_id: int
     def __init__(self, capture_id: _Optional[int] = ..., analyzer_id: _Optional[int] = ...) -> None: ...
 
+class RemoveHighLevelAnalyzerReply(_message.Message):
+    __slots__ = []
+    def __init__(self) -> None: ...
+
+class RemoveHighLevelAnalyzerRequest(_message.Message):
+    __slots__ = ["analyzer_id", "capture_id"]
+    ANALYZER_ID_FIELD_NUMBER: _ClassVar[int]
+    CAPTURE_ID_FIELD_NUMBER: _ClassVar[int]
+    analyzer_id: int
+    capture_id: int
+    def __init__(self, capture_id: _Optional[int] = ..., analyzer_id: _Optional[int] = ...) -> None: ...
+
 class SaveCaptureReply(_message.Message):
     __slots__ = []
     def __init__(self) -> None: ...
