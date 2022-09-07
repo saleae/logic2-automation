@@ -287,8 +287,8 @@ class Manager:
                 if app_info.api_version.major != saleae_pb2.THIS_API_VERSION_MAJOR:
                     logger.error(
                             "Incompatible Saleae Automation API Version encountered."
-                            + f"Supported Major={saleae_pb2.THIS_API_VERSION_MAJOR}, "
-                            + f"Logic2 Major={app_info.api_version.major}.{app_info.api_version.minor}.{app_info.api_version.patch}"
+                            + f"Supported Major Version={saleae_pb2.THIS_API_VERSION_MAJOR}, "
+                            + f"Logic2 Version={app_info.api_version.major}.{app_info.api_version.minor}.{app_info.api_version.patch}"
                         )
                     raise errors.IncompatibleApiVersionError()
 
@@ -364,7 +364,11 @@ class Manager:
             child_process_handle = win32api.OpenProcess(win32con.PROCESS_ALL_ACCESS, False, process.pid)
             win32job.AssignProcessToJobObject(job, child_process_handle)
 
-        return cls(address=_DEFAULT_GRPC_ADDRESS, port=_DEFAULT_GRPC_PORT, logic2_process=process)
+            # Attach the job to the process object so that it does not get garbage collected during the lifetime of the Popen object
+            process.__saleae_win32_job = job
+
+        obj = cls(address=_DEFAULT_GRPC_ADDRESS, port=_DEFAULT_GRPC_PORT, logic2_process=process)
+        return obj
 
     @classmethod
     def connect(cls, *, address: str = _DEFAULT_GRPC_ADDRESS, port: int = _DEFAULT_GRPC_PORT) -> 'Manager':
