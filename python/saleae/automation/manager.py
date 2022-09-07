@@ -285,6 +285,11 @@ class Manager:
                         raise errors.Logic2AlreadyRunningError()
 
                 if app_info.api_version.major != saleae_pb2.THIS_API_VERSION_MAJOR:
+                    logger.error(
+                            "Incompatible Saleae Automation API Version encountered."
+                            + f"Supported Major={saleae_pb2.THIS_API_VERSION_MAJOR}, "
+                            + f"Logic2 Major={app_info.api_version.major}.{app_info.api_version.minor}.{app_info.api_version.patch}"
+                        )
                     raise errors.IncompatibleApiVersionError()
 
                 break
