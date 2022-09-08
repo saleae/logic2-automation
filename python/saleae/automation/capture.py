@@ -187,7 +187,7 @@ class Capture:
         with _error_handler():
             self.manager.stub.SaveCapture(request)
 
-    def export_analyzer_legacy(
+    def legacy_export_analyzer(
         self, filepath: str, analyzer: AnalyzerHandle, radix: RadixType
     ):
         """
