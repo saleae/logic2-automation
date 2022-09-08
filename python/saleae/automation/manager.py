@@ -223,7 +223,7 @@ class CaptureConfiguration:
     """
 
     #: Capture buffer size (in megabytes)
-    buffer_size: Optional[int] = None
+    buffer_size_megabytes: Optional[int] = None
 
     capture_mode: CaptureMode = field(default_factory=ManualCaptureMode)
     """
@@ -508,9 +508,9 @@ class Manager:
             raise TypeError("Invalid device configuration type")
 
         if capture_configuration is not None:
-            if capture_configuration.buffer_size:
+            if capture_configuration.buffer_size_megabytes:
                 request.capture_configuration.buffer_size_megabytes = (
-                    capture_configuration.buffer_size
+                    capture_configuration.buffer_size_megabytes
                 )
 
             if capture_configuration.capture_mode is not None:
