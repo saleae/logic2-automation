@@ -4,7 +4,7 @@ Getting Started
 Installing the Python Automation API package
 --------------------------------------------
 
-To get started, you will need the latest build of the Logic 2 Software (2.4.0+), the logic2-automation python package, and Python 3.8, 3.9, or 3.10.
+To get started, you will need the latest build of the Logic 2 Software (2.4.0+), the logic2-automation (1.0.0+) python package, and Python 3.8, 3.9, or 3.10.
 
 First, let's install the logic2-automation package.
 
@@ -26,6 +26,7 @@ The automation interface can be enabled in the software UI. Open the preferences
 
 When the checkbox is checked, the automation server will start running in the Logic 2 software on the default port, 10430.
 
+
 Using the Python Automation API
 -------------------------------
 
@@ -46,7 +47,7 @@ With the software is running, and the automation interface enabled (as shown abo
 
 There you have it! Take a look at the documentation for Manager and Capture to see how the functionality all works!
 
-Also, for most automated applications, you won't want to start the software manually. See :ref:`this section<launching-and-starting-socket>` for more information about different ways to launch the Logic software, including through this python library.
+Also, for most automated applications, you won't want to start the software manually. See :ref:`this section<launching-and-starting-socket>` for more information about different ways to launch the Logic software.
 
 .. _device-serial-number:
 

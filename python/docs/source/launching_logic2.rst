@@ -20,6 +20,7 @@ The software can be launched with the automation server enabled with the followi
   ./Logic-2.4.0-master.AppImage --automation
   
   # by default, the port number is 10430. However, it can be set with --automationPort N
+  
 
 Note, the command line argument needs to be set in order for the automation interface to be enabled by default.
 
