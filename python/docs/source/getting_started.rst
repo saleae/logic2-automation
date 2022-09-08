@@ -4,34 +4,23 @@ Getting Started
 Installing the Python Automation API package
 --------------------------------------------
 
-To get started, you will need the latest build of the Logic 2 Software (2.3.59+), the logic2-automation python package, and Python 3.8, 3.9, or 3.10.
+To get started, you will need the latest build of the Logic 2 Software (2.4.0+), the logic2-automation python package, and Python 3.8, 3.9, or 3.10.
 
 First, let's install the logic2-automation package.
 
-Download the package: :download:`_static/logic2_automation-0.9.0-py3-none-any.whl`
+Download the package: :download:`_static/logic2_automation-1.0.0-py3-none-any.whl`
 
 And install it via pip:
 
 .. code-block:: bash
 
-  pip install path/to/logic2_automation-0.9.0-py3-none-any.whl
+  pip install path/to/logic2_automation-1.0.0-py3-none-any.whl
 
 
 Launching Logic2
 ----------------
 
-Because this feature is pre-release, the automation functionality is not available in the software by default. To activate it, the software needs to be launched with an environment variable:
-
-.. code-block:: bash
-
-  # cmd.exe
-  set ENABLE_AUTOMATION=1
-  # bash
-  export ENABLE_AUTOMATION=1
-  # powershell
-  $Env:ENABLE_AUTOMATION=1
-
-With this flag set, the automation interface can now be enabled in the software UI. Open the preferences dialog from the main menu, and scroll to the bottom.
+The automation interface can be enabled in the software UI. Open the preferences dialog from the main menu, and scroll to the bottom.
 
 .. image:: _static/server_ui.png
 

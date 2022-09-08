@@ -8,23 +8,19 @@ The software can be launched with the automation server enabled with the followi
 .. code-block:: bash
   
   # windows cmd
-  set ENABLE_AUTOMATION=1
   Logic.exe --automation
+
+  # Windows powershell
+  .\Logic.exe --automation
   
   # MacOS
-  export ENABLE_AUTOMATION=1
   ./Logic2/Contents/MacOS/Logic --automation
   
   # Linux
-  export ENABLE_AUTOMATION=1
-  ./Logic-2.3.59-master.AppImage --automation
-  
-  # Windows powershell
-  $Env:ENABLE_AUTOMATION=1
-  .\Logic.exe --automation
+  ./Logic-2.4.0-master.AppImage --automation
   
   # by default, the port number is 10430. However, it can be set with --automationPort N
 
-Note, both the environment variable and the command line argument need to be set in order for the automation interface to be enabled by default.
+Note, the command line argument needs to be set in order for the automation interface to be enabled by default.
 
 Additionally, the automation interface can be manually enabled in the UI by following the instructions in the :doc:`getting_started`.

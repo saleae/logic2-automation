@@ -28,8 +28,14 @@ class Version:
 
 @dataclass
 class AppInfo:
+    """Logic 2 Application Information"""
+    #: Version of saleae.proto that the server (Logic 2) is using
     api_version: Version
+
+    #: Logic 2 application version
     app_version: str
+
+    #: Logic 2 main application PID
     app_pid: int
 
 
