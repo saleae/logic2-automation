@@ -32,9 +32,9 @@ with automation.Manager.connect(port=10430) as manager:
     #       See the "Finding the Serial Number of a Device" section for information on finding your
     #       device's serial number.
     with manager.start_capture(
-        device_id='F4241',
+            device_id='F4241',
             device_configuration=device_configuration,
-                               capture_configuration=capture_configuration) as capture:
+            capture_configuration=capture_configuration) as capture:
 
         # Wait until the capture has finished
         # This will take about 5 seconds because we are using a timed capture mode
