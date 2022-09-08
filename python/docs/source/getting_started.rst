@@ -91,3 +91,23 @@ The version of the .proto file that the server is using can be retrieved using t
 
 
 When implementing a client that uses the gRPC API directly, it is recommended to always retrieve the api version via GetAppInfo to validate that the major version is the same, and that the minor version is not older than the client. The Python API does this automatically on creation of the Manager object.
+
+Headless on Linux
+-----------------
+
+We do not currently support running Logic 2 in a headless mode, but it is possible to run Logic 2 in headless Linux environments using XVFB.
+
+The specifics for your environment may differ, but on Ubuntu 20.04 we have had success with the following setup.
+
+Install xvfb and other depdendencies:
+
+.. code-block:: bash
+
+  sudo apt install xvfb libatk1.0-0 libatk-bridge2.0-0 libgtk-3-0 libgbm1
+
+
+Run Logic 2:
+
+.. code-block:: bash
+
+  xvfb-run path/to/Logic-2.4.0.AppImage
