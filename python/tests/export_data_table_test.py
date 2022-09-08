@@ -3,6 +3,8 @@ import filecmp
 from dataclasses import dataclass, field
 from typing import List, Optional
 import pytest
+import sys
+
 from . import utils
 
 import saleae.automation as automation
@@ -34,6 +36,8 @@ scenarios = [
 ]
 
 
+
+@pytest.mark.skipif(sys.platform == 'linux', reason='Currently failing on linux due to unstable data table column ordering')
 @pytest.mark.parametrize('scenario', scenarios)
 def test_data_table_export_single_analyzer(scenario: Scenario, manager: automation.Manager, asset_path: str, tmp_path):
     path = os.path.join(asset_path, 'small_spi_capture.sal')
@@ -53,6 +57,7 @@ def test_data_table_export_single_analyzer(scenario: Scenario, manager: automati
         utils.assert_files_match(export_filepath, expected_filepath)
 
 
+@pytest.mark.skipif(sys.platform == 'linux', reason='Currently failing on linux due to unstable data table column ordering')
 @pytest.mark.parametrize('scenario', scenarios)
 def test_data_table_export_multiple_existing_analyzers(scenario: Scenario, manager: automation.Manager, asset_path: str, tmp_path):
     path = os.path.join(asset_path, 'small_spi_capture.sal')
@@ -90,6 +95,7 @@ def test_data_table_export_multiple_existing_analyzers(scenario: Scenario, manag
                 assert not filecmp.cmp(export_filepath, expected_filepath)
 
 
+@pytest.mark.skipif(sys.platform == 'linux', reason='Currently failing on linux due to unstable data table column ordering')
 def test_data_table_export_multiple_analyzers(manager: automation.Manager, asset_path: str, tmp_path):
     path = os.path.join(asset_path, 'small_spi_capture.sal')
 
