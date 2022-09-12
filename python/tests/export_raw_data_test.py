@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
-from typing import Literal, List
+from typing_extensions import Literal
+from typing import List
 import pytest
 import os
 import os.path

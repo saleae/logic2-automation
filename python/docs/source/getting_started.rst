@@ -4,38 +4,28 @@ Getting Started
 Installing the Python Automation API package
 --------------------------------------------
 
-To get started, you will need the latest build of the Logic 2 Software (2.3.59+), the logic2-automation python package, and Python 3.8, 3.9, or 3.10.
+To get started, you will need the latest build of the Logic 2 Software (2.4.0+), the logic2-automation (1.0.0+) python package, and Python 3.8, 3.9, or 3.10.
 
 First, let's install the logic2-automation package.
 
-Download the package: :download:`_static/logic2_automation-0.9.0-py3-none-any.whl`
+Download the package: :download:`_static/logic2_automation-1.0.0-py3-none-any.whl`
 
 And install it via pip:
 
 .. code-block:: bash
 
-  pip install path/to/logic2_automation-0.9.0-py3-none-any.whl
+  pip install path/to/logic2_automation-1.0.0-py3-none-any.whl
 
 
 Launching Logic2
 ----------------
 
-Because this feature is pre-release, the automation functionality is not available in the software by default. To activate it, the software needs to be launched with an environment variable:
-
-.. code-block:: bash
-
-  # cmd.exe
-  set ENABLE_AUTOMATION=1
-  # bash
-  export ENABLE_AUTOMATION=1
-  # powershell
-  $Env:ENABLE_AUTOMATION=1
-
-With this flag set, the automation interface can now be enabled in the software UI. Open the preferences dialog from the main menu, and scroll to the bottom.
+The automation interface can be enabled in the software UI. Open the preferences dialog from the main menu, and scroll to the bottom.
 
 .. image:: _static/server_ui.png
 
 When the checkbox is checked, the automation server will start running in the Logic 2 software on the default port, 10430.
+
 
 Using the Python Automation API
 -------------------------------
@@ -57,7 +47,7 @@ With the software is running, and the automation interface enabled (as shown abo
 
 There you have it! Take a look at the documentation for Manager and Capture to see how the functionality all works!
 
-Also, for most automated applications, you won't want to start the software manually. See :ref:`this section<launching-and-starting-socket>` for more information about different ways to launch the Logic software, including through this python library.
+Also, for most automated applications, you won't want to start the software manually. See :ref:`this section<launching-and-starting-socket>` for more information about different ways to launch the Logic software.
 
 .. _device-serial-number:
 
@@ -101,3 +91,23 @@ The version of the .proto file that the server is using can be retrieved using t
 
 
 When implementing a client that uses the gRPC API directly, it is recommended to always retrieve the api version via GetAppInfo to validate that the major version is the same, and that the minor version is not older than the client. The Python API does this automatically on creation of the Manager object.
+
+Headless on Linux
+-----------------
+
+We do not currently support running Logic 2 in a headless mode, but it is possible to run Logic 2 in headless Linux environments using XVFB.
+
+The specifics for your environment may differ, but on Ubuntu 20.04 we have had success with the following setup.
+
+Install xvfb and other depdendencies:
+
+.. code-block:: bash
+
+  sudo apt install xvfb libatk1.0-0 libatk-bridge2.0-0 libgtk-3-0 libgbm1
+
+
+Run Logic 2:
+
+.. code-block:: bash
+
+  xvfb-run path/to/Logic-2.4.0.AppImage

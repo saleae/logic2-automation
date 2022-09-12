@@ -162,6 +162,18 @@ class Capture:
         with _error_handler():
             self.manager.stub.RemoveAnalyzer(request)
 
+    def remove_high_level_analyzer(self, high_level_analyzer: AnalyzerHandle):
+        """
+        Removes a high level analyzer from the capture.
+
+        :param high_level_analyzer: AnalyzerHandle returned by add_analyzer()
+        """
+        request = saleae_pb2.RemoveHighLevelAnalyzerRequest(
+            capture_id=self.capture_id, analyzer_id=high_level_analyzer.analyzer_id
+        )
+        with _error_handler():
+            self.manager.stub.RemoveHighLevelAnalyzer(request)
+
     def save_capture(self, filepath: str):
         """
         Saves the capture to a .sal file, which can be loaded later either through the UI or with the load_capture() function.
@@ -175,7 +187,7 @@ class Capture:
         with _error_handler():
             self.manager.stub.SaveCapture(request)
 
-    def export_analyzer_legacy(
+    def legacy_export_analyzer(
         self, filepath: str, analyzer: AnalyzerHandle, radix: RadixType
     ):
         """

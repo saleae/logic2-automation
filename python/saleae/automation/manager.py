@@ -28,8 +28,14 @@ class Version:
 
 @dataclass
 class AppInfo:
+    """Logic 2 Application Information"""
+    #: Version of saleae.proto that the server (Logic 2) is using
     api_version: Version
+
+    #: Logic 2 application version
     app_version: str
+
+    #: Logic 2 main application PID
     app_pid: int
 
 
@@ -217,7 +223,7 @@ class CaptureConfiguration:
     """
 
     #: Capture buffer size (in megabytes)
-    buffer_size: Optional[int] = None
+    buffer_size_megabytes: Optional[int] = None
 
     capture_mode: CaptureMode = field(default_factory=ManualCaptureMode)
     """
@@ -244,7 +250,11 @@ class Manager:
     Please review the getting started guide for instructions on preparing the Logic 2 software for API connections.
     """
 
-    def __init__(self, port: int, *, address: str = _DEFAULT_GRPC_ADDRESS, logic2_process: Optional[subprocess.Popen] = None, grpc_channel_arguments: Optional[List[Tuple[str, Any]]] = None):
+    def __init__(self, *, port: int, address: str = _DEFAULT_GRPC_ADDRESS,
+                 connect_timeout_seconds: Optional[float] = None,
+                 grpc_channel_arguments: Optional[List[Tuple[str, Any]]] = None,
+                 logic2_process: Optional[subprocess.Popen] = None,
+                 ):
         """
         It is recommended that you use Manager.launch() or Manager.connect() instead of using __init__ directly.
 
@@ -255,14 +265,18 @@ class Manager:
 
         :param port: Port number. By default, Logic 2 uses port 10430.
         :param address: Address to connect to.
+        :param connect_timeout_seconds: Number of seconds to attempt to connect to gRPC server, after which an exception will be thrown.
+        :param grpc_channel_arguments: A set of arguments to pass through to gRPC.
         :param logic2_process: Process object for Logic2 if launched from Python. The process will be shutdown automatically when
                                Manager.close() is called.
-        :param grpc_channel_arguments: A set of arguments to pass through to gRPC.
+
         """
         self.logic2_process = logic2_process
         self.channel = grpc.insecure_channel(f"{address}:{port}", options=grpc_channel_arguments)
         self.channel.subscribe(lambda value: logger.info(f"sub {value}"))
         self._stub = saleae_pb2_grpc.ManagerStub(self.channel)
+
+        connect_timeout_seconds = 20.0 if connect_timeout_seconds is None else connect_timeout_seconds
 
         def cleanup():
             # Immediately close the gRPC channel to avoid the process from hanging
@@ -272,7 +286,6 @@ class Manager:
             if logic2_process is not None:
                 logic2_process.terminate()
                 logic2_process.wait(2.0)
-                print("process return code", logic2_process.returncode, logic2_process)
 
         # Attempt to connect to endpoint
         start_time = time.monotonic()
@@ -285,12 +298,17 @@ class Manager:
                         raise errors.Logic2AlreadyRunningError()
 
                 if app_info.api_version.major != saleae_pb2.THIS_API_VERSION_MAJOR:
+                    logger.error(
+                            "Incompatible Saleae Automation API Version encountered."
+                            + f"Supported Major Version={saleae_pb2.THIS_API_VERSION_MAJOR}, "
+                            + f"Logic2 Version={app_info.api_version.major}.{app_info.api_version.minor}.{app_info.api_version.patch}"
+                        )
                     raise errors.IncompatibleApiVersionError()
 
                 break
             except grpc.RpcError as exc:
                 now = time.monotonic()
-                if (exc.code() != grpc.StatusCode.UNAVAILABLE) or (now - start_time) >= 10.0:
+                if (exc.code() != grpc.StatusCode.UNAVAILABLE) or (now - start_time) >= connect_timeout_seconds:
                     # Rethrow if X seconds have passed or this is not a connection error
                     cleanup()
                     raise exc from None
@@ -299,12 +317,17 @@ class Manager:
                 raise exc from None
 
     @classmethod
-    def launch(cls, application_path: Optional[Union[Path, str]] = None) -> 'Manager':
+    def launch(cls,
+              application_path: Optional[Union[Path, str]] = None, 
+               connect_timeout_seconds: Optional[float] = None,
+               grpc_channel_arguments: Optional[List[Tuple[str, Any]]] = None) -> 'Manager':
         """
         Launch the Logic2 application and shut it down when the returned Manager is closed.
 
         :param application_path: The path to the Logic2 binary to run. If not specified,
                                  a locally installed copy of Logic2 will be searched for.
+        :param connect_timeout_seconds: See __init__
+        :param grpc_channel_arguments: See __init__
 
         """
 
@@ -359,17 +382,35 @@ class Manager:
             child_process_handle = win32api.OpenProcess(win32con.PROCESS_ALL_ACCESS, False, process.pid)
             win32job.AssignProcessToJobObject(job, child_process_handle)
 
-        return cls(address=_DEFAULT_GRPC_ADDRESS, port=_DEFAULT_GRPC_PORT, logic2_process=process)
+            # Attach the job to the process object so that it does not get garbage collected during the lifetime of the Popen object
+            process.__saleae_win32_job = job
+
+        return cls(
+            address=_DEFAULT_GRPC_ADDRESS,
+            port=_DEFAULT_GRPC_PORT,
+            logic2_process=process,
+            connect_timeout_seconds=connect_timeout_seconds,
+            grpc_channel_arguments=grpc_channel_arguments)
 
     @classmethod
-    def connect(cls, *, address: str = _DEFAULT_GRPC_ADDRESS, port: int = _DEFAULT_GRPC_PORT) -> 'Manager':
+    def connect(cls,
+                *,
+                address: str = _DEFAULT_GRPC_ADDRESS,
+                port: int = _DEFAULT_GRPC_PORT,
+                connect_timeout_seconds: Optional[float] = None,
+                grpc_channel_arguments: Optional[List[Tuple[str, Any]]] = None) -> 'Manager':
         """Connect to an existing instance of Logic 2.
 
         :param port: Port number. By default, Logic 2 uses port 10430.
         :param address: Address to connect to.
+        :param connect_timeout_seconds: See __init__
+        :param grpc_channel_arguments: See __init__
         """
 
-        return cls(address=address, port=port)
+        return cls(address=address,
+                   port=port,
+                   connect_timeout_seconds=connect_timeout_seconds,
+                   grpc_channel_arguments=grpc_channel_arguments)
 
     def get_app_info(self) -> AppInfo:
         """Get information about the connected Logic 2 instance.
@@ -493,9 +534,9 @@ class Manager:
             raise TypeError("Invalid device configuration type")
 
         if capture_configuration is not None:
-            if capture_configuration.buffer_size:
+            if capture_configuration.buffer_size_megabytes:
                 request.capture_configuration.buffer_size_megabytes = (
-                    capture_configuration.buffer_size
+                    capture_configuration.buffer_size_megabytes
                 )
 
             if capture_configuration.capture_mode is not None:
