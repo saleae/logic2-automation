@@ -5,7 +5,7 @@ import time
 
 import saleae.automation
 
-def test_export_analyzer_legacy(manager: saleae.automation.Manager, asset_path: str, tmp_path):
+def test_legacy_export_analyzer(manager: saleae.automation.Manager, asset_path: str, tmp_path):
     path = os.path.join(asset_path, 'small_spi_capture.sal')
 
     
@@ -22,4 +22,4 @@ def test_export_analyzer_legacy(manager: saleae.automation.Manager, asset_path: 
             filepath = os.path.join(tmp_path, f'export_{type.name}.csv')
             print(f"Exporting to {filepath}")
 
-            cap.export_analyzer_legacy(filepath=filepath, analyzer=analyzer, radix=type)
+            cap.legacy_export_analyzer(filepath=filepath, analyzer=analyzer, radix=type)

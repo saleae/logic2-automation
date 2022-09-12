@@ -77,6 +77,11 @@ class ManagerStub(object):
                 request_serializer=saleae_dot_grpc_dot_saleae__pb2.AddHighLevelAnalyzerRequest.SerializeToString,
                 response_deserializer=saleae_dot_grpc_dot_saleae__pb2.AddHighLevelAnalyzerReply.FromString,
                 )
+        self.RemoveHighLevelAnalyzer = channel.unary_unary(
+                '/saleae.automation.Manager/RemoveHighLevelAnalyzer',
+                request_serializer=saleae_dot_grpc_dot_saleae__pb2.RemoveHighLevelAnalyzerRequest.SerializeToString,
+                response_deserializer=saleae_dot_grpc_dot_saleae__pb2.RemoveHighLevelAnalyzerReply.FromString,
+                )
         self.ExportRawDataCsv = channel.unary_unary(
                 '/saleae.automation.Manager/ExportRawDataCsv',
                 request_serializer=saleae_dot_grpc_dot_saleae__pb2.ExportRawDataCsvRequest.SerializeToString,
@@ -182,7 +187,14 @@ class ManagerServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def AddHighLevelAnalyzer(self, request, context):
-        """Add a high-level-analyzer to a capture.
+        """Add a high level analyzer to a capture.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def RemoveHighLevelAnalyzer(self, request, context):
+        """Remove a high level analyzer from a capture.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -273,6 +285,11 @@ def add_ManagerServicer_to_server(servicer, server):
                     servicer.AddHighLevelAnalyzer,
                     request_deserializer=saleae_dot_grpc_dot_saleae__pb2.AddHighLevelAnalyzerRequest.FromString,
                     response_serializer=saleae_dot_grpc_dot_saleae__pb2.AddHighLevelAnalyzerReply.SerializeToString,
+            ),
+            'RemoveHighLevelAnalyzer': grpc.unary_unary_rpc_method_handler(
+                    servicer.RemoveHighLevelAnalyzer,
+                    request_deserializer=saleae_dot_grpc_dot_saleae__pb2.RemoveHighLevelAnalyzerRequest.FromString,
+                    response_serializer=saleae_dot_grpc_dot_saleae__pb2.RemoveHighLevelAnalyzerReply.SerializeToString,
             ),
             'ExportRawDataCsv': grpc.unary_unary_rpc_method_handler(
                     servicer.ExportRawDataCsv,
@@ -496,6 +513,23 @@ class Manager(object):
         return grpc.experimental.unary_unary(request, target, '/saleae.automation.Manager/AddHighLevelAnalyzer',
             saleae_dot_grpc_dot_saleae__pb2.AddHighLevelAnalyzerRequest.SerializeToString,
             saleae_dot_grpc_dot_saleae__pb2.AddHighLevelAnalyzerReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def RemoveHighLevelAnalyzer(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/saleae.automation.Manager/RemoveHighLevelAnalyzer',
+            saleae_dot_grpc_dot_saleae__pb2.RemoveHighLevelAnalyzerRequest.SerializeToString,
+            saleae_dot_grpc_dot_saleae__pb2.RemoveHighLevelAnalyzerReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 

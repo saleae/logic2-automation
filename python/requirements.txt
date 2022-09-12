@@ -1,7 +1,6 @@
 atomicwrites==1.4.0
 attrs==21.4.0
 colorama==0.4.5
-googleapis-common-protos==1.56.3
 grpcio==1.46.3
 grpcio-status==1.46.3
 grpcio-tools==1.46.3
@@ -13,5 +12,7 @@ py==1.11.0
 pyparsing==3.0.9
 pytest==7.1.2
 pytest-repeat==0.9.1
+pywin32==304; sys_platform == 'win32'
 six==1.16.0
 tomli==2.0.1
+typing-extensions==4.3.0

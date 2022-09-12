@@ -28,7 +28,7 @@ def test_add_analyzer(manager: saleae.automation.Manager, asset_path: str):
 
             time.sleep(3)
 
-            cap.remove_analyzer(hla)
+            cap.remove_high_level_analyzer(hla)
 
             cap.remove_analyzer(analyzer)
 

@@ -12,7 +12,7 @@ with automation.Manager.connect(port=10430) as manager:
 
     # Configure the capturing device to record on digital channels 0, 1, 2, and 3,
     # with a sampling rate of 10 MSa/s, and a logic level of 3.3V.
-    # The settings chosen here will depend on your device's capablities wnad what
+    # The settings chosen here will depend on your device's capabilities and what
     # you can configure in the Logic 2 UI.
     device_configuration = automation.LogicDeviceConfiguration(
         enabled_digital_channels=[0, 1, 2, 3],
@@ -32,9 +32,9 @@ with automation.Manager.connect(port=10430) as manager:
     #       See the "Finding the Serial Number of a Device" section for information on finding your
     #       device's serial number.
     with manager.start_capture(
-        device_id='F4241',
+            device_id='F4241',
             device_configuration=device_configuration,
-                               capture_configuration=capture_configuration) as capture:
+            capture_configuration=capture_configuration) as capture:
 
         # Wait until the capture has finished
         # This will take about 5 seconds because we are using a timed capture mode

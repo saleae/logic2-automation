@@ -1,5 +1,5 @@
 //
-// Saleae gRPC Automation API 0.9.0
+// Saleae gRPC Automation API 1.0.0
 //
 // This file contains the protobuf description for the automation API integrated
 // into the Saleae Logic 2 software, versions 2.3.56 and later.
@@ -58,8 +58,11 @@ service Manager {
     // Remove an analyzer from a capture.
     rpc RemoveAnalyzer(RemoveAnalyzerRequest) returns (RemoveAnalyzerReply) {}
 
-    // Add a high-level-analyzer to a capture.
+    // Add a high level analyzer to a capture.
     rpc AddHighLevelAnalyzer(AddHighLevelAnalyzerRequest) returns (AddHighLevelAnalyzerReply) {}
+
+    // Remove a high level analyzer from a capture.
+    rpc RemoveHighLevelAnalyzer(RemoveHighLevelAnalyzerRequest) returns (RemoveHighLevelAnalyzerReply) {}
 
     // Export raw channel data to CSV files.
     rpc ExportRawDataCsv(ExportRawDataCsvRequest)
@@ -94,8 +97,8 @@ service Manager {
     // ZERO value here to appease protobuf - the first enum value must be zero.
     THIS_API_VERSION_ZERO = 0;
 
-    THIS_API_VERSION_MAJOR = 0;
-    THIS_API_VERSION_MINOR = 9;
+    THIS_API_VERSION_MAJOR = 1;
+    THIS_API_VERSION_MINOR = 0;
     THIS_API_VERSION_PATCH = 0;
  }
 
@@ -478,6 +481,15 @@ message AddAnalyzerReply {
     uint64 analyzer_id = 1;
 }
 
+message RemoveAnalyzerRequest {
+    // Id of capture to remove analyzer from.
+    uint64 capture_id = 1;
+
+    // Id of analyzer to remove.
+    uint64 analyzer_id = 2;
+}
+message RemoveAnalyzerReply {}
+
 message HighLevelAnalyzerSettingValue {
     oneof value {
         // String value
@@ -514,14 +526,15 @@ message AddHighLevelAnalyzerReply {
     uint64 analyzer_id = 1;
 }
 
-message RemoveAnalyzerRequest {
+message RemoveHighLevelAnalyzerRequest {
     // Id of capture to remove analyzer from.
     uint64 capture_id = 1;
 
-    // Id of analyzer to remove.
+    // Id of high level analyzer to remove.
     uint64 analyzer_id = 2;
 }
-message RemoveAnalyzerReply {}
+message RemoveHighLevelAnalyzerReply {}
+
 
 
 message DataTableAnalyzerConfiguration {
