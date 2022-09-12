@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Getting Started &mdash; Saleae 0.9.0 documentation</title>
+  <title>Getting Started &mdash; Saleae 1.0.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -46,6 +46,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#using-the-python-automation-api">Using the Python Automation API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#finding-the-serial-number-device-id-of-a-device">Finding the Serial Number (Device Id) of a Device</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#versioning">Versioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#headless-on-linux">Headless on Linux</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="launching_logic2.html">Launching the Logic 2 Software and Starting the Socket Interface</a></li>
@@ -81,26 +82,17 @@
 <h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this heading"></a></h1>
 <section id="installing-the-python-automation-api-package">
 <h2>Installing the Python Automation API package<a class="headerlink" href="#installing-the-python-automation-api-package" title="Permalink to this heading"></a></h2>
-<p>To get started, you will need the latest build of the Logic 2 Software (2.3.59+), the logic2-automation python package, and Python 3.8, 3.9, or 3.10.</p>
+<p>To get started, you will need the latest build of the Logic 2 Software (2.4.0+), the logic2-automation (1.0.0+) python package, and Python 3.8, 3.9, or 3.10.</p>
 <p>First, let’s install the logic2-automation package.</p>
-<p>Download the package: <a class="reference download internal" download="" href="_downloads/10fe050e5905cdddc4c37af33cbce0da/logic2_automation-0.9.0-py3-none-any.whl"><code class="xref download docutils literal notranslate"><span class="pre">_static/logic2_automation-0.9.0-py3-none-any.whl</span></code></a></p>
+<p>Download the package: <a class="reference download internal" download="" href="_downloads/3a6389974664c88edfbd009a9eaac439/logic2_automation-1.0.0-py3-none-any.whl"><code class="xref download docutils literal notranslate"><span class="pre">_static/logic2_automation-1.0.0-py3-none-any.whl</span></code></a></p>
 <p>And install it via pip:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install path/to/logic2_automation-0.9.0-py3-none-any.whl
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install path/to/logic2_automation-1.0.0-py3-none-any.whl
 </pre></div>
 </div>
 </section>
 <section id="launching-logic2">
 <h2>Launching Logic2<a class="headerlink" href="#launching-logic2" title="Permalink to this heading"></a></h2>
-<p>Because this feature is pre-release, the automation functionality is not available in the software by default. To activate it, the software needs to be launched with an environment variable:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># cmd.exe</span>
-<span class="nb">set</span> <span class="nv">ENABLE_AUTOMATION</span><span class="o">=</span><span class="m">1</span>
-<span class="c1"># bash</span>
-<span class="nb">export</span> <span class="nv">ENABLE_AUTOMATION</span><span class="o">=</span><span class="m">1</span>
-<span class="c1"># powershell</span>
-<span class="nv">$Env</span>:ENABLE_AUTOMATION<span class="o">=</span><span class="m">1</span>
-</pre></div>
-</div>
-<p>With this flag set, the automation interface can now be enabled in the software UI. Open the preferences dialog from the main menu, and scroll to the bottom.</p>
+<p>The automation interface can be enabled in the software UI. Open the preferences dialog from the main menu, and scroll to the bottom.</p>
 <img alt="_images/server_ui.png" src="_images/server_ui.png" />
 <p>When the checkbox is checked, the automation server will start running in the Logic 2 software on the default port, 10430.</p>
 </section>
@@ -125,7 +117,7 @@ to find your device’s serial number and replace the demo value in the example.
 
     <span class="c1"># Configure the capturing device to record on digital channels 0, 1, 2, and 3,</span>
     <span class="c1"># with a sampling rate of 10 MSa/s, and a logic level of 3.3V.</span>
-    <span class="c1"># The settings chosen here will depend on your device&#39;s capablities wnad what</span>
+    <span class="c1"># The settings chosen here will depend on your device&#39;s capabilities and what</span>
     <span class="c1"># you can configure in the Logic 2 UI.</span>
     <span class="n">device_configuration</span> <span class="o">=</span> <span class="n">automation</span><span class="o">.</span><span class="n">LogicDeviceConfiguration</span><span class="p">(</span>
         <span class="n">enabled_digital_channels</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
@@ -145,9 +137,9 @@ to find your device’s serial number and replace the demo value in the example.
     <span class="c1">#       See the &quot;Finding the Serial Number of a Device&quot; section for information on finding your</span>
     <span class="c1">#       device&#39;s serial number.</span>
     <span class="k">with</span> <span class="n">manager</span><span class="o">.</span><span class="n">start_capture</span><span class="p">(</span>
-        <span class="n">device_id</span><span class="o">=</span><span class="s1">&#39;F4241&#39;</span><span class="p">,</span>
+            <span class="n">device_id</span><span class="o">=</span><span class="s1">&#39;F4241&#39;</span><span class="p">,</span>
             <span class="n">device_configuration</span><span class="o">=</span><span class="n">device_configuration</span><span class="p">,</span>
-                               <span class="n">capture_configuration</span><span class="o">=</span><span class="n">capture_configuration</span><span class="p">)</span> <span class="k">as</span> <span class="n">capture</span><span class="p">:</span>
+            <span class="n">capture_configuration</span><span class="o">=</span><span class="n">capture_configuration</span><span class="p">)</span> <span class="k">as</span> <span class="n">capture</span><span class="p">:</span>
 
         <span class="c1"># Wait until the capture has finished</span>
         <span class="c1"># This will take about 5 seconds because we are using a timed capture mode</span>
@@ -187,7 +179,7 @@ to find your device’s serial number and replace the demo value in the example.
 </pre></div>
 </div>
 <p>There you have it! Take a look at the documentation for Manager and Capture to see how the functionality all works!</p>
-<p>Also, for most automated applications, you won’t want to start the software manually. See <a class="reference internal" href="launching_logic2.html#launching-and-starting-socket"><span class="std std-ref">this section</span></a> for more information about different ways to launch the Logic software, including through this python library.</p>
+<p>Also, for most automated applications, you won’t want to start the software manually. See <a class="reference internal" href="launching_logic2.html#launching-and-starting-socket"><span class="std std-ref">this section</span></a> for more information about different ways to launch the Logic software.</p>
 </section>
 <section id="finding-the-serial-number-device-id-of-a-device">
 <span id="device-serial-number"></span><h2>Finding the Serial Number (Device Id) of a Device<a class="headerlink" href="#finding-the-serial-number-device-id-of-a-device" title="Permalink to this heading"></a></h2>
@@ -223,6 +215,19 @@ to find your device’s serial number and replace the demo value in the example.
 </li>
 </ul>
 <p>When implementing a client that uses the gRPC API directly, it is recommended to always retrieve the api version via GetAppInfo to validate that the major version is the same, and that the minor version is not older than the client. The Python API does this automatically on creation of the Manager object.</p>
+</section>
+<section id="headless-on-linux">
+<h2>Headless on Linux<a class="headerlink" href="#headless-on-linux" title="Permalink to this heading"></a></h2>
+<p>We do not currently support running Logic 2 in a headless mode, but it is possible to run Logic 2 in headless Linux environments using XVFB.</p>
+<p>The specifics for your environment may differ, but on Ubuntu 20.04 we have had success with the following setup.</p>
+<p>Install xvfb and other depdendencies:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo apt install xvfb libatk1.0-0 libatk-bridge2.0-0 libgtk-3-0 libgbm1
+</pre></div>
+</div>
+<p>Run Logic 2:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>xvfb-run path/to/Logic-2.4.0.AppImage
+</pre></div>
+</div>
 </section>
 </section>
 

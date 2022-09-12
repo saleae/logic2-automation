@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Automation API &mdash; Saleae 0.9.0 documentation</title>
+  <title>Automation API &mdash; Saleae 1.0.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -99,7 +99,7 @@
 <p>Please review the getting started guide for instructions on preparing the Logic 2 software for API connections.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="saleae.automation.Manager.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">port</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'127.0.0.1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logic2_process</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grpc_channel_arguments</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#saleae.automation.Manager.__init__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'127.0.0.1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connect_timeout_seconds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grpc_channel_arguments</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logic2_process</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#saleae.automation.Manager.__init__" title="Permalink to this definition"></a></dt>
 <dd><p>It is recommended that you use Manager.launch() or Manager.connect() instead of using __init__ directly.</p>
 <p>Create an instance of the Manager class, and connect to the Logic 2 software.</p>
 <p>This library currently assumes the Logic 2 software is running on the same machine, and will attempt to connect to 127.0.0.1.
@@ -109,9 +109,10 @@ In the future, we’ll add support for supplying an IP address, as well as funct
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>port</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Port number. By default, Logic 2 uses port 10430.</p></li>
 <li><p><strong>address</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Address to connect to.</p></li>
+<li><p><strong>connect_timeout_seconds</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – Number of seconds to attempt to connect to gRPC server, after which an exception will be thrown.</p></li>
+<li><p><strong>grpc_channel_arguments</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]]) – A set of arguments to pass through to gRPC.</p></li>
 <li><p><strong>logic2_process</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Popen</span></code>]) – Process object for Logic2 if launched from Python. The process will be shutdown automatically when
 Manager.close() is called.</p></li>
-<li><p><strong>grpc_channel_arguments</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]]) – A set of arguments to pass through to gRPC.</p></li>
 </ul>
 </dd>
 </dl>
@@ -119,12 +120,16 @@ Manager.close() is called.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="saleae.automation.Manager.launch">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">launch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">application_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#saleae.automation.Manager.launch" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">launch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">application_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connect_timeout_seconds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grpc_channel_arguments</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#saleae.automation.Manager.launch" title="Permalink to this definition"></a></dt>
 <dd><p>Launch the Logic2 application and shut it down when the returned Manager is closed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>application_path</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – The path to the Logic2 binary to run. If not specified,
-a locally installed copy of Logic2 will be searched for.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>application_path</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – The path to the Logic2 binary to run. If not specified,
+a locally installed copy of Logic2 will be searched for.</p></li>
+<li><p><strong>connect_timeout_seconds</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – See __init__</p></li>
+<li><p><strong>grpc_channel_arguments</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]]) – See __init__</p></li>
+</ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#saleae.automation.Manager" title="saleae.automation.manager.Manager"><code class="xref py py-class docutils literal notranslate"><span class="pre">Manager</span></code></a></p>
@@ -134,13 +139,15 @@ a locally installed copy of Logic2 will be searched for.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="saleae.automation.Manager.connect">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'127.0.0.1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10430</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#saleae.automation.Manager.connect" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'127.0.0.1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10430</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connect_timeout_seconds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grpc_channel_arguments</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#saleae.automation.Manager.connect" title="Permalink to this definition"></a></dt>
 <dd><p>Connect to an existing instance of Logic 2.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>port</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Port number. By default, Logic 2 uses port 10430.</p></li>
 <li><p><strong>address</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Address to connect to.</p></li>
+<li><p><strong>connect_timeout_seconds</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – See __init__</p></li>
+<li><p><strong>grpc_channel_arguments</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]]) – See __init__</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -365,6 +372,17 @@ Only applies to digital channels.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="saleae.automation.Capture.remove_high_level_analyzer">
+<span class="sig-name descname"><span class="pre">remove_high_level_analyzer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">high_level_analyzer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#saleae.automation.Capture.remove_high_level_analyzer" title="Permalink to this definition"></a></dt>
+<dd><p>Removes a high level analyzer from the capture.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>high_level_analyzer</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">AnalyzerHandle</span></code>) – AnalyzerHandle returned by add_analyzer()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="saleae.automation.Capture.save_capture">
 <span class="sig-name descname"><span class="pre">save_capture</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#saleae.automation.Capture.save_capture" title="Permalink to this definition"></a></dt>
 <dd><p>Saves the capture to a .sal file, which can be loaded later either through the UI or with the load_capture() function.</p>
@@ -376,8 +394,8 @@ Only applies to digital channels.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="saleae.automation.Capture.export_analyzer_legacy">
-<span class="sig-name descname"><span class="pre">export_analyzer_legacy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyzer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radix</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#saleae.automation.Capture.export_analyzer_legacy" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="saleae.automation.Capture.legacy_export_analyzer">
+<span class="sig-name descname"><span class="pre">legacy_export_analyzer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyzer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radix</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#saleae.automation.Capture.legacy_export_analyzer" title="Permalink to this definition"></a></dt>
 <dd><p>Exports the specified analyzer using the analyzer plugin export format, and not the data table format.</p>
 <p>Use the export_data_table() function to export analyzer results from the data table.</p>
 <dl class="field-list simple">
@@ -491,8 +509,8 @@ Only applies to digital channels.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">saleae.automation.</span></span><span class="sig-name descname"><span class="pre">CaptureConfiguration</span></span><a class="headerlink" href="#saleae.automation.CaptureConfiguration" title="Permalink to this definition"></a></dt>
 <dd><p>The top-level capture configuration provided to the start_capture function.</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="saleae.automation.CaptureConfiguration.buffer_size">
-<span class="sig-name descname"><span class="pre">buffer_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#saleae.automation.CaptureConfiguration.buffer_size" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="saleae.automation.CaptureConfiguration.buffer_size_megabytes">
+<span class="sig-name descname"><span class="pre">buffer_size_megabytes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#saleae.automation.CaptureConfiguration.buffer_size_megabytes" title="Permalink to this definition"></a></dt>
 <dd><p>Capture buffer size (in megabytes)</p>
 </dd></dl>
 
@@ -518,7 +536,7 @@ Only applies to digital channels.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="saleae.automation.CaptureConfiguration.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">buffer_size=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capture_mode=&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#saleae.automation.CaptureConfiguration.__init__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">buffer_size_megabytes=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capture_mode=&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#saleae.automation.CaptureConfiguration.__init__" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -754,21 +772,24 @@ PULSE_HIGH or PULSE_LOW only</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="saleae.automation.AppInfo">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">saleae.automation.</span></span><span class="sig-name descname"><span class="pre">AppInfo</span></span><a class="headerlink" href="#saleae.automation.AppInfo" title="Permalink to this definition"></a></dt>
-<dd><p>AppInfo(api_version: saleae.automation.manager.Version, app_version: str, app_pid: int)</p>
+<dd><p>Logic 2 Application Information</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="saleae.automation.AppInfo.api_version">
 <span class="sig-name descname"><span class="pre">api_version</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#saleae.automation.Version" title="saleae.automation.manager.Version"><span class="pre">Version</span></a></em><a class="headerlink" href="#saleae.automation.AppInfo.api_version" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Version of saleae.proto that the server (Logic 2) is using</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="saleae.automation.AppInfo.app_version">
 <span class="sig-name descname"><span class="pre">app_version</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#saleae.automation.AppInfo.app_version" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Logic 2 application version</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="saleae.automation.AppInfo.app_pid">
 <span class="sig-name descname"><span class="pre">app_pid</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#saleae.automation.AppInfo.app_pid" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Logic 2 main application PID</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="saleae.automation.AppInfo.__init__">
