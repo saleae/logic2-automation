@@ -11,8 +11,8 @@ classifiers = [
    "Programming Language :: Python :: 3",
 ]
 dependencies = [
-    "grpcio==1.46.3",
-    "grpcio-tools==1.46.3",
+    "grpcio>=1.13.0",
+    "grpcio-tools>=1.13.0",
 ]
 
 [project.urls]
