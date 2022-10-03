@@ -112,14 +112,10 @@ def test_trigger_config(trigger: automation.CaptureMode, manager: automation.Man
         failure_expected = trigger.trigger_channel_index not in config.enabled_digital_channels or any(
             linked.channel_index not in config.enabled_digital_channels for linked in trigger.linked_channels)
 
-    if failure_expected:
-        try:
-            with manager.start_capture(device_id=serial, device_configuration=config, capture_configuration=capture_settings) as cap:
-                assert False, 'Expected failure due to trigger condition channels being disabled'
-        except:
-            assert failure_expected, 'Expected failure due to trigger condition channels being disabled'
-    else:
+    try:
         with manager.start_capture(device_id=serial, device_configuration=config, capture_configuration=capture_settings) as cap:
+            assert not failure_expected, 'Expected failure due to trigger condition channels being disabled'
+
             if isinstance(trigger, automation.ManualCaptureMode):
                 cap.stop()
             else:
@@ -147,8 +143,6 @@ def test_trigger_config(trigger: automation.CaptureMode, manager: automation.Man
 
                     def assert_channel_state(ch: int, expected_state: int):
                         state = int(trigger_row[f'Channel {ch}'])
-                        if state != expected_state:
-                            time.sleep(50)
                         assert state == expected_state
 
                     assert_channel_state(trigger.trigger_channel_index,
@@ -157,9 +151,11 @@ def test_trigger_config(trigger: automation.CaptureMode, manager: automation.Man
                     for linked in trigger.linked_channels:
                         assert_channel_state(linked.channel_index,
                                              1 if linked.state == automation.DigitalTriggerLinkedChannelState.HIGH else 0)
+    except automation.SaleaeError as exc:
+        assert failure_expected, 'Expected failure due to trigger condition channels being disabled'
 
 
-@ dataclass
+@dataclass
 class ThresholdScenario:
     serial: str
     threshold: float
