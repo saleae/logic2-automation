@@ -8,13 +8,13 @@ To get started, you will need the latest build of the Logic 2 Software (2.4.0+),
 
 First, let's install the logic2-automation package.
 
-Download the package: :download:`_static/logic2_automation-1.0.0-py3-none-any.whl`
+Download the package: :download:`logic2_automation-1.0.2.tar.gz <_static/logic2_automation-1.0.2.tar.gz>`
 
 And install it via pip:
 
 .. code-block:: bash
 
-  pip install path/to/logic2_automation-1.0.0-py3-none-any.whl
+  pip install path/to/logic2_automation-1.0.2.tar.gz
 
 
 Launching Logic2

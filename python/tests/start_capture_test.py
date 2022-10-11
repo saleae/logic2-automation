@@ -5,7 +5,7 @@ from dataclasses import dataclass
 import os.path
 import time
 import pytest
-from saleae.grpc.saleae_pb2 import DigitalTriggerType
+import csv
 
 SIMULATION_LOGIC_8 = 'F4243'
 SIMULATION_LOGIC_PRO_8 = 'F4244'
@@ -60,15 +60,45 @@ trigger_configs = [
     automation.DigitalTriggerCaptureMode(trigger_channel_index=0, trigger_type=automation.DigitalTriggerType.FALLING),
     automation.DigitalTriggerCaptureMode(trigger_channel_index=3, trigger_type=automation.DigitalTriggerType.RISING),
     automation.DigitalTriggerCaptureMode(
+        trigger_channel_index=0, trigger_type=automation.DigitalTriggerType.RISING,
+        linked_channels=[
+            automation.DigitalTriggerLinkedChannel(3, automation.DigitalTriggerLinkedChannelState.LOW),
+        ]),
+    automation.DigitalTriggerCaptureMode(
+        trigger_channel_index=3, trigger_type=automation.DigitalTriggerType.RISING,
+        linked_channels=[
+            automation.DigitalTriggerLinkedChannel(0, automation.DigitalTriggerLinkedChannelState.LOW),
+            automation.DigitalTriggerLinkedChannel(4, automation.DigitalTriggerLinkedChannelState.HIGH),
+            automation.DigitalTriggerLinkedChannel(5, automation.DigitalTriggerLinkedChannelState.HIGH),
+        ]),
+    automation.DigitalTriggerCaptureMode(
+        trigger_channel_index=5, trigger_type=automation.DigitalTriggerType.RISING,
+        linked_channels=[
+            automation.DigitalTriggerLinkedChannel(3, automation.DigitalTriggerLinkedChannelState.LOW),
+        ]),
+    automation.DigitalTriggerCaptureMode(
         trigger_channel_index=4, trigger_type=automation.DigitalTriggerType.PULSE_LOW, min_pulse_width_seconds=1e-9, max_pulse_width_seconds=0.5),
     automation.DigitalTriggerCaptureMode(
         trigger_channel_index=5, trigger_type=automation.DigitalTriggerType.PULSE_HIGH, min_pulse_width_seconds=1e-9, max_pulse_width_seconds=0.5),
+
+    # Failure modes
+    automation.DigitalTriggerCaptureMode(
+        trigger_channel_index=1, trigger_type=automation.DigitalTriggerType.PULSE_HIGH, min_pulse_width_seconds=1e-9, max_pulse_width_seconds=0.5
+    ),
+    automation.DigitalTriggerCaptureMode(
+        trigger_channel_index=3, trigger_type=automation.DigitalTriggerType.RISING,
+        linked_channels=[
+            automation.DigitalTriggerLinkedChannel(0, automation.DigitalTriggerLinkedChannelState.LOW),
+            automation.DigitalTriggerLinkedChannel(2, automation.DigitalTriggerLinkedChannelState.HIGH),
+            automation.DigitalTriggerLinkedChannel(4, automation.DigitalTriggerLinkedChannelState.HIGH),
+            automation.DigitalTriggerLinkedChannel(5, automation.DigitalTriggerLinkedChannelState.HIGH),
+        ]),
 
 ]
 
 
 @pytest.mark.parametrize('trigger', trigger_configs)
-def test_trigger_config(trigger: automation.CaptureMode, manager: automation.Manager):
+def test_trigger_config(trigger: automation.CaptureMode, manager: automation.Manager, tmp_path):
     serial = SIMULATION_LOGIC_PRO_8
     config = automation.LogicDeviceConfiguration(
         enabled_digital_channels=[0, 3, 4, 5],
@@ -77,11 +107,52 @@ def test_trigger_config(trigger: automation.CaptureMode, manager: automation.Man
     )
     capture_settings = automation.CaptureConfiguration(capture_mode=trigger)
 
-    with manager.start_capture(device_id=serial, device_configuration=config, capture_configuration=capture_settings) as cap:
-        if isinstance(trigger, automation.ManualCaptureMode):
-            cap.stop()
-        else:
-            cap.wait()
+    failure_expected = False
+    if isinstance(trigger, automation.DigitalTriggerCaptureMode):
+        failure_expected = trigger.trigger_channel_index not in config.enabled_digital_channels or any(
+            linked.channel_index not in config.enabled_digital_channels for linked in trigger.linked_channels)
+
+    try:
+        with manager.start_capture(device_id=serial, device_configuration=config, capture_configuration=capture_settings) as cap:
+            assert not failure_expected, 'Expected failure due to trigger condition channels being disabled'
+
+            if isinstance(trigger, automation.ManualCaptureMode):
+                cap.stop()
+            else:
+                cap.wait()
+
+            if isinstance(trigger, automation.DigitalTriggerCaptureMode):
+                directory = os.path.join(tmp_path, f'export_digital_data')
+                assert(not os.path.exists(directory))
+                cap.export_raw_data_csv(
+                    directory=directory,
+                    digital_channels=[0, 3, 4, 5],
+                )
+                digital_filepath = os.path.join(directory, 'digital.csv')
+                with open(digital_filepath) as f:
+                    reader = csv.DictReader(f)
+
+                    # Find trigger entry
+                    trigger_row = None
+                    for row in reader:
+                        if float(row['Time [s]']) == 0:
+                            trigger_row = row
+                            break
+
+                    assert trigger_row is not None
+
+                    def assert_channel_state(ch: int, expected_state: int):
+                        state = int(trigger_row[f'Channel {ch}'])
+                        assert state == expected_state
+
+                    assert_channel_state(trigger.trigger_channel_index,
+                                         1 if trigger.trigger_type in (automation.DigitalTriggerType.RISING, automation.DigitalTriggerType.PULSE_HIGH) else 0)
+
+                    for linked in trigger.linked_channels:
+                        assert_channel_state(linked.channel_index,
+                                             1 if linked.state == automation.DigitalTriggerLinkedChannelState.HIGH else 0)
+    except automation.SaleaeError as exc:
+        assert failure_expected, 'Expected failure due to trigger condition channels being disabled'
 
 
 @dataclass

@@ -26,11 +26,11 @@ with automation.Manager.connect(port=10430) as manager:
     )
 
     # Start a capture - the capture will be automatically closed when leaving the `with` block
-    # Note: We are using serial number 'F4241' here, which is the serial number for
-    #       the Logic Pro 16 demo device. You can remove the device_id and the first physical
-    #       device found will be used, or you can use your device's serial number.
-    #       See the "Finding the Serial Number of a Device" section for information on finding your
-    #       device's serial number.
+    # Note: The serial number 'F4241' is for the Logic Pro 16 demo device.
+    #       To use a real device, you can:
+    #         1. Omit the `device_id` argument. Logic 2 will choose the first real (non-simulated) device.
+    #         2. Use the serial number for your device. See the "Finding the Serial Number
+    #            of a Device" section for information on finding your device's serial number.
     with manager.start_capture(
             device_id='F4241',
             device_configuration=device_configuration,
