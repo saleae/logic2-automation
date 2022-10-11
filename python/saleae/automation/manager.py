@@ -13,9 +13,7 @@ from .capture import Capture
 
 from saleae.grpc import saleae_pb2, saleae_pb2_grpc
 
-
 logger = logging.getLogger(__name__)
-
 
 @dataclass
 class Version:
