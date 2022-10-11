@@ -84,9 +84,9 @@
 <h2>Installing the Python Automation API package<a class="headerlink" href="#installing-the-python-automation-api-package" title="Permalink to this heading"></a></h2>
 <p>To get started, you will need the latest build of the Logic 2 Software (2.4.0+), the logic2-automation (1.0.0+) python package, and Python 3.8, 3.9, or 3.10.</p>
 <p>First, let’s install the logic2-automation package.</p>
-<p>Download the package: <a class="reference download internal" download="" href="_downloads/646249a357272e68ff10fc66057d8a2a/logic2_automation-1.0.1-py3-none-any.whl"><code class="xref download docutils literal notranslate"><span class="pre">_static/logic2_automation-1.0.1-py3-none-any.whl</span></code></a></p>
+<p>Download the package: <a class="reference download internal" download="" href="_downloads/3a6389974664c88edfbd009a9eaac439/logic2_automation-1.0.0-py3-none-any.whl"><code class="xref download docutils literal notranslate"><span class="pre">_static/logic2_automation-1.0.0-py3-none-any.whl</span></code></a></p>
 <p>And install it via pip:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install path/to/logic2_automation-1.0.1-py3-none-any.whl
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install path/to/logic2_automation-1.0.0-py3-none-any.whl
 </pre></div>
 </div>
 </section>
@@ -131,11 +131,11 @@ to find your device’s serial number and replace the demo value in the example.
     <span class="p">)</span>
 
     <span class="c1"># Start a capture - the capture will be automatically closed when leaving the `with` block</span>
-    <span class="c1"># Note: The serial number &#39;F4241&#39; is for the Logic Pro 16 demo device.</span>
-    <span class="c1">#       To use a real device, you can:</span>
-    <span class="c1">#         1. Omit the `device_id` argument. Logic 2 will choose the first real (non-simulated) device.</span>
-    <span class="c1">#         2. Use the serial number for your device. See the &quot;Finding the Serial Number</span>
-    <span class="c1">#            of a Device&quot; section for information on finding your device&#39;s serial number.</span>
+    <span class="c1"># Note: We are using serial number &#39;F4241&#39; here, which is the serial number for</span>
+    <span class="c1">#       the Logic Pro 16 demo device. You can remove the device_id and the first physical</span>
+    <span class="c1">#       device found will be used, or you can use your device&#39;s serial number.</span>
+    <span class="c1">#       See the &quot;Finding the Serial Number of a Device&quot; section for information on finding your</span>
+    <span class="c1">#       device&#39;s serial number.</span>
     <span class="k">with</span> <span class="n">manager</span><span class="o">.</span><span class="n">start_capture</span><span class="p">(</span>
             <span class="n">device_id</span><span class="o">=</span><span class="s1">&#39;F4241&#39;</span><span class="p">,</span>
             <span class="n">device_configuration</span><span class="o">=</span><span class="n">device_configuration</span><span class="p">,</span>
