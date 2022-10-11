@@ -1,6 +1,6 @@
 [project]
 name = "logic2-automation"
-version = "1.0.0"
+version = "1.0.1"
 authors = [
     { name="Saleae, Inc.", email="support@saleae.com" },
 ]
@@ -11,8 +11,8 @@ classifiers = [
    "Programming Language :: Python :: 3",
 ]
 dependencies = [
-    "grpcio==1.46.3",
-    "grpcio-tools==1.46.3",
+    "grpcio>=1.13.0",
+    "grpcio-tools>=1.13.0",
 ]
 
 [project.urls]
