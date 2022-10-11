@@ -1,6 +1,6 @@
 [project]
 name = "logic2-automation"
-version = "1.0.1"
+version = "1.0.2"
 authors = [
     { name="Saleae, Inc.", email="support@saleae.com" },
 ]
@@ -13,6 +13,7 @@ classifiers = [
 dependencies = [
     "grpcio>=1.13.0",
     "grpcio-tools>=1.13.0",
+    "pywin32; platform_system == 'Windows'"
 ]
 
 [project.urls]
@@ -23,8 +24,24 @@ dependencies = [
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.hatch.build]
+# Source distributions include a script to build the gRPC/protobuf files using protoc
+[tool.hatch.build.targets.sdist]
 include = [
-    "/saleae/",
+    "grpc_build_hook.py",
+    "/saleae/automation",
 ]
+
+[tool.hatch.build.targets.wheel]
+include = [
+    "/saleae/automation",
+    "/saleae/grpc",
+]
+
+[tool.hatch.build.force-include]
+"../proto/saleae/grpc/saleae.proto" = "proto/saleae/grpc/saleae.proto"
+
+# The gRPC/protobuf files are only generated when building a wheel
+[tool.hatch.build.targets.wheel.hooks.custom]
+require-runtime-dependencies = true
+path = "grpc_build_hook.py"
 
