@@ -7,6 +7,11 @@ Documentation can be found at https://saleae.github.io/logic2-automation/
 
 ## Changelog
 
+### 1.0.3
+
+- Updated the README to link out to the docs, and move build instructions to BUILD.md.
+- Updated the install docs.
+
 ### 1.0.2
 
 - Update the distribution to only include a source distribution so that gRPC/protobuf files can be generated at install time, and be based on the installed version of grpcio/grpcio-tools/protobuf.
