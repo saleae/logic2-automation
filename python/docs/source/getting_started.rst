@@ -107,3 +107,17 @@ Run Logic 2:
 .. code-block:: bash
 
   xvfb-run path/to/Logic-2.4.0.AppImage
+
+Troubleshooting
+---------------
+
+Failure during install due to :code:`ModuleNotFoundError: No module named 'hatchling'`
+**************************************************************************************
+
+:code:`logic2-automation` is packaged as a source distribution and built locally on install. If you are building without isolation (for example, :code:`pip install --no-build-isolation logic2-automation`) and you don't have :code:`hatchling` installed, you will see this error. If you can't install with isolation, you can install `hatchling` in your local environment to resolve the issue.
+
+
+Running into other issues?
+**************************
+
+Contact us at https://contact.saleae.com/hc/en-us/requests/new.
