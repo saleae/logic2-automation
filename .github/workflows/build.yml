@@ -15,12 +15,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
-      - name: Build .whl
+      - name: Build .tar.gz (sdist)
         run: |
           cd python
           python -m pip install --upgrade build
-          python -m build
-          cp dist/*.whl docs/source/_static
+          python -m build --sdist
+          cp dist/*.tar.gz docs/source/_static
 
       - name: Build docs
         run: |
