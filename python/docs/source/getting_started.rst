@@ -112,12 +112,32 @@ Troubleshooting
 ---------------
 
 Failure during install due to :code:`ModuleNotFoundError: No module named 'hatchling'`
-**************************************************************************************
+======================================================================================
 
-:code:`logic2-automation` is packaged as a source distribution and built locally on install. If you are building without isolation (for example, :code:`pip install --no-build-isolation logic2-automation`) and you don't have :code:`hatchling` installed, you will see this error. If you can't install with isolation, you can install `hatchling` in your local environment to resolve the issue.
+:code:`logic2-automation` is packaged as a source distribution and built locally on install using :code:`hatchling`. If you are building without isolation (for example, :code:`pip install --no-build-isolation logic2-automation`) and you don't have :code:`hatchling` installed, you will see this error. If you can't install with isolation, you can install :code:`hatchling` (example: :code:`pip install hatchling`) in your local environment to resolve the issue.
 
 
-Running into other issues?
-**************************
+Failure when importing saleae.automation / saleae.grpc
+======================================================
+
+If you see an error like this when you import from :code:`saleae.automation`, it may be a protobuf/grpc version incompatibility. This can happen when you upgrade protobuf and/or grpc after installing :code:`logic2-automation`.
+
+.. code-block:: text
+
+  TypeError: Descriptors cannot not be created directly.
+  If this call came from a _pb2.py file, your generated code is out of date and must be regenerated with protoc >= 3.19.0.
+  If you cannot immediately regenerate your protos, some other possible workarounds are:
+   1. Downgrade the protobuf package to 3.20.x or lower.
+   2. Set PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python (but this will use pure-Python parsing and will be much slower).
+
+You can regenerate the protobuf/grpc files by reinstalling :code:`logic2-automation`:
+
+.. code-block:: bash
+
+  pip install --force-reinstall logic2-automation
+
+
+Can't find a solution?
+======================
 
 Contact us at https://contact.saleae.com/hc/en-us/requests/new.
