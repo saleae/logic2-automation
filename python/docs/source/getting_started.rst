@@ -140,4 +140,4 @@ You can regenerate the protobuf/grpc files by reinstalling :code:`logic2-automat
 Can't find a solution?
 ======================
 
-Contact us at https://contact.saleae.com/hc/en-us/requests/new.
+Contact us at https://contact.saleae.com/hc/en-us/requests/new
