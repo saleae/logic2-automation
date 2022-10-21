@@ -76,14 +76,14 @@ class Capture:
 
         if settings is not None:
             for key, value in settings.items():
-                if isinstance(value, str):
+                if isinstance(value, bool):
+                    v = saleae_pb2.AnalyzerSettingValue(bool_value=value)
+                elif isinstance(value, str):
                     v = saleae_pb2.AnalyzerSettingValue(string_value=value)
                 elif isinstance(value, int):
                     v = saleae_pb2.AnalyzerSettingValue(int64_value=value)
                 elif isinstance(value, float):
                     v = saleae_pb2.AnalyzerSettingValue(double_value=value)
-                elif isinstance(value, bool):
-                    v = saleae_pb2.AnalyzerSettingValue(bool_value=value)
                 else:
                     raise RuntimeError(
                         "Unsupported analyzer setting value type")
