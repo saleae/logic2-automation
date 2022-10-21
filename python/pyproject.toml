@@ -24,6 +24,9 @@ dependencies = [
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.hatch.envs.default.scripts]
+protobufs = "python ./grpc_build_hook.py"
+
 # Source distributions include a script to build the gRPC/protobuf files using protoc
 [tool.hatch.build.targets.sdist]
 include = [
