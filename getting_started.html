@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Getting Started &mdash; Saleae 1.0.3 documentation</title>
+  <title>Getting Started &mdash; Saleae 1.0.4 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -47,6 +47,12 @@
 <li class="toctree-l2"><a class="reference internal" href="#finding-the-serial-number-device-id-of-a-device">Finding the Serial Number (Device Id) of a Device</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#versioning">Versioning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#headless-on-linux">Headless on Linux</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#troubleshooting">Troubleshooting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#failure-during-install-due-to-modulenotfounderror-no-module-named-hatchling">Failure during install due to <code class="code docutils literal notranslate"><span class="pre">ModuleNotFoundError:</span> <span class="pre">No</span> <span class="pre">module</span> <span class="pre">named</span> <span class="pre">'hatchling'</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#failure-when-importing-saleae-automation-saleae-grpc">Failure when importing saleae.automation / saleae.grpc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#can-t-find-a-solution">Can’t find a solution?</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="launching_logic2.html">Launching the Logic 2 Software and Starting the Socket Interface</a></li>
@@ -226,6 +232,32 @@ to find your device’s serial number and replace the demo value in the example.
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>xvfb-run path/to/Logic-2.4.0.AppImage
 </pre></div>
 </div>
+</section>
+<section id="troubleshooting">
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this heading"></a></h2>
+<section id="failure-during-install-due-to-modulenotfounderror-no-module-named-hatchling">
+<h3>Failure during install due to <code class="code docutils literal notranslate"><span class="pre">ModuleNotFoundError:</span> <span class="pre">No</span> <span class="pre">module</span> <span class="pre">named</span> <span class="pre">'hatchling'</span></code><a class="headerlink" href="#failure-during-install-due-to-modulenotfounderror-no-module-named-hatchling" title="Permalink to this heading"></a></h3>
+<p><code class="code docutils literal notranslate"><span class="pre">logic2-automation</span></code> is packaged as a source distribution and built locally on install using <code class="code docutils literal notranslate"><span class="pre">hatchling</span></code>. If you are building without isolation (for example, <code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--no-build-isolation</span> <span class="pre">logic2-automation</span></code>) and you don’t have <code class="code docutils literal notranslate"><span class="pre">hatchling</span></code> installed, you will see this error. If you can’t install with isolation, you can install <code class="code docutils literal notranslate"><span class="pre">hatchling</span></code> (example: <code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">hatchling</span></code>) in your local environment to resolve the issue.</p>
+</section>
+<section id="failure-when-importing-saleae-automation-saleae-grpc">
+<h3>Failure when importing saleae.automation / saleae.grpc<a class="headerlink" href="#failure-when-importing-saleae-automation-saleae-grpc" title="Permalink to this heading"></a></h3>
+<p>If you see an error like this when you import from <code class="code docutils literal notranslate"><span class="pre">saleae.automation</span></code>, it may be a protobuf/grpc version incompatibility. This can happen when you upgrade protobuf and/or grpc after installing <code class="code docutils literal notranslate"><span class="pre">logic2-automation</span></code>.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>TypeError: Descriptors cannot not be created directly.
+If this call came from a _pb2.py file, your generated code is out of date and must be regenerated with protoc &gt;= 3.19.0.
+If you cannot immediately regenerate your protos, some other possible workarounds are:
+ 1. Downgrade the protobuf package to 3.20.x or lower.
+ 2. Set PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python (but this will use pure-Python parsing and will be much slower).
+</pre></div>
+</div>
+<p>You can regenerate the protobuf/grpc files by reinstalling <code class="code docutils literal notranslate"><span class="pre">logic2-automation</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install --force-reinstall logic2-automation
+</pre></div>
+</div>
+</section>
+<section id="can-t-find-a-solution">
+<h3>Can’t find a solution?<a class="headerlink" href="#can-t-find-a-solution" title="Permalink to this heading"></a></h3>
+<p>Contact us at <a class="reference external" href="https://contact.saleae.com/hc/en-us/requests/new">https://contact.saleae.com/hc/en-us/requests/new</a></p>
+</section>
 </section>
 </section>
 
