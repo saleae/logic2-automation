@@ -7,6 +7,10 @@ Documentation can be found at https://saleae.github.io/logic2-automation/
 
 ## Changelog
 
+### 1.0.4
+
+- Fix boolean analyzer settings not being sent as the correct type.
+
 ### 1.0.3
 
 - Updated the README to link out to the docs, and move build instructions to BUILD.md.

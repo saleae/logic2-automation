@@ -48,7 +48,7 @@ def test_bool_analyzer_setting(manager: saleae.automation.Manager, asset_path: s
 
         try:
             cap.add_analyzer('CAN', label='Invalid checkbox name', settings={
-                'CAN': 1,
+                'CAN': 4,
                 'Bit Rate (Bits/s)': 5000,
                 'Inverted': True
             })
@@ -57,14 +57,14 @@ def test_bool_analyzer_setting(manager: saleae.automation.Manager, asset_path: s
             pass
 
         cap.add_analyzer('CAN', label='CAN Analyzer', settings={
-            'CAN': 1,
+            'CAN': 4,
             'Bit Rate (Bits/s)': 5000,
             'Inverted (CAN High)': True
         })
 
         cap.add_analyzer('SMBus', label='SMBus Analyzer', settings={
-            'SMBDAT': 1,
-            'SMBCLK': 2,
+            'SMBDAT': 3,
+            'SMBCLK': 4,
             'Calculate PEC on packets': True
         })
 
