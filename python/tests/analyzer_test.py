@@ -41,6 +41,35 @@ def test_add_analyzer(manager: saleae.automation.Manager, asset_path: str):
             pass
 
 
+def test_bool_analyzer_setting(manager: saleae.automation.Manager, asset_path: str):
+    path = os.path.join(asset_path, 'small_spi_capture.sal')
+
+    with manager.load_capture(path) as cap:
+
+        try:
+            cap.add_analyzer('CAN', label='Invalid checkbox name', settings={
+                'CAN': 4,
+                'Bit Rate (Bits/s)': 5000,
+                'Inverted': True
+            })
+            assert(False)
+        except saleae.automation.InvalidRequestError:
+            pass
+
+        cap.add_analyzer('CAN', label='CAN Analyzer', settings={
+            'CAN': 4,
+            'Bit Rate (Bits/s)': 5000,
+            'Inverted (CAN High)': True
+        })
+
+        cap.add_analyzer('SMBus', label='SMBus Analyzer', settings={
+            'SMBDAT': 3,
+            'SMBCLK': 4,
+            'Calculate PEC on packets': True
+        })
+
+
+
 def test_remove_analyzer(manager: saleae.automation.Manager, asset_path: str):
     path = os.path.join(asset_path, 'small_spi_capture.sal')
     
