@@ -24,7 +24,11 @@ jobs:
 
       - name: Build docs
         run: |
-          cd python/docs
+          # Build GRPC files - they are required for generating the docs.
+          cd python
+          python grpc_build_hook.py
+
+          cd docs
           python -m pip install -r requirements.txt
           make html
           touch build/html/.nojekyll
