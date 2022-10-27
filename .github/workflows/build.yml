@@ -26,6 +26,7 @@ jobs:
         run: |
           # Build GRPC files - they are required for generating the docs.
           cd python
+          python -m pip install -r requirements.txt
           python grpc_build_hook.py
 
           cd docs
