@@ -1,6 +1,7 @@
 from enum import Enum
 from .errors import _error_handler
 
+import saleae.automation
 from saleae.grpc import saleae_pb2, saleae_pb2_grpc
 
 from typing import List, Optional, Union, Dict

@@ -31,7 +31,10 @@ jobs:
 
           cd docs
           python -m pip install -r requirements.txt
-          make html
+
+          # Configure SPHINXOPTS to treat warnings as errors
+          make html SPHINXOPTS='-W'
+
           touch build/html/.nojekyll
 
       - name: Publish docs to gh-pages branch
