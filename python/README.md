@@ -7,8 +7,14 @@ Documentation can be found at https://saleae.github.io/logic2-automation/
 
 ## Changelog
 
+### 1.0.5
+
+- The .whl build has been fixed, and now includes the generate protobuf/grpc files.
+
 ### 1.0.4
 
+- YANKED!
+  - The protobuf files (`saleae/grpc`) generated during the .whl build were not being included in the .whl file. This was caused by the `saleae/grpc` directory being added to the .gitignore file. These ignored files have been moved to the parent directory's .gitignore, and an empty .gitignore has been added to the python directory.
 - Fix boolean analyzer settings not being sent as the correct type.
 
 ### 1.0.3

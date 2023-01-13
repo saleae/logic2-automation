@@ -1,6 +1,6 @@
 [project]
 name = "logic2-automation"
-version = "1.0.4"
+version = "1.0.5"
 authors = [
     { name="Saleae, Inc.", email="support@saleae.com" },
 ]

@@ -1,1 +1,6 @@
 __pycache__
+
+python/.venv
+python/dist
+python/docs/build
+python/saleae/grpc
