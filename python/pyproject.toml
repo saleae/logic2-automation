@@ -12,7 +12,7 @@ classifiers = [
 ]
 dependencies = [
     "grpcio>=1.13.0",
-    "grpcio-tools>=1.13.0",
+    "protobuf>=3.5.0.post1",
     "pywin32; platform_system == 'Windows'"
 ]
 
@@ -47,4 +47,7 @@ include = [
 [tool.hatch.build.targets.wheel.hooks.custom]
 require-runtime-dependencies = true
 path = "grpc_build_hook.py"
+dependencies = [
+    "grpcio-tools>=1.13.0",
+]
 
