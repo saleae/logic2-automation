@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Getting Started &mdash; Saleae 1.0.5 documentation</title>
+  <title>Getting Started &mdash; Saleae 1.0.6 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -107,10 +107,10 @@ This example uses a demo device, if you would like to use a connected device fol
 steps <a class="reference internal" href="#device-serial-number"><span class="std std-ref">here</span></a>
 to find your device’s serial number and replace the demo value in the example.</p>
 <p>Create a new python file called <code class="code docutils literal notranslate"><span class="pre">saleae_example.py</span></code>, and paste in these contents:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">saleae</span> <span class="k">import</span> <span class="n">automation</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">saleae</span> <span class="kn">import</span> <span class="n">automation</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">os.path</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 
 <span class="c1"># Connect to the running Logic 2 Application on port `10430`.</span>
 <span class="c1"># Alternatively you can use automation.Manager.launch() to launch a new Logic 2 process - see</span>
@@ -151,7 +151,7 @@ to find your device’s serial number and replace the demo value in the example.
 
         <span class="c1"># Add an analyzer to the capture</span>
         <span class="c1"># Note: The simulator output is not actual SPI data</span>
-        <span class="n">spi_analyzer</span> <span class="o">=</span> <span class="n">capture</span><span class="o">.</span><span class="n">add_analyzer</span><span class="p">(</span><span class="s1">&#39;SPI&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">f</span><span class="s1">&#39;Test Analyzer&#39;</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="p">{</span>
+        <span class="n">spi_analyzer</span> <span class="o">=</span> <span class="n">capture</span><span class="o">.</span><span class="n">add_analyzer</span><span class="p">(</span><span class="s1">&#39;SPI&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Test Analyzer&#39;</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="p">{</span>
             <span class="s1">&#39;MISO&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
             <span class="s1">&#39;Clock&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
             <span class="s1">&#39;Enable&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
@@ -159,7 +159,7 @@ to find your device’s serial number and replace the demo value in the example.
         <span class="p">})</span>
 
         <span class="c1"># Store output in a timestamped directory</span>
-        <span class="n">output_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="n">f</span><span class="s1">&#39;output-{datetime.now().strftime(&quot;%Y-%m-</span><span class="si">%d</span><span class="s1">_%H-%M-%S&quot;)}&#39;</span><span class="p">)</span>
+        <span class="n">output_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="sa">f</span><span class="s1">&#39;output-</span><span class="si">{</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">_%H-%M-%S&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
 
         <span class="c1"># Export analyzer data to a CSV file</span>

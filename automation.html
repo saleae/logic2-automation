@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Automation API &mdash; Saleae 1.0.5 documentation</title>
+  <title>Automation API &mdash; Saleae 1.0.6 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -105,7 +105,7 @@
 <p>This library currently assumes the Logic 2 software is running on the same machine, and will attempt to connect to 127.0.0.1.
 In the future, we’ll add support for supplying an IP address, as well as functions to help launch local copies of the application.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>port</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Port number. By default, Logic 2 uses port 10430.</p></li>
 <li><p><strong>address</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Address to connect to.</p></li>
@@ -123,7 +123,7 @@ Manager.close() is called.</p></li>
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">launch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">application_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connect_timeout_seconds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grpc_channel_arguments</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#saleae.automation.Manager.launch" title="Permalink to this definition"></a></dt>
 <dd><p>Launch the Logic2 application and shut it down when the returned Manager is closed.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>application_path</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – The path to the Logic2 binary to run. If not specified,
 a locally installed copy of Logic2 will be searched for.</p></li>
@@ -131,7 +131,7 @@ a locally installed copy of Logic2 will be searched for.</p></li>
 <li><p><strong>grpc_channel_arguments</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]]) – See __init__</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dt class="field-even">Return type</dt>
 <dd class="field-even"><p><a class="reference internal" href="#saleae.automation.Manager" title="saleae.automation.manager.Manager"><code class="xref py py-class docutils literal notranslate"><span class="pre">Manager</span></code></a></p>
 </dd>
 </dl>
@@ -142,7 +142,7 @@ a locally installed copy of Logic2 will be searched for.</p></li>
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'127.0.0.1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10430</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connect_timeout_seconds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grpc_channel_arguments</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#saleae.automation.Manager.connect" title="Permalink to this definition"></a></dt>
 <dd><p>Connect to an existing instance of Logic 2.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>port</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Port number. By default, Logic 2 uses port 10430.</p></li>
 <li><p><strong>address</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Address to connect to.</p></li>
@@ -150,7 +150,7 @@ a locally installed copy of Logic2 will be searched for.</p></li>
 <li><p><strong>grpc_channel_arguments</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]]) – See __init__</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dt class="field-even">Return type</dt>
 <dd class="field-even"><p><a class="reference internal" href="#saleae.automation.Manager" title="saleae.automation.manager.Manager"><code class="xref py py-class docutils literal notranslate"><span class="pre">Manager</span></code></a></p>
 </dd>
 </dl>
@@ -161,10 +161,10 @@ a locally installed copy of Logic2 will be searched for.</p></li>
 <span class="sig-name descname"><span class="pre">get_app_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#saleae.automation.Manager.get_app_info" title="Permalink to this definition"></a></dt>
 <dd><p>Get information about the connected Logic 2 instance.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#saleae.automation.AppInfo" title="saleae.automation.manager.AppInfo"><code class="xref py py-class docutils literal notranslate"><span class="pre">AppInfo</span></code></a></p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>AppInfo object for the connected Logic 2 instance.</p>
 </dd>
 </dl>
@@ -181,10 +181,10 @@ a locally installed copy of Logic2 will be searched for.</p></li>
 <span class="sig-name descname"><span class="pre">get_devices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_simulation_devices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#saleae.automation.Manager.get_devices" title="Permalink to this definition"></a></dt>
 <dd><p>Returns a list of connected devices. Use this to find the device id of the attached devices.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>include_simulation_devices</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If True, the return value will also include simulation devices. This can be useful for testing without a physical device.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dt class="field-even">Return type</dt>
 <dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#saleae.automation.DeviceDesc" title="saleae.automation.manager.DeviceDesc"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeviceDesc</span></code></a>]</p>
 </dd>
 </dl>
@@ -197,17 +197,17 @@ a locally installed copy of Logic2 will be searched for.</p></li>
 <p>All capture settings need to be provided. The existing software settings, like selected device or added analyzers, are ignored.</p>
 <p>Be sure to catch DeviceError exceptions raised by this function, and handle them accordingly. See the error section of the library documentation.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>device_configuration</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">DeviceConfiguration</span></code>) – An instance of LogicDeviceConfiguration, complete with enabled channels, sample rates, and more.</p></li>
 <li><p><strong>device_id</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – The id of device to record with.</p></li>
 <li><p><strong>capture_configuration</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="#saleae.automation.CaptureConfiguration" title="saleae.automation.manager.CaptureConfiguration"><code class="xref py py-class docutils literal notranslate"><span class="pre">CaptureConfiguration</span></code></a>]) – The capture configuration, which selects the capture mode: timer, digital trigger, or manual., defaults to None, indicating manual mode.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dt class="field-even">Return type</dt>
 <dd class="field-even"><p><a class="reference internal" href="#saleae.automation.Capture" title="saleae.automation.capture.Capture"><code class="xref py py-class docutils literal notranslate"><span class="pre">Capture</span></code></a></p>
 </dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>Capture instance class. Be sure to call either wait() or stop() before trying to save, export, or close the capture.</p>
 </dd>
 </dl>
@@ -223,10 +223,10 @@ a locally installed copy of Logic2 will be searched for.</p></li>
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#saleae.automation.Capture" title="saleae.automation.capture.Capture"><code class="xref py py-class docutils literal notranslate"><span class="pre">Capture</span></code></a></p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Capture instance class.</p>
 </dd>
 </dl>
@@ -320,17 +320,17 @@ Only applies to digital channels.</p>
 <dd><p>Add an analyzer to the capture</p>
 <p>Note: analyzers already added to a loaded_capture cannot be accessed from the API at this time.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The name of the Analyzer, as shown in the Logic 2 application add analyzer list. This must match exactly.</p></li>
 <li><p><strong>label</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – The user editable display string for the analyzer. This will be shown in the analyzer data table export, defaults to None</p></li>
 <li><p><strong>settings</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]]]) – All settings for the analyzer. The keys and values here must exactly match the Analyzer settings as shown in the UI, defaults to None</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dt class="field-even">Return type</dt>
 <dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">AnalyzerHandle</span></code></p>
 </dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>Returns an AnalyzerHandle</p>
 </dd>
 </dl>
@@ -342,7 +342,7 @@ Only applies to digital channels.</p>
 <dd><p>Add a high level analyzer to the capture.</p>
 <p>Note: high level analyzers already added to a loaded_capture cannot be accessed from the API at this time.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>extension_directory</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The directory of the extension that the HLA is in.</p></li>
 <li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The name of the HLA, as specifiied in the extension.json of the extension.</p></li>
@@ -351,10 +351,10 @@ Only applies to digital channels.</p>
 <li><p><strong>label</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – The user editable display string for the high level analyzer. This will be shown in the analyzer data table export.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dt class="field-even">Return type</dt>
 <dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">AnalyzerHandle</span></code></p>
 </dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>Returns an AnalyzerHandle</p>
 </dd>
 </dl>
@@ -365,7 +365,7 @@ Only applies to digital channels.</p>
 <span class="sig-name descname"><span class="pre">remove_analyzer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">analyzer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#saleae.automation.Capture.remove_analyzer" title="Permalink to this definition"></a></dt>
 <dd><p>Removes an analyzer from the capture.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>analyzer</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">AnalyzerHandle</span></code>) – AnalyzerHandle returned by add_analyzer()</p>
 </dd>
 </dl>
@@ -376,7 +376,7 @@ Only applies to digital channels.</p>
 <span class="sig-name descname"><span class="pre">remove_high_level_analyzer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">high_level_analyzer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#saleae.automation.Capture.remove_high_level_analyzer" title="Permalink to this definition"></a></dt>
 <dd><p>Removes a high level analyzer from the capture.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>high_level_analyzer</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">AnalyzerHandle</span></code>) – AnalyzerHandle returned by add_analyzer()</p>
 </dd>
 </dl>
@@ -387,7 +387,7 @@ Only applies to digital channels.</p>
 <span class="sig-name descname"><span class="pre">save_capture</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#saleae.automation.Capture.save_capture" title="Permalink to this definition"></a></dt>
 <dd><p>Saves the capture to a .sal file, which can be loaded later either through the UI or with the load_capture() function.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>filepath</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – path to the .sal file. Can be absolute, or relative to the Logic 2 software current working directory.</p>
 </dd>
 </dl>
@@ -399,7 +399,7 @@ Only applies to digital channels.</p>
 <dd><p>Exports the specified analyzer using the analyzer plugin export format, and not the data table format.</p>
 <p>Use the export_data_table() function to export analyzer results from the data table.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>filepath</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – file name and path to export to. Should include the file name and extension, typically .csv or .txt.</p></li>
 <li><p><strong>analyzer</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">AnalyzerHandle</span></code>) – AnalyzerHandle returned from add_analyzer()</p></li>
@@ -415,7 +415,7 @@ Only applies to digital channels.</p>
 <dd><p>Exports the Analyzer Data Table</p>
 <p>We will be adding more options to this in the future, including the query string, specific columns, specific query columns, and more.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>filepath</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The specified output file, including extension, .csv.</p></li>
 <li><p><strong>analyzers</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">AnalyzerHandle</span></code>, <a class="reference internal" href="#saleae.automation.DataTableExportConfiguration" title="saleae.automation.capture.DataTableExportConfiguration"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataTableExportConfiguration</span></code></a>]]) – A list of AnalyzerHandles that should be included in the export, returned from add_analyzer()</p></li>
@@ -437,7 +437,7 @@ Only applies to digital channels.</p>
 <p>All selected analog channels will be combined into the analog.csv file, and likewise for digital channels and digital.csv</p>
 <p>If no channels are specified, all channels will be exported.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>directory</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – directory path (not including a filename) to where analog.csv and/or digital.csv will be saved.</p></li>
 <li><p><strong>analog_channels</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]]) – list of analog channels to export, defaults to None</p></li>
@@ -459,7 +459,7 @@ Only applies to digital channels.</p>
 <p>The export system will produce one .bin file for each channel exported.</p>
 <p>If no channels are specified, all channels will be exported.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>directory</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – directory path (not including a filename) to where .bin files will be saved</p></li>
 <li><p><strong>analog_channels</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]]) – list of analog channels to export, defaults to None</p></li>
