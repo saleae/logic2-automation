@@ -314,9 +314,10 @@ class Manager:
 
     @classmethod
     def launch(cls,
-              application_path: Optional[Union[Path, str]] = None, 
+               application_path: Optional[Union[Path, str]] = None,
                connect_timeout_seconds: Optional[float] = None,
-               grpc_channel_arguments: Optional[List[Tuple[str, Any]]] = None) -> 'Manager':
+               grpc_channel_arguments: Optional[List[Tuple[str, Any]]] = None,
+               port: Optional[int] = None) -> 'Manager':
         """
         Launch the Logic2 application and shut it down when the returned Manager is closed.
 
@@ -324,6 +325,7 @@ class Manager:
                                  a locally installed copy of Logic2 will be searched for.
         :param connect_timeout_seconds: See __init__
         :param grpc_channel_arguments: See __init__
+        :param port: Port to use for the gRPC server. If not specified, 10430 will be used.
 
         """
 
@@ -357,7 +359,10 @@ class Manager:
             if not os.path.exists(logic2_bin):
                 fail(f'application path "{application_path}" does not exist')
 
-        process = subprocess.Popen([logic2_bin, '--automation', '--automationPort', str(_DEFAULT_GRPC_PORT)],
+        if port is None:
+            port = _DEFAULT_GRPC_PORT
+
+        process = subprocess.Popen([logic2_bin, '--automation', '--automationPort', str(port)],
                                    stdout=subprocess.DEVNULL,
                                    stderr=subprocess.DEVNULL)
 
@@ -383,7 +388,7 @@ class Manager:
 
         return cls(
             address=_DEFAULT_GRPC_ADDRESS,
-            port=_DEFAULT_GRPC_PORT,
+            port=port,
             logic2_process=process,
             connect_timeout_seconds=connect_timeout_seconds,
             grpc_channel_arguments=grpc_channel_arguments)
