@@ -85,7 +85,10 @@ Logic.exe --automation
 <span class="c1"># Linux</span>
 ./Logic-2.4.0-master.AppImage --automation
 
-<span class="c1"># by default, the port number is 10430. However, it can be set with --automationPort N</span>
+<span class="c1"># By default, the gRPC server port number is 10430. However, it can be set with --automationPort N</span>
+<span class="c1"># Note: When using --automationPort, you will still need to pass --automation to enable the gRPC server.</span>
+<span class="c1"># Example:</span>
+Logic.exe --automation --automationPort <span class="m">10500</span>
 </pre></div>
 </div>
 <p>Note, the command line argument needs to be set in order for the automation interface to be enabled by default.</p>
