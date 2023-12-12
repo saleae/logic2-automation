@@ -1,6 +1,6 @@
 [project]
 name = "logic2-automation"
-version = "1.0.6"
+version = "1.0.7"
 authors = [
     { name="Saleae, Inc.", email="support@saleae.com" },
 ]
@@ -40,7 +40,7 @@ include = [
     "/saleae/grpc",
 ]
 
-[tool.hatch.build.force-include]
+[tool.hatch.build.targets.sdist.force-include]
 "../proto/saleae/grpc/saleae.proto" = "proto/saleae/grpc/saleae.proto"
 
 # The gRPC/protobuf files are only generated when building a wheel

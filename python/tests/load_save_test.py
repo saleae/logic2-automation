@@ -1,5 +1,4 @@
 import os.path
-from tkinter import E
 
 import saleae.automation
 

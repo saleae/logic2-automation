@@ -14,7 +14,7 @@ Run the following commands to generate a distributable source package:
 
 ```
 python -m pip install --upgrade build
-python -m build --dist
+python -m build --sdist
 ```
 
 ### Why not .whl?
