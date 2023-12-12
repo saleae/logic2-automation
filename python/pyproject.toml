@@ -21,7 +21,7 @@ dependencies = [
 "Bug Tracker" = "https://github.com/saleae/logic2-automation/issues"
 
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling==1.18.0"]
 build-backend = "hatchling.build"
 
 [tool.hatch.envs.default.scripts]

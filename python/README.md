@@ -4,8 +4,12 @@
 
 Documentation can be found at https://saleae.github.io/logic2-automation/
 
-
 ## Changelog
+
+### 1.0.7
+
+- Pin the hatchling build dependency to 1.18.0.
+  - `hatchling` 1.19.0 broke the logic2-automation install. It's unclear what the issue is yet, so we are pinning it to 1.18.0 temporarily.
 
 ### 1.0.6
 
