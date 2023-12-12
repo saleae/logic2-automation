@@ -7,6 +7,10 @@ Documentation can be found at https://saleae.github.io/logic2-automation/
 
 ## Changelog
 
+### 1.0.7
+
+- Fix builds not building with hatchling 1.19.0.
+
 ### 1.0.6
 
 - Moved `grpcio-tools` to build dependencies.
