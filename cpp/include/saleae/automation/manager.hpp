@@ -8,6 +8,7 @@
 
 #include "saleae/automation/models.hpp"
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <cstdint>
 #include <vector>
@@ -41,12 +42,15 @@ public:
 
     /// @brief Retrieve the list of devices connected and managed by the Logic
     ///        process.
-    auto GetDevices() -> std::vector<DeviceDescriptor> const;
+    auto GetDevices() -> std::vector<device::logic::Descriptor> const;
 
     /// @brief Retrieve the current running capture. If no capture is running,
     ///        create a new one.
-    auto StartCapture() -> const Capture*;
-    auto GetCapture() -> const Capture*;
+    auto StartCapture(
+        device::Config deviceConfig,
+        std::optional<std::string_view> deviceId = std::nullopt,
+        std::optional<capture::Config> captureConfiguration = std::nullopt
+    ) -> Capture;
 };
 
 } // namespace saleae::automation

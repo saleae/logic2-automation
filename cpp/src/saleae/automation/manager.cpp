@@ -13,6 +13,7 @@
 #include "saleae/grpc/saleae.pb.h"
 #include <regex>
 #include <optional>
+#include <variant>
 
 namespace saleae::automation {
 
@@ -163,10 +164,32 @@ auto AutomationManager::GetAppInfo() -> LogicAppInfo const {
     );
 }
 
-auto AutomationManager::GetDevices() -> std::vector<DeviceDescriptor> const {
+auto AutomationManager::GetDevices() -> std::vector<device::logic::Descriptor> const {
     return pImpl_->Query<GetDevicesReply>(
         [](auto context, auto stub, auto pReply) {
             return stub->GetDevices(context, {}, pReply);
+        }
+    );
+}
+
+auto AutomationManager::StartCapture(
+    device::Config deviceConfig,
+    std::optional<std::string_view> deviceId,
+    std::optional<capture::Config> captureConfiguration
+) -> Capture {
+    StartCaptureRequest request;
+
+    if (deviceId.has_value()) {
+        request.set_device_id(deviceId);
+    }
+
+    std::visit(overloaded{
+        [](const device::logic::Config& config)
+    }, deviceConfig);
+
+    return pImpl_->Query<StartCaptureReply>(
+        [](auto context, auto stub, auto pReply) {
+            return stub->StartCapture(context, request, pReply);
         }
     );
 }

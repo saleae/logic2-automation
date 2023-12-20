@@ -24,10 +24,10 @@ inline auto Deserialize(const GetAppInfoReply& reply) -> LogicAppInfo {
 
 inline auto Deserialize(
     const GetDevicesReply& reply
-) -> std::vector<DeviceDescriptor> {
+) -> std::vector<device::logic::Descriptor> {
     const auto& devices = reply.devices();
 
-    std::vector<DeviceDescriptor> output;
+    std::vector<device::logic::Descriptor> output;
     output.reserve(devices.size());
 
     std::transform(
@@ -35,9 +35,9 @@ inline auto Deserialize(
         devices.cend(),
         output.begin(),
         [](const Device& dev) {
-            return DeviceDescriptor {
+            return device::logic::Descriptor {
                 .deviceId = dev.device_id(),
-                .deviceType = static_cast<LogicDeviceType>(dev.device_type()),
+                .deviceType = static_cast<device::logic::Type>(dev.device_type()),
                 .isSimulation = dev.is_simulation(),
             };
         }
