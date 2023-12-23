@@ -10,6 +10,7 @@
 #include <string_view>
 #include <unordered_map>
 #include "saleae/automation/private/grpc_adapters.hpp"
+#include "saleae/automation/private/utils.hpp"
 #include "saleae/grpc/saleae.pb.h"
 #include <regex>
 #include <optional>
@@ -26,7 +27,7 @@ struct AutomationManager::impl {
             ::grpc::Status
             (::grpc::ClientContext* context, Manager::Stub*, ReplyType* pReply)
         > queryLambda
-    ) {
+    ) -> ReplyType {
         ::grpc::ClientContext context;
         ReplyType reply;
         const ::grpc::Status status = queryLambda(&context, stub.get(), &reply);
@@ -176,22 +177,30 @@ auto AutomationManager::StartCapture(
     device::Config deviceConfig,
     std::optional<std::string_view> deviceId,
     std::optional<capture::Config> captureConfiguration
-) -> Capture {
+) -> std::unique_ptr<Capture> {
     StartCaptureRequest request;
 
     if (deviceId.has_value()) {
         request.set_device_id(deviceId);
     }
 
+    if (captureConfiguration.has_value()) {
+        request.set_allocated_capture_configuration(
+            Serialize(captureConfiguration.value()));
+    }
+
     std::visit(overloaded{
-        [](const device::logic::Config& config)
+        [request](const device::logic::Config& config) mutable {
+            request.set_allocated_logic_device_configuration(Serialize(config));
+        }
     }, deviceConfig);
 
-    return pImpl_->Query<StartCaptureReply>(
-        [](auto context, auto stub, auto pReply) {
+    const StartCaptureReply reply = pImpl_->Query<StartCaptureReply>(
+        [request](auto context, auto stub, auto pReply) {
             return stub->StartCapture(context, request, pReply);
         }
     );
+
 }
 
 } // namespace saleae::automation

@@ -76,8 +76,7 @@ namespace device {
 };
 
 namespace capture {
-    class DigitalTriggerMode {
-    public:
+    struct DigitalTriggerMode {
         // TODO(markovejnovic): Figure out a way to pin against the pbuf
         // trigger types.
         enum class TriggerType {
@@ -111,11 +110,11 @@ namespace capture {
         std::optional<float> trimDataSeconds;
         std::optional<float> triggerDataSeconds;
     };
-    class TimedMode {
+    struct TimedMode {
         float durationSeconds;
         std::optional<float> trimDataSeconds;
     };
-    class ManualMode {
+    struct ManualMode {
         std::optional<float> trimDataSeconds;
     };
 
@@ -123,6 +122,7 @@ namespace capture {
 
     struct Config {
         std::optional<int> bufferSizeMB;
+        Mode captureMode;
     };
 };
 

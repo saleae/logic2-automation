@@ -50,7 +50,7 @@ public:
         device::Config deviceConfig,
         std::optional<std::string_view> deviceId = std::nullopt,
         std::optional<capture::Config> captureConfiguration = std::nullopt
-    ) -> Capture;
+    ) -> std::unique_ptr<Capture>;
 };
 
 } // namespace saleae::automation
