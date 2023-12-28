@@ -26,6 +26,7 @@ add_custom_command(
 
 add_library(saleae-automation
             src/saleae/automation/manager.cpp
+            src/saleae/automation/capture.cpp
             "${CMAKE_CURRENT_BINARY_DIR}/saleae/grpc/saleae.grpc.pb.cc"
             "${CMAKE_CURRENT_BINARY_DIR}/saleae/grpc/saleae.pb.cc")
 target_compile_features(saleae-automation PRIVATE cxx_std_17)

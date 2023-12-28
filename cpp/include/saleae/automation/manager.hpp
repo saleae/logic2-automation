@@ -24,6 +24,7 @@ private:
 
     struct impl;
     std::unique_ptr<impl> pImpl_;
+    friend class Capture;
 
 public:
     AutomationManager();
@@ -48,9 +49,14 @@ public:
     ///        create a new one.
     auto StartCapture(
         device::Config deviceConfig,
-        std::optional<std::string_view> deviceId = std::nullopt,
+        std::optional<const char*> deviceId = std::nullopt,
         std::optional<capture::Config> captureConfiguration = std::nullopt
     ) -> std::unique_ptr<Capture>;
+
+private:
+    friend class Capture;
+    void StopCapture(unsigned long captureId);
+    void SaveCapture(unsigned long captureId, std::string path);
 };
 
 } // namespace saleae::automation

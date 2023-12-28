@@ -1,10 +1,10 @@
 #ifndef SALEAE_AUTOMATION_PRIVATE_GRPC_ADAPTER_HPP
 #define SALEAE_AUTOMATION_PRIVATE_GRPC_ADAPTER_HPP
 
+#include "saleae/automation/capture.hpp"
+#include "saleae/automation/models.hpp"
 #include "saleae/automation/private/utils.hpp"
 #include "saleae/grpc/saleae.pb.h"
-
-#include "saleae/automation/models.hpp"
 #include <algorithm>
 #include <stdexcept>
 #include <variant>
@@ -13,13 +13,13 @@ namespace saleae::automation {
 
 inline auto Serialize(
     device::logic::Config::DigitalChannelCollection::VoltageThreshold threshold
-) -> float {
+) -> double {
     using VT =
         device::logic::Config::DigitalChannelCollection::VoltageThreshold;
     switch (threshold) {
-        case VT::V1_2: return 1.2F;
-        case VT::V1_8: return 1.8F;
-        case VT::V3_3: return 3.3F;
+        case VT::V1_2: return 1.2;
+        case VT::V1_8: return 1.8;
+        case VT::V3_3: return 3.3;
 
         case VT::Count:
             throw std::runtime_error(
@@ -37,12 +37,14 @@ inline auto Serialize(
 ) -> DigitalTriggerType {
     using InT = capture::DigitalTriggerMode::TriggerType;
     using OutT = DigitalTriggerType;
+
     switch (trigger) {
         case InT::Falling: return OutT::DIGITAL_TRIGGER_TYPE_FALLING;
         case InT::Rising: return OutT::DIGITAL_TRIGGER_TYPE_RISING;
         case InT::PulseHigh: return OutT::DIGITAL_TRIGGER_TYPE_PULSE_HIGH;
         case InT::PulseLow: return OutT::DIGITAL_TRIGGER_TYPE_PULSE_LOW;
         case InT::Unspecified: return OutT::DIGITAL_TRIGGER_TYPE_UNSPECIFIED;
+                               
         case InT::Count:
             throw std::runtime_error(
                 "Cannot serialize a \"Count\" trigger type."
@@ -74,12 +76,13 @@ inline auto Serialize(
     const capture::Config& in
 ) -> CaptureConfiguration* {
     CaptureConfiguration* out = new CaptureConfiguration();
+
     if (in.bufferSizeMB.has_value()) {
         out->set_buffer_size_megabytes(*in.bufferSizeMB);
     }
 
     std::visit(overloaded{
-        [out](const capture::DigitalTriggerMode& mode) mutable {
+        [&out](const capture::DigitalTriggerMode& mode) mutable {
             auto* modeOut = out->mutable_digital_capture_mode();
             modeOut->set_trigger_type(Serialize(mode.triggerType));
             if (mode.triggerDataSeconds.has_value()) {
@@ -105,17 +108,17 @@ inline auto Serialize(
                 chanOut->set_state(Serialize(chan.state));
             }
         },
-        [out](const capture::TimedMode& mode) mutable {
+        [&out](const capture::TimedMode& mode) mutable {
             auto* modeOut = out->mutable_timed_capture_mode();
             modeOut->set_duration_seconds(mode.durationSeconds);
             if (mode.trimDataSeconds.has_value()) {
                 modeOut->set_trim_data_seconds(*mode.trimDataSeconds);
             }
         },
-        [out](const capture::ManualMode& mode) mutable {
+        [&out](const capture::ManualMode& mode) mutable {
+            auto* modeOut = out->mutable_manual_capture_mode();
             if (mode.trimDataSeconds.has_value()) {
-                out->mutable_manual_capture_mode()
-                   ->set_trim_data_seconds(*mode.trimDataSeconds);
+                modeOut->set_trim_data_seconds(*mode.trimDataSeconds);
             }
         }
     }, in.captureMode);
@@ -129,22 +132,23 @@ inline auto Serialize(
     using device::logic::Config;
 
     LogicDeviceConfiguration* out = new LogicDeviceConfiguration();
+
     if (config.digitalChannels.has_value()) {
         using DVoltThreshold =
             Config::DigitalChannelCollection::VoltageThreshold;
 
         out->set_digital_sample_rate(config.digitalChannels->sampleRate);
 
-        if (config.digitalChannels->threshold == DVoltThreshold::Unspecified) {
+        if (config.digitalChannels->threshold.has_value()) {
             out->set_digital_threshold_volts(
-                Serialize(config.digitalChannels->threshold)
+                Serialize(*config.digitalChannels->threshold)
             );
+        }
 
-            for (const auto& gf : config.digitalChannels->glitchFilters) {
-                auto* gfOut = out->add_glitch_filters();
-                gfOut->set_channel_index(gf.forChannel);
-                gfOut->set_pulse_width_seconds(gf.pulseWidthSeconds);
-            }
+        for (const auto& gf : config.digitalChannels->glitchFilters) {
+            auto* gfOut = out->add_glitch_filters();
+            gfOut->set_channel_index(gf.forChannel);
+            gfOut->set_pulse_width_seconds(gf.pulseWidthSeconds);
         }
 
         for (const auto chan : config.digitalChannels->enabledChannels) {
@@ -187,9 +191,7 @@ inline auto Deserialize(
     output.reserve(devices.size());
 
     std::transform(
-        devices.cbegin(),
-        devices.cend(),
-        output.begin(),
+        devices.cbegin(), devices.cend(), output.begin(),
         [](const Device& dev) {
             return device::logic::Descriptor {
                 .deviceId = dev.device_id(),

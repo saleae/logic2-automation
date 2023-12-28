@@ -1,6 +1,7 @@
 #include "saleae/automation/manager.hpp"
 #include "saleae/automation/errors.hpp"
 #include "saleae/automation/models.hpp"
+#include "saleae/automation/capture.hpp"
 #include "saleae/grpc/saleae.grpc.pb.h"
 #include <functional>
 #include <grpcpp/client_context.h>
@@ -27,12 +28,12 @@ struct AutomationManager::impl {
             ::grpc::Status
             (::grpc::ClientContext* context, Manager::Stub*, ReplyType* pReply)
         > queryLambda
-    ) -> ReplyType {
+    ) {
         ::grpc::ClientContext context;
         ReplyType reply;
         const ::grpc::Status status = queryLambda(&context, stub.get(), &reply);
         DelegateError(status);
-        return Deserialize(reply);
+        return reply;
     }
 
     static auto ParseLogicAbortedError(
@@ -158,49 +159,80 @@ auto AutomationManager::Connect(
 }
 
 auto AutomationManager::GetAppInfo() -> LogicAppInfo const {
-    return pImpl_->Query<GetAppInfoReply>(
+    return Deserialize(pImpl_->Query<GetAppInfoReply>(
         [](auto context, auto stub, auto pReply) {
             return stub->GetAppInfo(context, {}, pReply);
         }
-    );
+    ));
 }
 
 auto AutomationManager::GetDevices() -> std::vector<device::logic::Descriptor> const {
-    return pImpl_->Query<GetDevicesReply>(
+    return Deserialize(pImpl_->Query<GetDevicesReply>(
         [](auto context, auto stub, auto pReply) {
             return stub->GetDevices(context, {}, pReply);
         }
-    );
+    ));
 }
 
 auto AutomationManager::StartCapture(
     device::Config deviceConfig,
-    std::optional<std::string_view> deviceId,
+    std::optional<const char*> deviceId,
     std::optional<capture::Config> captureConfiguration
 ) -> std::unique_ptr<Capture> {
     StartCaptureRequest request;
 
     if (deviceId.has_value()) {
-        request.set_device_id(deviceId);
+        request.set_device_id(*deviceId);
     }
 
     if (captureConfiguration.has_value()) {
-        request.set_allocated_capture_configuration(
-            Serialize(captureConfiguration.value()));
+        auto* pbufCapConf = Serialize(*captureConfiguration);
+        std::cout << pbufCapConf->SerializeAsString() << std::endl;
+        request.set_allocated_capture_configuration(pbufCapConf);
     }
 
     std::visit(overloaded{
-        [request](const device::logic::Config& config) mutable {
+        [&request](const device::logic::Config& config) mutable {
             request.set_allocated_logic_device_configuration(Serialize(config));
+        },
+        [](const auto& config) {
+            throw std::runtime_error("Invalid device configuration type.");
         }
     }, deviceConfig);
 
-    const StartCaptureReply reply = pImpl_->Query<StartCaptureReply>(
-        [request](auto context, auto stub, auto pReply) {
+    const auto captureId = pImpl_->Query<StartCaptureReply>(
+        [&](auto context, auto stub, auto pReply) {
             return stub->StartCapture(context, request, pReply);
         }
-    );
+    ).capture_info().capture_id();
 
+    return std::make_unique<Capture>(this, captureId);
+}
+
+void AutomationManager::StopCapture(unsigned long captureId) {
+    StopCaptureRequest request;
+    request.set_capture_id(captureId);
+
+    pImpl_->Query<StopCaptureReply>(
+        [request](auto context, auto stub, auto pReply) {
+            return stub->StopCapture(context, request, pReply);
+        }
+    );
+}
+
+void AutomationManager::SaveCapture(
+    unsigned long captureId,
+    std::string path
+) {
+    SaveCaptureRequest request;
+    request.set_capture_id(captureId);
+    request.set_filepath(path);
+
+    pImpl_->Query<SaveCaptureReply>(
+        [request](auto context, auto stub, auto pReply) {
+            return stub->SaveCapture(context, request, pReply);
+        }
+    );
 }
 
 } // namespace saleae::automation

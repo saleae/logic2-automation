@@ -1,7 +1,10 @@
-add_executable(TestConnection test_connection.cpp)
-target_link_libraries(TestConnection saleae-automation)
-add_test(TestConnection COMMAND TestConnection)
+find_package(Catch2 3 REQUIRED)
+add_executable(TestSaleaeAutomation test_saleae_automation.cpp)
+target_link_libraries(TestSaleaeAutomation
+                      PRIVATE
+                          saleae-automation
+                          Catch2::Catch2WithMain)
 
-add_executable(TestDevices test_devices.cpp)
-target_link_libraries(TestDevices saleae-automation)
-add_test(TestDevices COMMAND TestDevices)
+include(CTest)
+include(Catch)
+catch_discover_tests(TestSaleaeAutomation)

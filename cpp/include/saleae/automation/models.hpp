@@ -63,7 +63,7 @@ namespace device {
 
                 unsigned long long sampleRate;
                 std::vector<ChannelIdx> enabledChannels;
-                VoltageThreshold threshold;
+                std::optional<VoltageThreshold> threshold = std::nullopt;
                 std::vector<GlitchFilter> glitchFilters = {};
             };
 
