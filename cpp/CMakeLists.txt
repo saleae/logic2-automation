@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.27)
 
 project(saleae-automation
         VERSION 0.1.0
@@ -11,10 +11,14 @@ set(PROTO_PATH "${CMAKE_SOURCE_DIR}/../proto")
 set(SALEAE_GRPC_PROTO_PATH "${PROTO_PATH}/saleae/grpc/saleae.proto")
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_CLANG_TIDY clang-tidy
+    --config-file=${CMAKE_SOURCE_DIR}/.clang-tidy)
 
 add_custom_command(
     OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/saleae/grpc/saleae.grpc.pb.h"
            "${CMAKE_CURRENT_BINARY_DIR}/saleae/grpc/saleae.grpc.pb.cc"
+           "${CMAKE_CURRENT_BINARY_DIR}/saleae/grpc/saleae.pb.h"
+           "${CMAKE_CURRENT_BINARY_DIR}/saleae/grpc/saleae.pb.cc"
     COMMAND ${PROTOBUF_PROTOC}
     ARGS --grpc_out "${CMAKE_CURRENT_BINARY_DIR}"
         --cpp_out "${CMAKE_CURRENT_BINARY_DIR}"
@@ -32,6 +36,12 @@ add_library(saleae-automation
 target_compile_features(saleae-automation PRIVATE cxx_std_17)
 target_link_libraries(saleae-automation
                       grpc++ absl_synchronization protobuf)
+set_source_files_properties(
+    ${CMAKE_CURRENT_BINARY_DIR}/saleae/grpc/saleae.grpc.pb.cc
+    SKIP_LINTING ON)
+set_source_files_properties(
+    ${CMAKE_CURRENT_BINARY_DIR}/saleae/grpc/saleae.pb.cc
+    SKIP_LINTING ON)
 
 target_include_directories(saleae-automation
                            PUBLIC include

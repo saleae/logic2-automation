@@ -1,5 +1,5 @@
-#ifndef SALEAE_AUTOMATION_PRIVATE_GRPC_ADAPTER_HPP
-#define SALEAE_AUTOMATION_PRIVATE_GRPC_ADAPTER_HPP
+#ifndef SALEAE_AUTOMATION_PRIVATE_GRPC_ADAPTERS_HPP
+#define SALEAE_AUTOMATION_PRIVATE_GRPC_ADAPTERS_HPP
 
 #include "saleae/automation/capture.hpp"
 #include "saleae/automation/models.hpp"
@@ -206,4 +206,4 @@ inline auto Deserialize(
 
 } // namespace saleae::automation
 
-#endif // SALEAE_AUTOMATION_PRIVATE_GRPC_ADAPTER_HPP
+#endif // SALEAE_AUTOMATION_PRIVATE_GRPC_ADAPTERS_HPP

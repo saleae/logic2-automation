@@ -187,7 +187,6 @@ auto AutomationManager::StartCapture(
 
     if (captureConfiguration.has_value()) {
         auto* pbufCapConf = Serialize(*captureConfiguration);
-        std::cout << pbufCapConf->SerializeAsString() << std::endl;
         request.set_allocated_capture_configuration(pbufCapConf);
     }
 

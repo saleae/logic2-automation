@@ -1,6 +1,7 @@
 #ifndef SALEAE_AUTOMATION_APPINFO_HPP
 #define SALEAE_AUTOMATION_APPINFO_HPP
 
+#include <cstdint>
 #include <optional>
 #include <string_view>
 #include <variant>
@@ -11,9 +12,9 @@ namespace saleae::automation {
 using ChannelIdx = std::size_t;
 
 struct SemverVersion {
-    unsigned long major;
-    unsigned long minor;
-    unsigned long patch;
+    std::uint64_t major;
+    std::uint64_t minor;
+    std::uint64_t patch;
 };
 
 struct LogicAppInfo {
@@ -43,7 +44,7 @@ namespace device {
 
         struct Config {
             struct AnalogChannelCollection {
-                unsigned long long sampleRate;
+                std::uint64_t sampleRate;
                 std::vector<ChannelIdx> enabledChannels;
             };
 
@@ -61,7 +62,7 @@ namespace device {
                     float pulseWidthSeconds;
                 };
 
-                unsigned long long sampleRate;
+                std::uint64_t sampleRate;
                 std::vector<ChannelIdx> enabledChannels;
                 std::optional<VoltageThreshold> threshold = std::nullopt;
                 std::vector<GlitchFilter> glitchFilters = {};
@@ -70,10 +71,10 @@ namespace device {
             std::optional<AnalogChannelCollection> analogChannels = std::nullopt;
             std::optional<DigitalChannelCollection> digitalChannels = std::nullopt;
         };
-    };
+    } // namespace logic
 
     using Config = std::variant<logic::Config>;
-};
+} // namespace device
 
 namespace capture {
     struct DigitalTriggerMode {
@@ -98,7 +99,7 @@ namespace capture {
                 Count,
             };
 
-            size_t channelIndex;
+            std::size_t channelIndex;
             LinkedChannelState state;
         };
 
@@ -124,7 +125,7 @@ namespace capture {
         std::optional<int> bufferSizeMB;
         Mode captureMode;
     };
-};
+} // namespace capture
 
 } // namespace saleae::automation
 
