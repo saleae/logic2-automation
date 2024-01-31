@@ -193,7 +193,7 @@ class TimedCaptureMode:
     duration_seconds: float
 
     #: Seconds of data at end of capture to keep. If unspecified, all data will be kept.
-    #: Note, this retains the latest X seconds. If specified, the final recording length will be approximately duration_seconds-trim_data_seconds, retaining the latest data.
+    #: Note, this retains the latest X seconds. If specified, the final recording length will be approximately trim_data_seconds, retaining the latest data.
     trim_data_seconds: Optional[float] = None
 
 
