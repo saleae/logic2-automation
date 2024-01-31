@@ -581,7 +581,7 @@ Note: when using this mode, the wait() function will wait until the specified du
 <dt class="sig sig-object py" id="saleae.automation.TimedCaptureMode.trim_data_seconds">
 <span class="sig-name descname"><span class="pre">trim_data_seconds</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#saleae.automation.TimedCaptureMode.trim_data_seconds" title="Permalink to this definition"></a></dt>
 <dd><p>Seconds of data at end of capture to keep. If unspecified, all data will be kept.
-Note, this retains the latest X seconds. If specified, the final recording length will be approximately duration_seconds-trim_data_seconds, retaining the latest data.</p>
+Note, this retains the latest X seconds. If specified, the final recording length will be approximately trim_data_seconds, retaining the latest data.</p>
 </dd></dl>
 
 <dl class="py method">
