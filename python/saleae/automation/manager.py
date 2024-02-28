@@ -469,15 +469,14 @@ class Manager:
         with errors._error_handler():
             reply: saleae_pb2.GetDevicesReply = self.stub.GetDevices(request)
 
-        devices = []
-        for device in reply.devices:
-            devices.append(DeviceDesc(
+        return [
+            DeviceDesc(
                 device_id=device.device_id,
                 device_type=DeviceType(device.device_type),
                 is_simulation=device.is_simulation,
-            ))
-
-        return devices
+            )
+            for device in reply.devices
+        ]
 
     def start_capture(
         self,
