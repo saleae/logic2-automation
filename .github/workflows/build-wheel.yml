@@ -15,7 +15,7 @@ jobs:
           python -m build
 
       - name: Store Output
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: logic2-automation-python
           path: python/dist/*.whl
