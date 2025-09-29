@@ -7,6 +7,11 @@ Documentation can be found at https://saleae.github.io/logic2-automation/
 
 ## Changelog
 
+### 1.0.8
+
+- Revert change to make grpcio-tools a runtime dependency.
+  - This dependency was originally moved to build deps so that it would only be installed in that environment. Unfortunately this environment is unaffected by the runtime env, so it was not constrained by the user's existing protobuf/grpc dependencies, causing the protobuf/grpc files to be generated using the latest version. If the user used an earlier version of protobuf that was not compatible with the latest, importing logic-automation would fail. By moving grpcio-tools back to a runtime dependency it can be constrained by the user's existing dependencies.
+
 ### 1.0.7
 
 - Fix builds not building with hatchling 1.19.0.

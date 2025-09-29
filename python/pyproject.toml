@@ -1,6 +1,6 @@
 [project]
 name = "logic2-automation"
-version = "1.0.7"
+version = "1.0.8"
 authors = [
     { name="Saleae, Inc.", email="support@saleae.com" },
 ]
@@ -11,6 +11,7 @@ classifiers = [
    "Programming Language :: Python :: 3",
 ]
 dependencies = [
+    "grpcio-tools>=1.13.0",
     "grpcio>=1.13.0",
     "protobuf>=3.5.0.post1",
     "pywin32; platform_system == 'Windows'"
@@ -48,6 +49,5 @@ include = [
 require-runtime-dependencies = true
 path = "grpc_build_hook.py"
 dependencies = [
-    "grpcio-tools>=1.13.0",
 ]
 
