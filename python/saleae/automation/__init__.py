@@ -4,9 +4,10 @@ except Exception as exc:
     import sys
     sys.stderr.write('''There was an error that occurred while importing grpc/pb modules.
 This can be caused by pb files that were generated using an incompatible version of protobuf.
-You can regenerate these files by reinstalling logic2-automation:
 
-     pip install logic2-automation --force-reinstall
+Please ensure you are using grpc 1.50+.
+
+If the problem persists, please contact support at https://contact.saleae.com
 
  ''')
     raise exc from None
