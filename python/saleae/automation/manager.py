@@ -397,7 +397,7 @@ class Manager:
     def connect(cls,
                 *,
                 address: str = _DEFAULT_GRPC_ADDRESS,
-                port: int = _DEFAULT_GRPC_PORT,
+                port: Optional[int] = None,
                 connect_timeout_seconds: Optional[float] = None,
                 grpc_channel_arguments: Optional[List[Tuple[str, Any]]] = None) -> 'Manager':
         """Connect to an existing instance of Logic 2.
@@ -407,6 +407,9 @@ class Manager:
         :param connect_timeout_seconds: See __init__
         :param grpc_channel_arguments: See __init__
         """
+
+        if port is None:
+            port = _DEFAULT_GRPC_PORT
 
         return cls(address=address,
                    port=port,
