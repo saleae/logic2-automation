@@ -4,12 +4,6 @@
 
 Documentation can be found at https://saleae.github.io/logic2-automation/
 
-## Development
-
-Regenrate protobuf files: `uv run build-protobufs`
-Build wheel: `uv build`
-Publish to PyPi: `uv publish`
-
 
 ## Changelog
 

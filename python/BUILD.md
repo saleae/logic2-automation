@@ -1,3 +1,9 @@
+# Development
+
+ - Regenrate protobuf files: `uv run build-protobufs`
+ - Build wheel: `uv build`
+ - Publish to PyPi: `uv publish`
+
 # Build
 
 ## Setup
