@@ -5,6 +5,20 @@ import time
 
 import saleae.automation
 
+def test_add_nonexistent_analyzer(manager: saleae.automation.Manager, asset_path: str):
+    """
+    PRO-1182: Test that adding a non-existent analyzer returns InvalidRequestError.
+    """
+    path = os.path.join(asset_path, 'small_spi_capture.sal')
+
+    with manager.load_capture(path) as cap:
+        try:
+            cap.add_analyzer('NonExistentAnalyzer', label='Test', settings={})
+            assert False, "Expected InvalidRequestError for non-existent analyzer"
+        except saleae.automation.InvalidRequestError:
+            pass
+
+
 def test_add_analyzer(manager: saleae.automation.Manager, asset_path: str):
     path = os.path.join(asset_path, 'small_spi_capture.sal')
     
