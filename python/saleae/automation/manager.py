@@ -256,9 +256,6 @@ class Manager:
 
         Create an instance of the Manager class, and connect to the Logic 2 software.
 
-        This library currently assumes the Logic 2 software is running on the same machine, and will attempt to connect to 127.0.0.1.
-        In the future, we'll add support for supplying an IP address, as well as functions to help launch local copies of the application.
-
         :param port: Port number. By default, Logic 2 uses port 10430.
         :param address: Address to connect to.
         :param connect_timeout_seconds: Number of seconds to attempt to connect to gRPC server, after which an exception will be thrown.
