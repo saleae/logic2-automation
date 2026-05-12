@@ -319,7 +319,11 @@ class Manager:
         Launch the Logic2 application and shut it down when the returned Manager is closed.
 
         :param application_path: The path to the Logic2 binary to run. If not specified,
-                                 a locally installed copy of Logic2 will be searched for.
+                                 a locally installed copy of Logic2 will be searched for
+                                 in one of these locations, in order:
+                                  - The environment variable `SALEAE_LOGIC2_APPLICATION_PATH`
+                                  - The default installation directory on supported 
+                                    operating systems,
         :param connect_timeout_seconds: See __init__
         :param grpc_channel_arguments: See __init__
         :param port: Port to use for the gRPC server. If not specified, 10430 will be used.
@@ -336,8 +340,11 @@ class Manager:
             raise RuntimeError(f"Logic2 application not found: {reason}")
 
         if application_path is None:
-            if system == 'Linux':
-                raise RuntimeError(f"launch_application() not supported on Linux without `application_path` specified")
+            path_from_env = os.environ.get('SALEAE_LOGIC2_APPLICATION_PATH')
+            if path_from_env:
+                logic2_bin = path_from_env
+            elif system == 'Linux':
+                raise RuntimeError("launch_application() not supported on Linux without `application_path` or the environment variable `SALEAE_LOGIC2_APPLICATION_PATH` specified")
             elif system == 'Windows':
                 program_files_path = os.environ.get('programw6432')
                 if program_files_path is None:
@@ -348,7 +355,7 @@ class Manager:
                 if not os.path.exists(logic2_bin):
                     fail('Logic2 install not found. Go to https://www.saleae.com/downloads/ to download the installer.')
             elif system == 'Darwin':
-                raise RuntimeError(f"launch_application() not supported on MacOS without `application_path` specified")
+                raise RuntimeError("launch_application() not supported on MacOS without `application_path` or the environment variable `SALEAE_LOGIC2_APPLICATION_PATH` specified")
             else:
                 raise RuntimeError(f"Unknown system: {system}")
         else:
