@@ -585,7 +585,7 @@ class Manager:
 
         return Capture(self, reply.capture_info.capture_id)
 
-    def load_capture(self, filepath: str) -> "Capture":
+    def load_capture(self, filepath: Union[Path, str]) -> "Capture":
         """
         Load a capture.
 
@@ -596,7 +596,7 @@ class Manager:
 
         :return: Capture instance class.
         """
-        request = saleae_pb2.LoadCaptureRequest(filepath=filepath)
+        request = saleae_pb2.LoadCaptureRequest(filepath=str(filepath))
         with errors._error_handler():
             reply: saleae_pb2.LoadCaptureReply = self.stub.LoadCapture(request)
 
