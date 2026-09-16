@@ -1,4 +1,5 @@
 from enum import Enum
+from pathlib import Path
 from .errors import _error_handler
 
 import saleae.automation
@@ -105,7 +106,7 @@ class Capture:
 
     def add_high_level_analyzer(
         self,
-        extension_directory: str,
+        extension_directory: Union[Path, str],
         name: str,
         *,
         input_analyzer: AnalyzerHandle,
@@ -139,7 +140,7 @@ class Capture:
 
         request = saleae_pb2.AddHighLevelAnalyzerRequest(
             capture_id=self.capture_id,
-            extension_directory=extension_directory,
+            extension_directory=str(extension_directory),
             hla_name=name,
             input_analyzer_id=input_analyzer.analyzer_id,
             settings=analyzer_settings,
@@ -175,21 +176,21 @@ class Capture:
         with _error_handler():
             self.manager.stub.RemoveHighLevelAnalyzer(request)
 
-    def save_capture(self, filepath: str):
+    def save_capture(self, filepath: Union[Path, str]):
         """
         Saves the capture to a .sal file, which can be loaded later either through the UI or with the load_capture() function.
 
         :param filepath: path to the .sal file. Can be absolute, or relative to the Logic 2 software current working directory.
         """
         request = saleae_pb2.SaveCaptureRequest(
-            capture_id=self.capture_id, filepath=filepath
+            capture_id=self.capture_id, filepath=str(filepath)
         )
 
         with _error_handler():
             self.manager.stub.SaveCapture(request)
 
     def legacy_export_analyzer(
-        self, filepath: str, analyzer: AnalyzerHandle, radix: RadixType
+        self, filepath: Union[Path, str], analyzer: AnalyzerHandle, radix: RadixType
     ):
         """
         Exports the specified analyzer using the analyzer plugin export format, and not the data table format.
@@ -202,7 +203,7 @@ class Capture:
         """
         request = saleae_pb2.LegacyExportAnalyzerRequest(
             capture_id=self.capture_id,
-            filepath=filepath,
+            filepath=str(filepath),
             analyzer_id=analyzer.analyzer_id,
             radix_type=radix.value,
         )
@@ -212,7 +213,7 @@ class Capture:
 
     def export_data_table(
         self,
-        filepath: str,
+        filepath: Union[Path, str],
         analyzers: List[Union[AnalyzerHandle, DataTableExportConfiguration]],
         *,
         columns: Optional[List[str]] = None,
@@ -244,7 +245,7 @@ class Capture:
 
         request = saleae_pb2.ExportDataTableCsvRequest(
             capture_id=self.capture_id,
-            filepath=filepath,
+            filepath=str(filepath),
             analyzers=analyzer_configs,
             export_columns=columns,
             filter=pb_filter,
@@ -256,7 +257,7 @@ class Capture:
 
     def export_raw_data_csv(
         self,
-        directory: str,
+        directory: Union[Path, str],
         *,
         analog_channels: Optional[List[int]] = None,
         digital_channels: Optional[List[int]] = None,
@@ -288,7 +289,7 @@ class Capture:
 
         request = saleae_pb2.ExportRawDataCsvRequest(
             capture_id=self.capture_id,
-            directory=directory,
+            directory=str(directory),
             logic_channels=channels,
             analog_downsample_ratio=analog_downsample_ratio,
             iso8601_timestamp=iso8601_timestamp,
@@ -299,7 +300,7 @@ class Capture:
 
     def export_raw_data_binary(
         self,
-        directory: str,
+        directory: Union[Path, str],
         *,
         analog_channels: Optional[List[int]] = None,
         digital_channels: Optional[List[int]] = None,
@@ -330,7 +331,7 @@ class Capture:
 
         request = saleae_pb2.ExportRawDataBinaryRequest(
             capture_id=self.capture_id,
-            directory=directory,
+            directory=str(directory),
             logic_channels=channels,
             analog_downsample_ratio=analog_downsample_ratio,
         )
